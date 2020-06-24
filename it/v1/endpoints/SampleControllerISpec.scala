@@ -32,7 +32,6 @@ class SampleControllerISpec extends IntegrationBaseSpec {
 
     val nino = "AA123456A"
     val taxYear = "2017-18"
-    val correlationId = "X-123"
 
     val requestJson: JsValue = Json.parse(
       s"""
@@ -56,7 +55,7 @@ class SampleControllerISpec extends IntegrationBaseSpec {
                                               |  "responseData" : "someResponse",
                                               |  "links": [
                                               |   {
-                                              |     "href": "/other/deductions/$nino/sample-endpoint",
+                                              |     "href": "/individuals/deductions/other/$nino/sample-endpoint",
                                               |     "method": "GET",
                                               |     "rel": "sample-rel"
                                               |   }
