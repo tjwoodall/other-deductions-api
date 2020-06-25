@@ -1,0 +1,11 @@
+{
+  "seafarers":[
+    {
+      "customerReference": "myref",
+      "amountDeducted": 2342.22,
+      "nameOfShip": "Boaty McBoatface",
+      "fromDate": "2018-08-17",
+      "toDate":"2018-10-02"
+    }
+  ]
+}
