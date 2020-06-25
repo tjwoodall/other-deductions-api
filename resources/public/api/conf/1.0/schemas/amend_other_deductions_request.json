@@ -8,7 +8,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "description": "Financial details about",
+        "description": "Financial details about deductions and time spent working on a ship.",
         "properties": {
           "customerReference": {
             "description": "A reference the user supplies to identify the record.",
