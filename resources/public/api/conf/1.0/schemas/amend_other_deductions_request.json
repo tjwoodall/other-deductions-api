@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Amend Other Deductions",
+  "description": "This endpoint allows the developer to amend deductions. A National Insurance number and tax year must be provided.",
+  "type": "object",
+  "properties": {
+    "seafarers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Financial details about deductions and time spent working on a ship.",
+        "properties": {
+          "customerReference": {
+            "description": "A reference the user supplies to identify the record.",
+            "type": "string",
+            "example": "SEAFARERS1234"
+          },
+          "amountDeducted": {
+            "description": "Deduction from Seafarers' Earnings.\n\nThe value must be between 0 and 99999999999.99 up to 2 decimal places.",
+            "type": "number",
+            "example": "2000.99"
+          },
+          "nameOfShip": {
+            "description": "The name of the ship worked on.",
+            "type": "string",
+            "example": "Blue Bell"
+          },
+          "fromDate": {
+            "description": "The date work started in the format YYYY-MM-DD",
+            "type": "string",
+            "example": "2019-04-06"
+          },
+          "toDate": {
+            "description": "The date work ended in format YYYY-MM-DD",
+            "type": "string",
+            "example": "2020-04-06"
+          }
+        },
+        "required": [
+          "amountDeducted",
+          "nameOfShip",
+          "fromDate",
+          "toDate"
+        ]
+      }
+    }
+  }
+}
