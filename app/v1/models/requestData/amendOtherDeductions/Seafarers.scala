@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package v1.models.hateoas
+package v1.models.requestData.amendOtherDeductions
 
-object RelType {
-  val SAMPLE_ENDPOINT_REL = "sample-rel"
-  val SELF = "self"
-  val AMEND_DEDUCTIONS_OTHER = "amend-deductions-other"
-  val DELETE_DEDUCTIONS_OTHER = "delete-deductions-other"
+import play.api.libs.json.{Json, OFormat}
+
+case class Seafarers(customerReference: Option[String], amountDeducted: BigDecimal,
+                     nameOfShip: String, fromDate: String, toDate:String)
+
+object Seafarers {
+  implicit val format: OFormat[Seafarers] = Json.format[Seafarers]
 }
