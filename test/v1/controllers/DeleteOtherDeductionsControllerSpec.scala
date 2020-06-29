@@ -23,7 +23,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockDeleteOtherDeductionsRequestParser
 import v1.mocks.services.{MockAuditService, MockDeleteOtherDeductionsService, MockEnrolmentsAuthService, MockMtdIdLookupService}
-import v1.models.errors.{ErrorWrapper, MtdError}
+import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.deleteOtherDeductions.{DeleteOtherDeductionsRawData, DeleteOtherDeductionsRequest}
 
@@ -110,11 +110,11 @@ class DeleteOtherDeductionsControllerSpec
         def serviceErrors(mtdError: MtdError, expectedStatus: Int): Unit = {
           s"a $mtdError error is returned from the service" in new Test {
 
-            MockDeleteOtherReliefsRequestParser
+            MockDeleteOtherDeductionsRequestParser
               .parse(rawData)
               .returns(Right(requestData))
 
-            MockDeleteService
+            MockDeleteOtherDeductionsService
               .delete(requestData)
               .returns(Future.successful(Left(ErrorWrapper(Some(correlationId), mtdError))))
 
@@ -137,5 +137,4 @@ class DeleteOtherDeductionsControllerSpec
       }
     }
   }
-
 }
