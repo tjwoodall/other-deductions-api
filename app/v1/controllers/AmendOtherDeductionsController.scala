@@ -22,11 +22,13 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents}
 import utils.Logging
+import v1.controllers.requestParsers.AmendOtherDeductionsRequestParser
 import v1.hateoas.HateoasFactory
 import v1.models.errors._
 import v1.models.request.amendOtherDeductions.AmendOtherDeductionsRawData
 import v1.models.response.AmendOtherDeductionsHateoasData
-import v1.services.{EnrolmentsAuthService, MtdIdLookupService}
+import v1.models.response.AmendOtherDeductionsResponse.AmendOtherLinksFactory
+import v1.services.{AmendOtherDeductionsService, EnrolmentsAuthService, MtdIdLookupService}
 
 import scala.concurrent.{ExecutionContext, Future}
 
