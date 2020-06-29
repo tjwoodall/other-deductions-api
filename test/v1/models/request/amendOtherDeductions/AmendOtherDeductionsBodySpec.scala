@@ -21,16 +21,16 @@ import support.UnitSpec
 import v1.models.utils.JsonErrorValidators
 
 class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
-  val amendOtherDeductionsBody = AmendOtherDeductionsBody(Seq(
+  val amendOtherDeductionsBody = AmendOtherDeductionsBody(Some(Seq(
     Seafarers(
       Some("myRef"),
       2000.99,
       "Blue Bell",
       "2018-04-06",
       "2019-04-06"
-    ))
+    )))
   )
-  val multipleSeafarersAmendOtherDeductionsBody = AmendOtherDeductionsBody(Seq(
+  val multipleSeafarersAmendOtherDeductionsBody = AmendOtherDeductionsBody(Some(Seq(
     Seafarers(
       Some("myRef"),
       2000.99,
@@ -44,17 +44,17 @@ class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
       "Blue Bell",
       "2018-04-06",
       "2019-04-06"
-    ))
+    )))
   )
 
-  val noRefAmendOtherDeductionsBody = AmendOtherDeductionsBody(Seq(
+  val noRefAmendOtherDeductionsBody = AmendOtherDeductionsBody(Some(Seq(
     Seafarers(
       None,
       2000.99,
       "Blue Bell",
       "2018-04-06",
       "2019-04-06"
-    ))
+    )))
   )
 
   val json = Json.parse(

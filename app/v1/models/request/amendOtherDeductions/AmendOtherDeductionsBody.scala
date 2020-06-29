@@ -18,7 +18,7 @@ package v1.models.request.amendOtherDeductions
 
 import play.api.libs.json.{Json, OFormat}
 
-case class AmendOtherDeductionsBody(seafarers: Seq[Seafarers])
+case class AmendOtherDeductionsBody(seafarers: Option[Seq[Seafarers]])
 
 object AmendOtherDeductionsBody {
   implicit val format: OFormat[AmendOtherDeductionsBody] = Json.format[AmendOtherDeductionsBody]
