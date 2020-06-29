@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package v1.models.requestData.amendOtherDeductions
+package v1.models.request.amendOtherDeductions
 
-import play.api.libs.json.JsValue
-import v1.models.requestData.RawData
+import play.api.libs.json.{Json, OFormat}
 
-case class AmendOtherDeductionsRawData(nino: String, taxYear: String, body: JsValue) extends RawData
+case class AmendOtherDeductionsBody(seafarers: Seq[Seafarers])
+
+object AmendOtherDeductionsBody {
+  implicit val format: OFormat[AmendOtherDeductionsBody] = Json.format[AmendOtherDeductionsBody]
+}

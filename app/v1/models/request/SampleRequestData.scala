@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package v1.models.requestData.amendOtherDeductions
+package v1.models.request
 
-import uk.gov.hmrc.auth.core.Nino
+import uk.gov.hmrc.domain.Nino
+import v1.models.domain.SampleRequestBody
 
-case class AmendOtherDeductionsRequest(nino: Nino, taxYear: String, body: AmendOtherDeductionsBody)
+case class SampleRequestData(nino: Nino, desTaxYear: DesTaxYear, body: SampleRequestBody)

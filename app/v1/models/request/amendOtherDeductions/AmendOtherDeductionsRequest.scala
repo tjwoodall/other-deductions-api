@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package v1.models.requestData.amendOtherDeductions
+package v1.models.request.amendOtherDeductions
 
-import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.auth.core.Nino
 
-case class Seafarers(customerReference: Option[String], amountDeducted: BigDecimal,
-                     nameOfShip: String, fromDate: String, toDate:String)
-
-object Seafarers {
-  implicit val format: OFormat[Seafarers] = Json.format[Seafarers]
-}
+case class AmendOtherDeductionsRequest(nino: Nino, taxYear: String, body: AmendOtherDeductionsBody)
