@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package v1.controllers.requestParsers.validators
+package v1.controllers.requestParsers.validators.validations
 
-import java.time.format.DateTimeFormatter
+import v1.models.errors.{MtdError, NameOfShipFormatError}
 
-package object validations {
+object NameOfShipValidation {
 
-  val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-  val NoValidationErrors = List()
-
+  def validate(field: String, path: String): List[MtdError] = {
+    if (field.length <= 105) {
+      Nil
+    } else {
+      List(NameOfShipFormatError.copy(paths = Some(Seq(path))))
+    }
+  }
 }

@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package v1.controllers.requestParsers.validators
+package v1.controllers.requestParsers.validators.validations
 
-import java.time.format.DateTimeFormatter
+import v1.models.errors.{MtdError, ValueFormatError}
 
-package object validations {
+object AmountValidation {
 
-  val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-  val NoValidationErrors = List()
-
+  def validate(field: BigDecimal, path: String): List[MtdError] = {
+    if (field >= 0 && field < 99999999999.99 && field.scale <= 2){
+      Nil
+    } else {
+      List(
+        ValueFormatError.copy(paths = Some(Seq(path)))
+      )
+    }
+  }
 }
