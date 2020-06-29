@@ -19,7 +19,7 @@ package v1.mocks.requestParsers
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import v1.models.errors.ErrorWrapper
-import v1.models.requestData.amendOtherDeductions.{AmendOtherDeductionsRawData, AmendOtherDeductionsRequest}
+import v1.models.request.amendOtherDeductions.{AmendOtherDeductionsRawData, AmendOtherDeductionsRequest}
 
 trait MockAmendOtherDeductionsRequestParser extends MockFactory {
 

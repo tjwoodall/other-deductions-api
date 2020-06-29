@@ -27,7 +27,8 @@ import v1.models.errors._
 import v1.models.hateoas.{HateoasWrapper, Link}
 import v1.models.hateoas.Method.PUT
 import v1.models.outcomes.ResponseWrapper
-import v1.models.requestData.amendOtherDeductions.{AmendOtherDeductionsBody, AmendOtherDeductionsRawData, AmendOtherDeductionsRequest, Seafarers}
+import v1.models.request.amendOtherDeductions.{AmendOtherDeductionsBody, AmendOtherDeductionsRawData, AmendOtherDeductionsRequest, Seafarers}
+import v1.models.response.AmendOtherDeductionsHateoasData
 
 import scala.concurrent.Future
 
@@ -79,13 +80,13 @@ class AmendOtherDeductionsControllerSpec
   )
 
   private val requestBody = AmendOtherDeductionsBody(
-    Seq(Seafarers(
+    Some(Seq(Seafarers(
       "myRef",
       2342.22,
       "Blue Bell",
       "2018-08-17",
       "2018-10-02"
-    ))
+    )))
   )
 
 
@@ -101,7 +102,7 @@ class AmendOtherDeductionsControllerSpec
           .parseRequest(rawData)
           .returns(Right(requestData))
 
-        MockAmendReliefService
+        MockAmendOtherDeductionsService
           .amend(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
@@ -148,7 +149,7 @@ class AmendOtherDeductionsControllerSpec
               .parseRequest(rawData)
               .returns(Right(requestData))
 
-            MockAmendReliefService
+            MockAmendOtherDeductionsService
               .amend(requestData)
               .returns(Future.successful(Left(ErrorWrapper(Some(correlationId), mtdError))))
 

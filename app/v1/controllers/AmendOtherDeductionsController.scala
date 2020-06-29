@@ -24,7 +24,8 @@ import play.api.mvc.{Action, ControllerComponents}
 import utils.Logging
 import v1.hateoas.HateoasFactory
 import v1.models.errors._
-import v1.models.requestData.amendOtherDeductions.AmendOtherDeductionsRawData
+import v1.models.request.amendOtherDeductions.AmendOtherDeductionsRawData
+import v1.models.response.AmendOtherDeductionsHateoasData
 import v1.services.{EnrolmentsAuthService, MtdIdLookupService}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -69,11 +70,15 @@ class AmendOtherDeductionsController @Inject()(val authService: EnrolmentsAuthSe
 
     (errorWrapper.error: @unchecked) match {
       case NinoFormatError |
-           BadRequestError |
            TaxYearFormatError |
-           RuleIncorrectOrEmptyBodyError |
+           BadRequestError |
            RuleTaxYearRangeInvalidError |
-           MtdErrorWithCustomMessage(ValueFormatError.code) => BadRequest(Json.toJson(errorWrapper))
+           MtdErrorWithCustomMessage(ValueFormatError.code) |
+           MtdErrorWithCustomMessage(NameOfShipFormatError.code) |
+           MtdErrorWithCustomMessage(CustomerReferenceFormatError.code) |
+           MtdErrorWithCustomMessage(DateFormatError.code) |
+           RuleIncorrectOrEmptyBodyError |
+           MtdErrorWithCustomMessage(RangeToDateBeforeFromDateError.code) => BadRequest(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
       case NotFoundError => NotFound(Json.toJson(errorWrapper))
     }

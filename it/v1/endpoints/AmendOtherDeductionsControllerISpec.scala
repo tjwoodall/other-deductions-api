@@ -22,7 +22,7 @@ import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
-import v1.models.errors.{BadRequestError, CustomerReferenceFormatError, DownstreamError, ErrorWrapper, MtdError, NinoFormatError, NotFoundError, ReliefDateFormatError, TaxYearFormatError, ValueFormatError}
+import v1.models.errors._
 import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
 class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
@@ -31,6 +31,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
     val nino = "AA123456A"
     val taxYear = "2019-20"
+    val correlationId: String = "X-123"
 
     val requestBodyJson: JsValue = Json.parse(
       s"""
@@ -141,13 +142,13 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
                       "/seafarers/[0]/amountDeducted"
                     ))
                   ),
-                  nameOfShipsFormatError.copy(
+                  NameOfShipFormatError.copy(
                     message = "The provided customer reference is not valid",
                     paths = Some(List(
                       "/seafarers/[0]/nameOfShip"
                     ))
                   ),
-                  ReliefDateFormatError.copy(
+                  DateFormatError.copy(
                     message = "The field should be in the format YYYY-MM-DD",
                     paths =Some(List(
                       "/maintenancePayments/0/exSpouseDateOfBirth",
