@@ -1,3 +1,4 @@
 POST       /:nino/:taxYear/sampleEndpoint                  v1.controllers.SampleController.handleRequest(nino: String, taxYear: String)
 
 DELETE     /:nino/:taxYear                                 v1.controllers.DeleteOtherDeductionsController.handleRequest(nino: String, taxYear: String)
+POST       /:nino/:taxYear                                 v1.controllers.AmendOtherDeductionsController.handleRequest(nino: String, taxYear: String)
