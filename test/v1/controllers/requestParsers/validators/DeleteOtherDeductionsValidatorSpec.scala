@@ -16,55 +16,48 @@
 
 package v1.controllers.requestParsers.validators
 
-import play.api.libs.json.Json
 import support.UnitSpec
 import v1.models.errors._
-import v1.models.request.sample.SampleRawData
+import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRawData
 
-class SampleValidatorSpec extends UnitSpec {
+class DeleteOtherDeductionsValidatorSpec extends UnitSpec {
 
   private val validNino = "AA123456A"
   private val validTaxYear = "2018-19"
-  private val requestBodyJson = Json.parse(
-    """{
-      |  "data" : "someData"
-      |}
-    """.stripMargin)
 
-  val validator = new SampleValidator()
+  val validator = new DeleteOtherDeductionsValidator()
 
   "running a validation" should {
     "return no errors" when {
       "a valid request is supplied" in {
-        validator.validate(SampleRawData(validNino, validTaxYear, requestBodyJson)) shouldBe Nil
+        validator.validate(DeleteOtherDeductionsRawData(validNino, validTaxYear)) shouldBe Nil
       }
     }
 
     "return NinoFormatError error" when {
       "an invalid nino is supplied" in {
-        validator.validate(SampleRawData("A12344A", validTaxYear, requestBodyJson)) shouldBe
+        validator.validate(DeleteOtherDeductionsRawData("A12344A", validTaxYear)) shouldBe
           List(NinoFormatError)
       }
     }
 
     "return TaxYearFormatError error" when {
       "an invalid tax year is supplied" in {
-        validator.validate(SampleRawData(validNino, "20178", requestBodyJson)) shouldBe
+        validator.validate(DeleteOtherDeductionsRawData(validNino, "20178")) shouldBe
           List(TaxYearFormatError)
       }
     }
 
-    "return RuleTaxYearNotSupportedError error" when {
-      "an out of range tax year is supplied" in {
-        validator.validate(
-          SampleRawData(validNino, "2016-17", requestBodyJson)) shouldBe
-          List(RuleTaxYearNotSupportedError)
+    "return RuleTaxYearRangeInvalidError error" when {
+      "an invalid tax year range is supplied" in {
+        validator.validate(DeleteOtherDeductionsRawData(validNino, "2017-19")) shouldBe
+          List(RuleTaxYearRangeInvalidError)
       }
     }
 
     "return multiple errors" when {
       "request supplied has multiple errors" in {
-        validator.validate(SampleRawData("A12344A", "20178", requestBodyJson)) shouldBe
+        validator.validate(DeleteOtherDeductionsRawData("A12344A", "20178")) shouldBe
           List(NinoFormatError, TaxYearFormatError)
       }
     }

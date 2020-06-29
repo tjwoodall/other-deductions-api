@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package v1.models.request
+package v1.models.response.sample.des
 
-/**
-  * Represents a tax year for DES
-  *
-  * @param value the tax year string (where 2018 represents 2017-18)
-  */
-case class DesTaxYear(value: String) extends AnyVal {
-  override def toString: String = value
-}
+import play.api.libs.json.Json
+import support.UnitSpec
 
-object DesTaxYear {
+class DesSampleResponseSpec extends UnitSpec {
+  "Json reads" should {
+    "use specified format" in {
+      val json = Json.parse(
+        """
+          |{
+          |  "responseData": "someResponse"
+          |}""".stripMargin)
 
-  /**
-    * @param taxYear tax year in MTD format (e.g. 2017-18)
-    */
-  def fromMtd(taxYear: String): DesTaxYear =
-    DesTaxYear(taxYear.take(2) + taxYear.drop(5))
+      json.as[DesSampleResponse] shouldBe DesSampleResponse("someResponse")
+    }
+  }
 }

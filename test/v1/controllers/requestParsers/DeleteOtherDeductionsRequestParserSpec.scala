@@ -16,47 +16,38 @@
 
 package v1.controllers.requestParsers
 
-import play.api.libs.json.Json
 import support.UnitSpec
 import uk.gov.hmrc.domain.Nino
-import v1.mocks.validators.MockSampleValidator
-import v1.models.domain.SampleRequestBody
+import v1.mocks.validators.MockDeleteOtherDeductionsValidator
 import v1.models.errors._
-import v1.models.request.{DesTaxYear, SampleRawData, SampleRequestData}
+import v1.models.request.deleteOtherDeductions.{DeleteOtherDeductionsRawData, DeleteOtherDeductionsRequest}
 
-class SampleRequestDataParserSpec extends UnitSpec {
+class DeleteOtherDeductionsRequestParserSpec extends UnitSpec {
   val nino = "AA123456B"
   val taxYear = "2017-18"
-  val calcId = "someCalcId"
 
-  private val requestBodyJson = Json.parse(
-    """{
-      |  "data" : "someData"
-      |}
-    """.stripMargin)
+  val inputData: DeleteOtherDeductionsRawData =
+    DeleteOtherDeductionsRawData(nino, taxYear)
 
-  val inputData =
-    SampleRawData(nino, taxYear, requestBodyJson)
-
-  trait Test extends MockSampleValidator {
-    lazy val parser = new SampleRequestDataParser(mockValidator)
+  trait Test extends MockDeleteOtherDeductionsValidator {
+    lazy val parser = new DeleteOtherDeductionsRequestParser(mockValidator)
   }
 
   "parse" should {
 
     "return a request object" when {
       "valid request data is supplied" in new Test {
-        MockSampleValidator.validate(inputData).returns(Nil)
+        MockDeleteOtherDeductionsValidator.validate(inputData).returns(Nil)
 
         parser.parseRequest(inputData) shouldBe
-          Right(SampleRequestData(Nino(nino), DesTaxYear("2018"), SampleRequestBody("someData")))
+          Right(DeleteOtherDeductionsRequest(Nino(nino), "2017-18"))
       }
     }
 
     "return an ErrorWrapper" when {
 
       "a single validation error occurs" in new Test {
-        MockSampleValidator.validate(inputData)
+        MockDeleteOtherDeductionsValidator.validate(inputData)
           .returns(List(NinoFormatError))
 
         parser.parseRequest(inputData) shouldBe
@@ -64,7 +55,7 @@ class SampleRequestDataParserSpec extends UnitSpec {
       }
 
       "multiple validation errors occur" in new Test {
-        MockSampleValidator.validate(inputData)
+        MockDeleteOtherDeductionsValidator.validate(inputData)
           .returns(List(NinoFormatError, TaxYearFormatError))
 
         parser.parseRequest(inputData) shouldBe

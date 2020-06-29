@@ -25,21 +25,21 @@ import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.Logging
-import v1.controllers.requestParsers.SampleRequestDataParser
+import v1.controllers.requestParsers.SampleRequestParser
 import v1.hateoas.HateoasFactory
 import v1.models.audit.{AuditEvent, SampleAuditDetail, SampleAuditResponse}
 import v1.models.auth.UserDetails
-import v1.models.domain.SampleHateoasData
 import v1.models.errors._
-import v1.models.request.SampleRawData
-import v1.services.{SampleService, _}
+import v1.models.request.sample.SampleRawData
+import v1.models.response.sample.SampleHateoasData
+import v1.services._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SampleController @Inject()(val authService: EnrolmentsAuthService,
                                  val lookupService: MtdIdLookupService,
-                                 requestDataParser: SampleRequestDataParser,
+                                 requestDataParser: SampleRequestParser,
                                  sampleService: SampleService,
                                  hateoasFactory: HateoasFactory,
                                  auditService: AuditService,
@@ -80,7 +80,7 @@ class SampleController @Inject()(val authService: EnrolmentsAuthService,
   private def errorResult(errorWrapper: ErrorWrapper) = {
     (errorWrapper.error: @unchecked) match {
       case RuleIncorrectOrEmptyBodyError | BadRequestError | NinoFormatError | TaxYearFormatError | RuleTaxYearNotSupportedError |
-           RuleTaxYearRangeExceededError =>
+           RuleTaxYearRangeInvalidError =>
         BadRequest(Json.toJson(errorWrapper))
       case NotFoundError => NotFound(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))

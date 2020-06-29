@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.models.request.sample
 
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.JsValue
+import v1.models.request.RawData
 
-case class SampleRequestBody(data: String)
-
-object SampleRequestBody {
-  implicit val reads: Reads[SampleRequestBody] = Json.reads[SampleRequestBody]
-}
+case class SampleRawData(nino: String, taxYear: String, body: JsValue) extends RawData

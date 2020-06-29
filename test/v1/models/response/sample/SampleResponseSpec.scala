@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.models.response.sample
 
+import mocks.MockAppConfig
 import play.api.libs.json.Json
 import support.UnitSpec
+import v1.models.hateoas.{Link, Method}
 
-class SampleResponseSpec extends UnitSpec {
+class SampleResponseSpec extends UnitSpec with MockAppConfig {
   "writes" must {
     "write expected JSON format" in {
       Json.toJson(SampleResponse("someData")) shouldBe Json.parse(
@@ -28,6 +30,20 @@ class SampleResponseSpec extends UnitSpec {
           |  "responseData" : "someData"
           |}
         """.stripMargin)
+    }
+  }
+
+  "LinksFactory" should {
+    "produce the correct links" when {
+      "called" in {
+        val data: SampleHateoasData = SampleHateoasData("mynino")
+
+        MockedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
+
+        SampleResponse.SampleLinksFactory.links(mockAppConfig, data) shouldBe Seq(
+          Link(href = s"/my/context/${data.nino}/sample-endpoint", method = Method.GET, rel = "sample-rel")
+        )
+      }
     }
   }
 }

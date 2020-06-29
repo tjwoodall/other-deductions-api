@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.models.response.sample
 
 import config.AppConfig
 import play.api.libs.json.{Json, OWrites}
@@ -26,7 +26,7 @@ case class SampleResponse(responseData: String)
 object SampleResponse extends HateoasLinks {
   implicit val writes: OWrites[SampleResponse] = Json.writes[SampleResponse]
 
-  implicit object AmendLinksFactory extends HateoasLinksFactory[SampleResponse, SampleHateoasData] {
+  implicit object SampleLinksFactory extends HateoasLinksFactory[SampleResponse, SampleHateoasData] {
     override def links(appConfig: AppConfig, data: SampleHateoasData): Seq[Link] = {
       import data._
       Seq(sampleLink(appConfig, nino))
