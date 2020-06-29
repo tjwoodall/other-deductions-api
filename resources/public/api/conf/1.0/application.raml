@@ -1,10 +1,10 @@
 #%RAML 1.0
 ---
-title: Other Deductions API
+title: Other Deductions (MTD)
 version: 1.0
 
 protocols: [ HTTPS ]
-baseUri: https://helloworld.service.hmrc.gov.uk/
+baseUri: https://api.service.hmrc.gov.uk/
 
 documentation:
  - title: Overview
@@ -47,3 +47,4 @@ uses:
           description: This is a sample endpoint
         post: !include sample_post.raml
       put: !include otherDeductions_amend.raml
+      delete: !include otherDeductions_delete.raml
