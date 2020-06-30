@@ -23,6 +23,7 @@ import v1.controllers.EndpointLogContext
 import v1.models.errors.ErrorWrapper
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.amendOtherDeductions.AmendOtherDeductionsRequest
+import v1.services.AmendOtherDeductionsService
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,7 +35,7 @@ trait MockAmendOtherDeductionsService extends MockFactory {
 
     def amend(requestData: AmendOtherDeductionsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[Unit]]]] = {
       (mockService
-        .amendOtherDeductions(_: AmendOtherDeductionsRequest)(_: HeaderCarrier, _: ExecutionContext, _: EndpointLogContext))
+        .amend(_: AmendOtherDeductionsRequest)(_: HeaderCarrier, _: ExecutionContext, _: EndpointLogContext))
         .expects(requestData, *, *, *)
     }
   }

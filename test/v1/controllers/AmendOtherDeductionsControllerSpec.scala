@@ -30,6 +30,7 @@ import v1.models.outcomes.ResponseWrapper
 import v1.models.request.amendOtherDeductions.{AmendOtherDeductionsBody, AmendOtherDeductionsRawData, AmendOtherDeductionsRequest, Seafarers}
 import v1.models.response.AmendOtherDeductionsHateoasData
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class AmendOtherDeductionsControllerSpec
@@ -81,7 +82,7 @@ class AmendOtherDeductionsControllerSpec
 
   private val requestBody = AmendOtherDeductionsBody(
     Some(Seq(Seafarers(
-      "myRef",
+      Some("myRef"),
       2342.22,
       "Blue Bell",
       "2018-08-17",
@@ -135,7 +136,24 @@ class AmendOtherDeductionsControllerSpec
         val input = Seq(
           (BadRequestError, BAD_REQUEST),
           (NinoFormatError, BAD_REQUEST),
-          ???
+          (TaxYearFormatError, BAD_REQUEST),
+          (RuleTaxYearRangeInvalidError, BAD_REQUEST),
+          (ValueFormatError.copy(paths = Some(Seq(
+            "seafarers/0/amountDeducted",
+            "seafarers/1/amountDeducted"))), BAD_REQUEST),
+          (NameOfShipFormatError.copy(paths = Some(Seq(
+            "seafarers/0/nameOfShip",
+            "seafarers/1/nameOfShip"))), BAD_REQUEST),
+          (CustomerReferenceFormatError.copy(paths = Some(Seq(
+            "seafarers/0/customerReference",
+            "seafarers/1/customerReference"))), BAD_REQUEST),
+          (DateFormatError.copy(paths = Some(Seq(
+            "seafarers/0/fromDate",
+            "seafarers/0/toDate",
+            "seafarers/1/fromDate",
+            "seafarers/1/toDate"))), BAD_REQUEST),
+          (RuleIncorrectOrEmptyBodyError, BAD_REQUEST),
+          (RangeToDateBeforeFromDateError, BAD_REQUEST)
         )
 
         input.foreach(args => (errorsFromParserTester _).tupled(args))

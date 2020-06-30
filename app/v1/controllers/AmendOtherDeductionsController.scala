@@ -75,11 +75,11 @@ class AmendOtherDeductionsController @Inject()(val authService: EnrolmentsAuthSe
            TaxYearFormatError |
            BadRequestError |
            RuleTaxYearRangeInvalidError |
+           RuleIncorrectOrEmptyBodyError |
            MtdErrorWithCustomMessage(ValueFormatError.code) |
            MtdErrorWithCustomMessage(NameOfShipFormatError.code) |
            MtdErrorWithCustomMessage(CustomerReferenceFormatError.code) |
            MtdErrorWithCustomMessage(DateFormatError.code) |
-           RuleIncorrectOrEmptyBodyError |
            MtdErrorWithCustomMessage(RangeToDateBeforeFromDateError.code) => BadRequest(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
       case NotFoundError => NotFound(Json.toJson(errorWrapper))

@@ -29,8 +29,8 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino = "AA123456A"
-    val taxYear = "2019-20"
+    val nino: String = "AA123456A"
+    val taxYear: String = "2019-20"
     val correlationId: String = "X-123"
 
     val requestBodyJson: JsValue = Json.parse(
@@ -198,6 +198,28 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             |}
             |""".stripMargin)
 
+        val RangeToDateBeforeFromDateJson = Json.parse(
+          """
+            |{
+            |  "seafarers":[
+            |    {
+            |      "customerReference": "myRef",
+            |      "amountDeducted": 2342.22,
+            |      "nameOfShip": "Blue Bell",
+            |      "fromDate": "2019-08-17",
+            |      "toDate":"2018-10-02"
+            |    },
+            |    {
+            |      "customerReference": "myOtherRef",
+            |      "amountDeducted": 2872.16,
+            |      "nameOfShip": "Blue Bell 2",
+            |      "fromDate": "2022-06-17",
+            |      "toDate":"2020-05-02"
+            |    }
+            |  ]
+            |}
+            |""".stripMargin)
+
         val allInvalidValueFormatRequestBodyJson = Json.parse(
           """
             |{
@@ -294,7 +316,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           ))
         )
 
-        val allDateFormatError: MtdError = ReliefDateFormatError.copy(
+        val allDateFormatError: MtdError = DateFormatError.copy(
           message = "The field should be in the format YYYY-MM-DD",
           paths = Some(List(
             "/seafarers/0/fromDate",
@@ -312,7 +334,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           ))
         )
 
-        val allNamesOfShipsFormatErrors: MtdError = nameOfShipsFormatError.copy(
+        val allNamesOfShipsFormatErrors: MtdError = NameOfShipFormatError.copy(
           message = "The provided customer reference is not valid",
           paths = Some(List(
             "/seafarers/[0]/nameOfShip",
@@ -343,7 +365,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           val input = Seq(
             ("AA1123A", "2017-18", validRequestBodyJson, BAD_REQUEST, NinoFormatError),
             ("AA123456A", "20177", validRequestBodyJson, BAD_REQUEST, TaxYearFormatError),
-            ("AA123456A", "2019-18", validRequestBodyJson, BAD_REQUEST, ToDateBeforeFromDateError),
+            ("AA123456A", "2017-18", RangeToDateBeforeFromDateJson, BAD_REQUEST, RangeToDateBeforeFromDateError),
             ("AA123456A", "2017-18", allInvalidValueFormatRequestBodyJson, BAD_REQUEST, allValueFormatError),
             ("AA123456A", "2017-18", allDatesInvalidRequestBodyJson, BAD_REQUEST, allDateFormatError),
             ("AA123456A", "2017-18", allCustomerReferencesInvalidRequestBodyJson, BAD_REQUEST, allCustomerReferenceFormatErrors),
@@ -374,8 +396,8 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
             (BAD_REQUEST, "FORMAT_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
             (BAD_REQUEST, "NOT_FOUND", NOT_FOUND, NotFoundError),
-            (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError)),
-            (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError)
+            (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError),
+            (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError))
 
           input.foreach(args => (serviceErrorTest _).tupled(args))
         }
