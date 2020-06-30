@@ -1,0 +1,28 @@
+{
+  "seafarers": [
+    {
+      "customerReference": "SEAFARERS1234",
+      "amountDeducted": 2543.32,
+      "nameOfShip": "Blue Bell",
+      "fromDate": "2019-04-06",
+      "toDate": "2020-04-05"
+    }
+  ],
+  "links":[
+    {
+      "href":"/individuals/deductions/other/TC663795B/2019-20",
+      "method":"GET",
+      "rel":"self"
+    },
+    {
+      "href":"/individuals/deductions/other/TC663795B/2019-20",
+      "method":"PUT",
+      "rel":"amend-deductions-other"
+    },
+    {
+      "href":"/individuals/deductions/other/TC663795B/2019-20",
+      "method":"DELETE",
+      "rel":"delete-deductions-other"
+    }
+  ]
+}

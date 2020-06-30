@@ -11,9 +11,11 @@
             <td><p>N/A - DEFAULT</p></td>
             <td><p>Simulate success response.</p></td>
         </tr>
-        <tr>
-            <td><p>NOT_FOUND</p></td>
-            <td><p>Simulates the scenario where the given deduction could not be found.</p></td>
-         </tr>
     </tbody>
+        <tbody>
+            <tr>
+                <td><p>NOT_FOUND</p></td>
+                <td><p>Simulates the scenario where the given deduction could not be found.</p></td>
+            </tr>            
+        </tbody>
 </table>
