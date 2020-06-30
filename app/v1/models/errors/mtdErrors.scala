@@ -24,6 +24,10 @@ object MtdError {
   implicit val writes: Writes[MtdError] = Json.writes[MtdError]
 }
 
+object MtdErrorWithCustomMessage {
+  def unapply(arg: MtdError): Option[String] = Some(arg.code)
+}
+
 object NinoFormatError extends MtdError("FORMAT_NINO", "The provided NINO is invalid")
 object TaxYearFormatError extends MtdError("FORMAT_TAX_YEAR", "The provided tax year is invalid")
 object ValueFormatError extends MtdError("FORMAT_VALUE", "The field should be between 0 and 99999999999.99")
@@ -31,7 +35,7 @@ object NameOfShipFormatError extends MtdError("FORMAT_NAME_OF_SHIP", "The provid
 object CustomerReferenceFormatError extends MtdError("FORMAT_CUSTOMER_REFERENCE", "The provided customer reference is not valid")
 object DateFormatError extends MtdError("FORMAT_DATE", "The field should be in the format YYYY-MM-DD")
 
-object RangeToDateBeforeFromDateError extends MtdError("RaNGE_TO_DATE_BEFORE_FROM_DATE", "The To date is before the From date")
+object RangeToDateBeforeFromDateError extends MtdError("RANGE_TO_DATE_BEFORE_FROM_DATE", "The To date is before the From date")
 
 // Rule Errors
 object RuleTaxYearNotSupportedError

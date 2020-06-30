@@ -32,7 +32,7 @@ trait HateoasLinks {
     Link(href = sampleUri(appConfig, nino), method = GET, rel = SAMPLE_ENDPOINT_REL)
 
   private def otherDeductionsUri(appConfig: AppConfig, nino: String, taxYear: String): String =
-    s"/${appConfig.apiGatewayContext}/other/$nino/$taxYear"
+    s"/${appConfig.apiGatewayContext}/$nino/$taxYear"
 
   def amendOtherDeductions(appConfig: AppConfig, nino: String, taxYear: String): Link =
     Link(href = otherDeductionsUri(appConfig, nino, taxYear), method = PUT, rel = AMEND_DEDUCTIONS_OTHER)
