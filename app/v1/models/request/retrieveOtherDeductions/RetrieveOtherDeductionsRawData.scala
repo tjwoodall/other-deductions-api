@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package v1.models.request.amendOtherDeductions
+package v1.models.request.retrieveOtherDeductions
 
-import play.api.libs.json.{Json, OFormat}
+import v1.models.request.RawData
 
-case class Seafarers(customerReference: Option[String], amountDeducted: BigDecimal,
-                     nameOfShip: String, fromDate: String, toDate: String)
-
-object Seafarers {
-  implicit val format: OFormat[Seafarers] = Json.format[Seafarers]
-}
+case class RetrieveOtherDeductionsRawData(nino: String, taxYear: String) extends RawData

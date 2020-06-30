@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package v1.models.request.amendOtherDeductions
+package v1.models.response.retrieveOtherDeductions
 
 import play.api.libs.json.Json
 import support.UnitSpec
@@ -49,8 +49,6 @@ class SeafarersSpec extends UnitSpec {
         json.as[Seafarers] shouldBe seafarers
       }
     }
-  }
-  "reads from a JSON with no reference" when {
     "passed a JSON with no customer reference" should {
       "return a model with no customer reference " in {
         noRefJson.as[Seafarers] shouldBe noRefSeafares
@@ -63,8 +61,6 @@ class SeafarersSpec extends UnitSpec {
         Json.toJson(seafarers) shouldBe json
       }
     }
-  }
-  "writes from a model with no reference" when {
     "passed a model with no customer reference" should {
       "return a JSON with no customer reference" in {
         Json.toJson(noRefSeafares) shouldBe noRefJson

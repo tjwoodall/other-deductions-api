@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package v1.models.request.amendOtherDeductions
+package v1.models.response.retrieveOtherDeductions
 
+import mocks.MockAppConfig
 import play.api.libs.json.Json
 import support.UnitSpec
-import v1.models.utils.JsonErrorValidators
+import v1.models.hateoas.{Link, Method}
 
-class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
-  val amendOtherDeductionsBody = AmendOtherDeductionsBody(Some(Seq(
+class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
+  val retrieveOtherDeductionsResponse: RetrieveOtherDeductionsResponse = RetrieveOtherDeductionsResponse(Some(Seq(
     Seafarers(
       Some("myRef"),
       2000.99,
@@ -30,7 +31,7 @@ class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
       "2019-04-06"
     )))
   )
-  val multipleSeafarersAmendOtherDeductionsBody = AmendOtherDeductionsBody(Some(Seq(
+  val multipleSeafarersRetrieveOtherDeductionsResponse: RetrieveOtherDeductionsResponse = RetrieveOtherDeductionsResponse(Some(Seq(
     Seafarers(
       Some("myRef"),
       2000.99,
@@ -47,7 +48,7 @@ class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
     )))
   )
 
-  val noRefAmendOtherDeductionsBody = AmendOtherDeductionsBody(Some(Seq(
+  val noRefRetrieveOtherDeductionsResponse: RetrieveOtherDeductionsResponse = RetrieveOtherDeductionsResponse(Some(Seq(
     Seafarers(
       None,
       2000.99,
@@ -100,34 +101,51 @@ class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
   "reads" when {
     "passed a valid JSON" should {
       "return a valid model" in {
-        json.as[AmendOtherDeductionsBody] shouldBe amendOtherDeductionsBody
+        json.as[RetrieveOtherDeductionsResponse] shouldBe retrieveOtherDeductionsResponse
       }
     }
     "passed a JSON with multiple seafarers" should {
       "return a valid model with multiple seafarers" in {
-        jsonMultipleSeafarers.as[AmendOtherDeductionsBody] shouldBe multipleSeafarersAmendOtherDeductionsBody
+        jsonMultipleSeafarers.as[RetrieveOtherDeductionsResponse] shouldBe multipleSeafarersRetrieveOtherDeductionsResponse
       }
     }
     "passed JSON with no customer reference" should {
       "return a model with no customer reference" in {
-        jsonNoRef.as[AmendOtherDeductionsBody] shouldBe noRefAmendOtherDeductionsBody
+        jsonNoRef.as[RetrieveOtherDeductionsResponse] shouldBe noRefRetrieveOtherDeductionsResponse
       }
     }
   }
+
   "writes" when {
     "passed valid model" should {
       "return valid JSON" in {
-        Json.toJson(amendOtherDeductionsBody) shouldBe json
+        Json.toJson(retrieveOtherDeductionsResponse) shouldBe json
       }
     }
     "passed a model with multiple seafarers" should {
       "return a JSON with multiple seafarers" in {
-        Json.toJson(multipleSeafarersAmendOtherDeductionsBody) shouldBe jsonMultipleSeafarers
+        Json.toJson(multipleSeafarersRetrieveOtherDeductionsResponse) shouldBe jsonMultipleSeafarers
       }
     }
     "passed a body with no customer reference" should {
       "return a JSON with no customer reference" in {
-        Json.toJson(noRefAmendOtherDeductionsBody) shouldBe jsonNoRef
+        Json.toJson(noRefRetrieveOtherDeductionsResponse) shouldBe jsonNoRef
+      }
+    }
+  }
+
+  "LinksFactory" should {
+    "produce the correct links" when {
+      "called" in {
+        val data: RetrieveOtherDeductionsHateoasData = RetrieveOtherDeductionsHateoasData("mynino", "mytaxyear")
+
+        MockedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
+
+        RetrieveOtherDeductionsResponse.RetrieveOtherLinksFactory.links(mockAppConfig, data) shouldBe Seq(
+          Link(href = s"/my/context/other/${data.nino}/${data.taxYear}", method = Method.PUT, rel = "amend-deductions-other"),
+          Link(href = s"/my/context/other/${data.nino}/${data.taxYear}", method = Method.GET, rel = "self"),
+          Link(href = s"/my/context/other/${data.nino}/${data.taxYear}", method = Method.DELETE, rel = "delete-deductions-other")
+        )
       }
     }
   }
