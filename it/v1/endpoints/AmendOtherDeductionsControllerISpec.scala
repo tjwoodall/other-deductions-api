@@ -53,17 +53,17 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
          |{
          |   "links":[
          |      {
-         |         "href":"/individuals/deductions/other/{nino}/{taxYear}",
-         |         "method":"GET",
-         |         "rel":"self"
-         |      },
-         |      {
-         |         "href":"/individuals/deductions/other/{nino}/{taxYear}",
+         |         "href":"/individuals/deductions/other/$nino/$taxYear",
          |         "method":"PUT",
          |         "rel":"amend-deductions-other"
          |      },
          |      {
-         |         "href":"/individuals/deductions/other/{nino}/{taxYear}",
+         |         "href":"/individuals/deductions/other/$nino/$taxYear",
+         |         "method":"GET",
+         |         "rel":"self"
+         |      },
+         |      {
+         |         "href":"/individuals/deductions/other/$nino/$taxYear",
          |         "method":"DELETE",
          |         "rel":"delete-deductions-other"
          |      }
@@ -119,40 +119,40 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             |{
             |  "seafarers":[
             |    {
-            |      "customerReference": "myRef",
-            |      "amountDeducted": 2342.22,
-            |      "nameOfShip": "Blue Bell",
-            |      "fromDate": "2018-08-17",
-            |      "toDate":"2018-10-02"
+            |      "customerReference": "myRasefgsevfssfcgvqwertyuioplasdfghjkzxcvbnmhbjhgfdzxjxgfghjkhgnbfkhdfghjhgfndbdxgfcvhjghfmdfnhgchffxgcvhgbcef",
+            |      "amountDeducted": -2342.22,
+            |      "nameOfShip": "myRasefgsevfssfcgvqwertyuioplasdfghjkzxcvbnmhbjhgfdzxjxgfghjkhgnbfkhdfghjhgfndbdxgfcvhjghfmdfnhgchffxgcvhgbcef",
+            |      "fromDate": "201-08-17",
+            |      "toDate":"201-10-02"
             |    }
             |  ]
             |}
             |""".stripMargin)
 
                 val allInvalidValueRequestError: List[MtdError] = List(
+                  NameOfShipFormatError.copy(
+                    message = "The provided name of ship is not valid",
+                    paths = Some(List(
+                      "/seafarers/0/nameOfShip"
+                    ))
+                  ),
                   CustomerReferenceFormatError.copy(
                     message = "The provided customer reference is not valid",
                     paths = Some(List(
-                      "/seafarers/[0]/customerReference"
+                      "/seafarers/0/customerReference"
                     ))
                   ),
                   ValueFormatError.copy(
                     message = "The field should be between 0 and 99999999999.99",
                     paths = Some(List(
-                      "/seafarers/[0]/amountDeducted"
-                    ))
-                  ),
-                  NameOfShipFormatError.copy(
-                    message = "The provided customer reference is not valid",
-                    paths = Some(List(
-                      "/seafarers/[0]/nameOfShip"
+                      "/seafarers/0/amountDeducted"
                     ))
                   ),
                   DateFormatError.copy(
                     message = "The field should be in the format YYYY-MM-DD",
                     paths =Some(List(
-                      "/maintenancePayments/0/exSpouseDateOfBirth",
-                      "/postCessationTradeReliefAndCertainOtherLosses/0/dateBusinessCeased"
+                      "/seafarers/0/fromDate",
+                      "/seafarers/0/toDate"
                     ))
                   )
                 )
@@ -311,8 +311,8 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
         val allValueFormatError: MtdError = ValueFormatError.copy(
           message = "The field should be between 0 and 99999999999.99",
           paths = Some(Seq(
-            "/seafarers/[0]/amountDeducted",
-            "/seafarers/[1]/amountDeducted"
+            "/seafarers/0/amountDeducted",
+            "/seafarers/1/amountDeducted"
           ))
         )
 
@@ -329,16 +329,24 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
         val allCustomerReferenceFormatErrors: MtdError = CustomerReferenceFormatError.copy(
           message = "The provided customer reference is not valid",
           paths = Some(List(
-            "/seafarers/[0]/customerReference",
-            "/seafarers/[1]/customerReference"
+            "/seafarers/0/customerReference",
+            "/seafarers/1/customerReference"
           ))
         )
 
         val allNamesOfShipsFormatErrors: MtdError = NameOfShipFormatError.copy(
-          message = "The provided customer reference is not valid",
+          message = "The provided name of ship is not valid",
           paths = Some(List(
-            "/seafarers/[0]/nameOfShip",
-            "/seafarers/[1]/nameOfShip"
+            "/seafarers/0/nameOfShip",
+            "/seafarers/1/nameOfShip"
+          ))
+        )
+
+        val aRangeToDateBeforeFromDateError: MtdError = RangeToDateBeforeFromDateError.copy(
+          message = "The To date is before the From date",
+          paths = Some(List(
+            "/seafarers/0/fromDate","/seafarers/0/toDate",
+            "/seafarers/1/fromDate","/seafarers/1/toDate"
           ))
         )
 
@@ -365,7 +373,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           val input = Seq(
             ("AA1123A", "2017-18", validRequestBodyJson, BAD_REQUEST, NinoFormatError),
             ("AA123456A", "20177", validRequestBodyJson, BAD_REQUEST, TaxYearFormatError),
-            ("AA123456A", "2017-18", RangeToDateBeforeFromDateJson, BAD_REQUEST, RangeToDateBeforeFromDateError),
+            ("AA123456A", "2017-18", RangeToDateBeforeFromDateJson, BAD_REQUEST, aRangeToDateBeforeFromDateError),
             ("AA123456A", "2017-18", allInvalidValueFormatRequestBodyJson, BAD_REQUEST, allValueFormatError),
             ("AA123456A", "2017-18", allDatesInvalidRequestBodyJson, BAD_REQUEST, allDateFormatError),
             ("AA123456A", "2017-18", allCustomerReferencesInvalidRequestBodyJson, BAD_REQUEST, allCustomerReferenceFormatErrors),

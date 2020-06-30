@@ -35,7 +35,7 @@ object NameOfShipFormatError extends MtdError("FORMAT_NAME_OF_SHIP", "The provid
 object CustomerReferenceFormatError extends MtdError("FORMAT_CUSTOMER_REFERENCE", "The provided customer reference is not valid")
 object DateFormatError extends MtdError("FORMAT_DATE", "The field should be in the format YYYY-MM-DD")
 
-object RangeToDateBeforeFromDateError extends MtdError("RaNGE_TO_DATE_BEFORE_FROM_DATE", "The To date is before the From date")
+object RangeToDateBeforeFromDateError extends MtdError("RANGE_TO_DATE_BEFORE_FROM_DATE", "The To date is before the From date")
 
 // Rule Errors
 object RuleTaxYearNotSupportedError
