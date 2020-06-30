@@ -62,7 +62,7 @@ class AmendOtherDeductionsControllerSpec
   private val taxYear = "2019-20"
   private val correlationId = "X-123"
 
-  private val testHateoasLink = Link(href = s"individuals/reliefs/foreign/$nino/$taxYear", method = PUT, rel = "self")
+  private val testHateoasLink = Link(href = s"individuals/other/deductions/$nino/$taxYear", method = PUT, rel = "self")
 
   private val requestJson = Json.parse(
     """|
@@ -153,7 +153,11 @@ class AmendOtherDeductionsControllerSpec
             "seafarers/1/fromDate",
             "seafarers/1/toDate"))), BAD_REQUEST),
           (RuleIncorrectOrEmptyBodyError, BAD_REQUEST),
-          (RangeToDateBeforeFromDateError, BAD_REQUEST)
+          (RangeToDateBeforeFromDateError.copy(paths = Some(Seq(
+            "seafarers/0/fromDate",
+            "seafarers/0/toDate",
+            "seafarers/1/fromDate",
+            "seafarers/1/toDate"))), BAD_REQUEST)
         )
 
         input.foreach(args => (errorsFromParserTester _).tupled(args))
