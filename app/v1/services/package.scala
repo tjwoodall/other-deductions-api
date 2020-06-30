@@ -18,6 +18,7 @@ package v1
 
 import v1.models.errors.ErrorWrapper
 import v1.models.outcomes.ResponseWrapper
+import v1.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsResponse
 
 package object services {
 
@@ -26,4 +27,7 @@ package object services {
   type AmendOtherDeductionsServiceOutcome = ServiceOutcome[Unit]
 
   type DeleteOtherDeductionsServiceOutcome = ServiceOutcome[Unit]
+
+  type RetrieveOtherDeductionsServiceOutcome = ServiceOutcome[RetrieveOtherDeductionsResponse]
+
 }
