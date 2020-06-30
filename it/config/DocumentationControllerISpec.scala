@@ -38,7 +38,7 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
     |      }
     |   ],
     |   "api":{
-    |      "name": "Other-Deductions-Api (MTD)",
+    |      "name": "Other Deductions Api (MTD)",
     |      "description": "an api for retrieving, amending and deleting other deductions",
     |      "context":"individuals/deductions/other",
     |      "categories":[

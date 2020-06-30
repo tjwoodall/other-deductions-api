@@ -56,7 +56,7 @@ class ApiDefinitionFactorySpec extends UnitSpec {
               )
             ),
             api = APIDefinition(
-              name = "Other-Deductions-Api (MTD)",
+              name = "Other Deductions Api (MTD)",
               description = "an api for retrieving, amending and deleting other deductions",
               context = "other/deductions",
               categories = Seq("INCOME_TAX_MTD"),

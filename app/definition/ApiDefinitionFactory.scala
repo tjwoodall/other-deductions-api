@@ -42,7 +42,7 @@ class ApiDefinitionFactory @Inject()(appConfig: AppConfig) {
         )
       ),
       api = APIDefinition(
-        name = "Other Deductions (MTD)",
+        name = "Other Deductions Api (MTD)",
         description = "an api for retrieving, amending and deleting other deductions",
         context = appConfig.apiGatewayContext,
         categories = Seq("INCOME_TAX_MTD"),
