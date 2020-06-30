@@ -75,7 +75,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
     def uri: String = s"/$nino/$taxYear"
 
-    def desUri: String = s"/deductions/other/{nino}/{taxYear}"
+    def desUri: String = s"/deductions/other/$nino/$taxYear"
 
     def request(): WSRequest = {
       setupStubs()
