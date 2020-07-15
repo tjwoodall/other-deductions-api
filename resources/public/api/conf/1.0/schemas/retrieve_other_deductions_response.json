@@ -41,7 +41,8 @@
           "nameOfShip",
           "fromDate",
           "toDate"
-        ]
+        ],
+        "additionalProperties": false
       }
     },
     "links": {
@@ -78,8 +79,10 @@
           "href",
           "rel",
           "method"
-        ]
+        ],
+        "additionalProperties": false
       }
     }
-  }
+  },
+  "additionalProperties": false
 }
