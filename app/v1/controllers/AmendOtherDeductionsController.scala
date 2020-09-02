@@ -76,6 +76,7 @@ class AmendOtherDeductionsController @Inject()(val authService: EnrolmentsAuthSe
            BadRequestError |
            RuleTaxYearRangeInvalidError |
            RuleIncorrectOrEmptyBodyError |
+           RuleTaxYearNotSupportedError |
            MtdErrorWithCustomMessage(ValueFormatError.code) |
            MtdErrorWithCustomMessage(NameOfShipFormatError.code) |
            MtdErrorWithCustomMessage(CustomerReferenceFormatError.code) |

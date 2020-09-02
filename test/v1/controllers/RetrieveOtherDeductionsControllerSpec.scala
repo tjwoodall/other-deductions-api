@@ -68,6 +68,7 @@ class RetrieveOtherDeductionsControllerSpec
   private val testHateoasLink = Link(href = s"/individuals/deductions/other/{nino}/{taxYear}", method = GET, rel = "self")
 
   private val responseBody = RetrieveOtherDeductionsResponse(
+    "2019-04-04T01:01:01Z",
     Some(Seq(Seafarers(
       Some("myRef"),
       2000.99,

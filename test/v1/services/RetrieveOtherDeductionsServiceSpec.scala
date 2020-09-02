@@ -35,7 +35,9 @@ class RetrieveOtherDeductionsServiceSpec extends UnitSpec {
   private val taxYear = "2017-18"
   private val correlationId = "X-123"
 
-  private val responseModel = RetrieveOtherDeductionsResponse(Some(Seq(Seafarers(Some("SEAFARERS1234"), 2543.32, "Blue Bell", "2019-04-06", "2020-04-05"))))
+  private val responseModel = RetrieveOtherDeductionsResponse(
+    "2019-04-04T01:01:01Z",
+    Some(Seq(Seafarers(Some("SEAFARERS1234"), 2543.32, "Blue Bell", "2019-04-06", "2020-04-05"))))
 
   private val requestData = RetrieveOtherDeductionsRequest(Nino(nino), taxYear)
 

@@ -31,9 +31,10 @@ class AuthISpec extends IntegrationBaseSpec {
     val nino          = "AA123456A"
     val taxYear       = "2019-20"
 
-    val desResonseBody: JsValue = Json.parse(
+    val desResponseBody: JsValue = Json.parse(
       """
         |{
+        |   "submittedOn": "2019-04-04T01:01:01Z",
         |   "seafarers": [{
         |      "customerReference": "SEAFARERS1234",
         |      "amountDeducted": 2543.32,
@@ -83,7 +84,7 @@ class AuthISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, Status.OK, desResonseBody)
+          DesStub.onSuccess(DesStub.GET, desUri, Status.OK, desResponseBody)
         }
 
         val response: WSResponse = await(request().get())

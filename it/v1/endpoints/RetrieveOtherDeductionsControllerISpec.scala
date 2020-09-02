@@ -35,6 +35,7 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
     val responseBody = Json.parse(
       s"""
          |{
+         |   "submittedOn": "2019-04-04T01:01:01Z",
          |   "seafarers": [{
          |      "customerReference": "SEAFARERS1234",
          |      "amountDeducted": 2543.32,
@@ -65,6 +66,7 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
     val desResponseBody = Json.parse(
       s"""
          |{
+         |  "submittedOn": "2019-04-04T01:01:01Z",
          |   "seafarers": [{
          |      "customerReference": "SEAFARERS1234",
          |      "amountDeducted": 2543.32,
