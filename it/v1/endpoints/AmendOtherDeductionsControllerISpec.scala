@@ -371,13 +371,14 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           }
 
           val input = Seq(
-            ("AA1123A", "2017-18", validRequestBodyJson, BAD_REQUEST, NinoFormatError),
+            ("AA1123A", "2019-20", validRequestBodyJson, BAD_REQUEST, NinoFormatError),
             ("AA123456A", "20177", validRequestBodyJson, BAD_REQUEST, TaxYearFormatError),
-            ("AA123456A", "2017-18", RangeToDateBeforeFromDateJson, BAD_REQUEST, aRangeToDateBeforeFromDateError),
-            ("AA123456A", "2017-18", allInvalidValueFormatRequestBodyJson, BAD_REQUEST, allValueFormatError),
-            ("AA123456A", "2017-18", allDatesInvalidRequestBodyJson, BAD_REQUEST, allDateFormatError),
-            ("AA123456A", "2017-18", allCustomerReferencesInvalidRequestBodyJson, BAD_REQUEST, allCustomerReferenceFormatErrors),
-            ("AA123456A", "2017-18", allNamesOfShipsInvalidRequestBodyJson, BAD_REQUEST, allNamesOfShipsFormatErrors)
+            ("AA123456A", "2017-18", validRequestBodyJson, BAD_REQUEST, RuleTaxYearNotSupportedError),
+            ("AA123456A", "2019-20", RangeToDateBeforeFromDateJson, BAD_REQUEST, aRangeToDateBeforeFromDateError),
+            ("AA123456A", "2019-20", allInvalidValueFormatRequestBodyJson, BAD_REQUEST, allValueFormatError),
+            ("AA123456A", "2019-20", allDatesInvalidRequestBodyJson, BAD_REQUEST, allDateFormatError),
+            ("AA123456A", "2019-20", allCustomerReferencesInvalidRequestBodyJson, BAD_REQUEST, allCustomerReferenceFormatErrors),
+            ("AA123456A", "2019-20", allNamesOfShipsInvalidRequestBodyJson, BAD_REQUEST, allNamesOfShipsFormatErrors)
           )
 
           input.foreach(args => (validationErrorTest _).tupled(args))

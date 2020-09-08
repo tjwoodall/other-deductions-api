@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-package v1.controllers.requestParsers.validators.validations
+package v1.mocks
 
-import config.AppConfig
+import org.joda.time.DateTime
+import org.scalamock.handlers.CallHandler1
+import org.scalamock.scalatest.MockFactory
 import utils.CurrentTaxYear
-import v1.models.domain.DesTaxYear
-import v1.models.errors.{MtdError, RuleTaxYearNotSupportedError}
 
-object MtdTaxYearValidation {
+trait MockCurrentTaxYear extends MockFactory {
 
-  // @param taxYear In format YYYY-YY
-  def validate(taxYear: String)
-              (implicit appConfig: AppConfig,  currentTaxYear: CurrentTaxYear): List[MtdError] = {
+  val mockCurrentTaxYear: CurrentTaxYear = mock[CurrentTaxYear]
 
-    val desTaxYear = Integer.parseInt(DesTaxYear.fromMtd(taxYear).value)
-
-    desTaxYear match {
-      case _ if desTaxYear < appConfig.minimumPermittedTaxYear => List(RuleTaxYearNotSupportedError)
-      case _ => NoValidationErrors
-    }
+  object MockCurrentTaxYear {
+    def getCurrentTaxYear(date: DateTime): CallHandler1[DateTime, Int] =
+      (mockCurrentTaxYear.getCurrentTaxYear(_: DateTime)).expects(date)
   }
-
 }

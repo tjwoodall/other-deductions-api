@@ -16,7 +16,11 @@
 
 package v1.controllers.requestParsers.validators
 
+import config.AppConfig
+import mocks.MockAppConfig
 import support.UnitSpec
+import utils.CurrentTaxYear
+import v1.mocks.MockCurrentTaxYear
 import v1.models.errors._
 import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRawData
 
@@ -25,32 +29,41 @@ class RetrieveOtherDeductionsValidatorSpec extends UnitSpec {
   private val validNino = "AA123456A"
   private val validTaxYear = "2019-20"
 
-  val validator = new RetrieveOtherDeductionsValidator()
+  class Test extends MockCurrentTaxYear with MockAppConfig {
 
-  "running a validation" should {
-    "return no errors" when {
-      "a valid request is supplied" in {
-        validator.validate(RetrieveOtherDeductionsRawData(validNino,validTaxYear)) shouldBe Nil
+    implicit val appConfig: AppConfig = mockAppConfig
+    implicit val currentTaxYear: CurrentTaxYear = mockCurrentTaxYear
+
+    MockedAppConfig.minimumPermittedTaxYear
+      .returns(2019)
+
+    val validator = new RetrieveOtherDeductionsValidator()
+
+    "running a validation" should {
+      "return no errors" when {
+        "a valid request is supplied" in {
+          validator.validate(RetrieveOtherDeductionsRawData(validNino, validTaxYear)) shouldBe Nil
+        }
       }
-    }
-    "return NinoFormatError" when {
-      "an invalid nino is supplied" in {
-        validator.validate(RetrieveOtherDeductionsRawData("A12344A", validTaxYear)) shouldBe List(NinoFormatError)
+      "return NinoFormatError" when {
+        "an invalid nino is supplied" in {
+          validator.validate(RetrieveOtherDeductionsRawData("A12344A", validTaxYear)) shouldBe List(NinoFormatError)
+        }
       }
-    }
-    "return TaxYearFormatError" when {
-      "an invalid tax year is supplied" in {
-        validator.validate(RetrieveOtherDeductionsRawData(validNino, "201831")) shouldBe List(TaxYearFormatError)
+      "return TaxYearFormatError" when {
+        "an invalid tax year is supplied" in {
+          validator.validate(RetrieveOtherDeductionsRawData(validNino, "201831")) shouldBe List(TaxYearFormatError)
+        }
       }
-    }
-    "return RuleTaxYearRangeInvalidError" when {
-      "the tax year range exceeds 1" in {
-        validator.validate(RetrieveOtherDeductionsRawData(validNino, "2019-21")) shouldBe List(RuleTaxYearRangeInvalidError)
+      "return RuleTaxYearRangeInvalidError" when {
+        "the tax year range exceeds 1" in {
+          validator.validate(RetrieveOtherDeductionsRawData(validNino, "2019-21")) shouldBe List(RuleTaxYearRangeInvalidError)
+        }
       }
-    }
-    "return multiple errors" when {
-      "request supplied has multiple errors" in {
-        validator.validate(RetrieveOtherDeductionsRawData("A12344A", "20178")) shouldBe List(NinoFormatError, TaxYearFormatError)
+      "return multiple errors" when {
+        "request supplied has multiple errors" in {
+          validator.validate(RetrieveOtherDeductionsRawData("A12344A", "20178")) shouldBe List(NinoFormatError, TaxYearFormatError)
+        }
       }
     }
   }

@@ -16,18 +16,28 @@
 
 package v1.controllers.requestParsers.validators
 
+import config.AppConfig
+import javax.inject.Inject
+import utils.CurrentTaxYear
 import v1.controllers.requestParsers.validators.validations._
 import v1.models.errors.MtdError
 import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRawData
 
-class DeleteOtherDeductionsValidator extends Validator[DeleteOtherDeductionsRawData] {
+class DeleteOtherDeductionsValidator @Inject()(implicit appConfig: AppConfig, currentTaxYear: CurrentTaxYear)
+  extends Validator[DeleteOtherDeductionsRawData] {
 
-  private val validationSet = List(parameterFormatValidation)
+  private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
 
   private def parameterFormatValidation: DeleteOtherDeductionsRawData => List[List[MtdError]] = (data: DeleteOtherDeductionsRawData) => {
     List(
       NinoValidation.validate(data.nino),
       TaxYearValidation.validate(data.taxYear)
+    )
+  }
+
+  private def parameterRuleValidation: DeleteOtherDeductionsRawData => List[List[MtdError]] = (data: DeleteOtherDeductionsRawData) => {
+    List(
+      MtdTaxYearValidation.validate(data.taxYear)
     )
   }
 

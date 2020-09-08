@@ -14,28 +14,23 @@
  * limitations under the License.
  */
 
-package v1.controllers.requestParsers.validators.validations
+package utils
 
-import v1.models.errors.{MtdError, RuleTaxYearRangeInvalidError, TaxYearFormatError}
+import javax.inject.Singleton
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 
-object TaxYearValidation{
+@Singleton
+class CurrentTaxYear {
 
-  val taxYearFormat = "20[1-9][0-9]\\-[1-9][0-9]"
+  def getCurrentTaxYear(date: DateTime): Int = {
 
-  def validate(taxYear: String): List[MtdError] = {
-    if (taxYear.matches(taxYearFormat)) {
+    lazy val taxYearStartDate: DateTime = DateTime.parse(
+      date.getYear + "-04-06",
+      DateTimeFormat.forPattern("yyyy-MM-dd")
+    )
 
-      val start = taxYear.substring(2, 4).toInt
-      val end   = taxYear.substring(5, 7).toInt
-
-      if (end - start == 1) {
-        NoValidationErrors
-      } else {
-        List(RuleTaxYearRangeInvalidError)
-      }
-    } else {
-      List(TaxYearFormatError)
-    }
+    if (date.isBefore(taxYearStartDate)) date.getYear else date.getYear + 1
   }
 
 }

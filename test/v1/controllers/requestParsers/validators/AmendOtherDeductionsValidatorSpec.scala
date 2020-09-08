@@ -16,12 +16,17 @@
 
 package v1.controllers.requestParsers.validators
 
+import config.AppConfig
+import javax.inject.Inject
+import mocks.MockAppConfig
 import play.api.libs.json.Json
 import support.UnitSpec
+import utils.CurrentTaxYear
+import v1.mocks.MockCurrentTaxYear
 import v1.models.errors._
 import v1.models.request.amendOtherDeductions.AmendOtherDeductionsRawData
 
-class AmendOtherDeductionsValidatorSpec extends UnitSpec {
+class AmendOtherDeductionsValidatorSpec @Inject()(implicit appConfig: AppConfig, currentTaxYear: CurrentTaxYear) extends UnitSpec {
 
   private val validNino = "AA123456A"
   private val validTaxYear = "2019-20"
@@ -85,178 +90,186 @@ class AmendOtherDeductionsValidatorSpec extends UnitSpec {
       |""".stripMargin
   )
 
-  val validator = new AmendOtherDeductionsValidator
+  class Test extends MockCurrentTaxYear with MockAppConfig {
 
-  "running a validation" should {
-    "return no errors" when {
-      "a valid request is supplied" in {
-        validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, requestBodyJson)) shouldBe Nil
+      implicit val appConfig: AppConfig = mockAppConfig
+      implicit val currentTaxYear: CurrentTaxYear = mockCurrentTaxYear
+
+      MockedAppConfig.minimumPermittedTaxYear
+        .returns(2019)
+
+    val validator = new AmendOtherDeductionsValidator
+
+    "running a validation" should {
+      "return no errors" when {
+        "a valid request is supplied" in {
+          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, requestBodyJson)) shouldBe Nil
+        }
+        "a valid request is supplied with no customerRef" in {
+          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, requestBodyJsonNoRef)) shouldBe Nil
+        }
+        "a valid request is supplied with multiple objects in the seafarers array" in {
+          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, requestBodyJsonMultiple)) shouldBe Nil
+        }
       }
-      "a valid request is supplied with no customerRef" in {
-        validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, requestBodyJsonNoRef)) shouldBe Nil
+
+      "return a path parameter error" when {
+        "an invalid nino is supplied" in {
+          validator.validate(AmendOtherDeductionsRawData("AAUH881", validTaxYear, requestBodyJson)) shouldBe List(NinoFormatError)
+        }
+        "an invalid taxYear is supplied" in {
+          validator.validate(AmendOtherDeductionsRawData(validNino, "20319", requestBodyJson)) shouldBe List(TaxYearFormatError)
+        }
+        "a taxYear with too long of a range is supplied" in {
+          validator.validate(AmendOtherDeductionsRawData(validNino, "2018-20", requestBodyJson)) shouldBe List(RuleTaxYearRangeInvalidError)
+        }
+        "all path parameters are invalid" in {
+          validator.validate(AmendOtherDeductionsRawData("AANNAA12", "20319", requestBodyJson)) shouldBe List(NinoFormatError, TaxYearFormatError)
+        }
       }
-      "a valid request is supplied with multiple objects in the seafarers array" in {
-        validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, requestBodyJsonMultiple)) shouldBe Nil
+
+      "return RuleIncorrectOrEmptyBodyError" when {
+        "an empty JSON body is submitted" in {
+          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, emptyJson)) shouldBe Nil
+        }
       }
-    }
 
-    "return a path parameter error" when {
-      "an invalid nino is supplied" in {
-        validator.validate(AmendOtherDeductionsRawData("AAUH881", validTaxYear, requestBodyJson)) shouldBe List(NinoFormatError)
+      "return request body field errors" when {
+        "the customer reference is invalid" in {
+          val badJson = Json.parse(
+            """
+              |{
+              |    "seafarers":[
+              |      {
+              |      "customerReference": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              |      "amountDeducted": 2342.22,
+              |      "nameOfShip": "Blue Bell",
+              |      "fromDate": "2018-08-17",
+              |      "toDate":"2018-10-02"
+              |      }
+              |    ]
+              |}
+              |""".stripMargin
+          )
+
+          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
+            CustomerReferenceFormatError.copy(paths = Some(Seq("/seafarers/0/customerReference")))
+          )
+        }
+        "the amountDeduction is invalid" in {
+          val badJson = Json.parse(
+            """
+              |{
+              |    "seafarers":[
+              |      {
+              |      "customerReference": "SEAFARERS1234",
+              |      "amountDeducted": 999999999999.99,
+              |      "nameOfShip": "Blue Bell",
+              |      "fromDate": "2018-08-17",
+              |      "toDate":"2018-10-02"
+              |      }
+              |    ]
+              |}
+              |""".stripMargin
+          )
+
+          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
+            ValueFormatError.copy(paths = Some(Seq("/seafarers/0/amountDeducted")))
+          )
+
+        }
+        "the nameOfShip is invalid" in {
+          val badJson = Json.parse(
+            """
+              |{
+              |    "seafarers":[
+              |      {
+              |      "customerReference": "SEAFARERS1234",
+              |      "amountDeducted": 2342.22,
+              |      "nameOfShip": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              |      "fromDate": "2018-08-17",
+              |      "toDate":"2018-10-02"
+              |      }
+              |    ]
+              |}
+              |""".stripMargin
+          )
+
+          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
+            NameOfShipFormatError.copy(paths = Some(Seq("/seafarers/0/nameOfShip")))
+          )
+
+        }
+        "the fromDate is invalid" in {
+          val badJson = Json.parse(
+            """
+              |{
+              |    "seafarers":[
+              |      {
+              |      "customerReference": "SEAFARERS1234",
+              |      "amountDeducted": 2342.22,
+              |      "nameOfShip": "Blue Bell",
+              |      "fromDate": "17-08-2012",
+              |      "toDate":"2018-10-02"
+              |      }
+              |    ]
+              |}
+              |""".stripMargin
+          )
+
+          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
+            DateFormatError.copy(paths = Some(Seq("/seafarers/0/fromDate")))
+          )
+
+        }
+        "the toDate is invalid" in {
+          val badJson = Json.parse(
+            """
+              |{
+              |    "seafarers":[
+              |      {
+              |      "customerReference": "SEAFARERS1234",
+              |      "amountDeducted": 2342.22,
+              |      "nameOfShip": "Blue Bell",
+              |      "fromDate": "2018-08-17",
+              |      "toDate":"2018.10.02"
+              |      }
+              |    ]
+              |}
+              |""".stripMargin
+          )
+
+          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
+            DateFormatError.copy(paths = Some(Seq("/seafarers/0/toDate")))
+          )
+
+        }
+        "the toDate is before fromDate" in {
+          val badJson = Json.parse(
+            """
+              |{
+              |    "seafarers":[
+              |      {
+              |      "customerReference": "SEAFARERS1234",
+              |      "amountDeducted": 2342.22,
+              |      "nameOfShip": "Blue Bell",
+              |      "fromDate": "2018-10-17",
+              |      "toDate":"2018-08-17"
+              |      }
+              |    ]
+              |}
+              |""".stripMargin
+          )
+
+          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
+            RangeToDateBeforeFromDateError.copy(paths = Some(Seq("/seafarers/0/fromDate", "/seafarers/0/toDate")))
+          )
+
+        }
       }
-      "an invalid taxYear is supplied" in {
-        validator.validate(AmendOtherDeductionsRawData(validNino, "20319", requestBodyJson)) shouldBe List(TaxYearFormatError)
-      }
-      "a taxYear with too long of a range is supplied" in {
-        validator.validate(AmendOtherDeductionsRawData(validNino, "2018-20", requestBodyJson)) shouldBe List(RuleTaxYearRangeInvalidError)
-      }
-      "all path parameters are invalid" in {
-        validator.validate(AmendOtherDeductionsRawData("AANNAA12", "20319", requestBodyJson)) shouldBe List(NinoFormatError, TaxYearFormatError)
-      }
-    }
 
-    "return RuleIncorrectOrEmptyBodyError" when {
-      "an empty JSON body is submitted" in {
-        validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, emptyJson)) shouldBe Nil
-      }
-    }
-
-    "return request body field errors" when {
-      "the customer reference is invalid" in {
-        val badJson = Json.parse(
-          """
-            |{
-            |    "seafarers":[
-            |      {
-            |      "customerReference": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-            |      "amountDeducted": 2342.22,
-            |      "nameOfShip": "Blue Bell",
-            |      "fromDate": "2018-08-17",
-            |      "toDate":"2018-10-02"
-            |      }
-            |    ]
-            |}
-            |""".stripMargin
-        )
-
-        validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
-          CustomerReferenceFormatError.copy(paths = Some(Seq("/seafarers/0/customerReference")))
-        )
-      }
-      "the amountDeduction is invalid" in {
-        val badJson = Json.parse(
-          """
-            |{
-            |    "seafarers":[
-            |      {
-            |      "customerReference": "SEAFARERS1234",
-            |      "amountDeducted": 999999999999.99,
-            |      "nameOfShip": "Blue Bell",
-            |      "fromDate": "2018-08-17",
-            |      "toDate":"2018-10-02"
-            |      }
-            |    ]
-            |}
-            |""".stripMargin
-        )
-
-        validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
-          ValueFormatError.copy(paths = Some(Seq("/seafarers/0/amountDeducted")))
-        )
-
-      }
-      "the nameOfShip is invalid" in {
-        val badJson = Json.parse(
-          """
-            |{
-            |    "seafarers":[
-            |      {
-            |      "customerReference": "SEAFARERS1234",
-            |      "amountDeducted": 2342.22,
-            |      "nameOfShip": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-            |      "fromDate": "2018-08-17",
-            |      "toDate":"2018-10-02"
-            |      }
-            |    ]
-            |}
-            |""".stripMargin
-        )
-
-        validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
-          NameOfShipFormatError.copy(paths = Some(Seq("/seafarers/0/nameOfShip")))
-        )
-
-      }
-      "the fromDate is invalid" in {
-        val badJson = Json.parse(
-          """
-            |{
-            |    "seafarers":[
-            |      {
-            |      "customerReference": "SEAFARERS1234",
-            |      "amountDeducted": 2342.22,
-            |      "nameOfShip": "Blue Bell",
-            |      "fromDate": "17-08-2012",
-            |      "toDate":"2018-10-02"
-            |      }
-            |    ]
-            |}
-            |""".stripMargin
-        )
-
-        validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
-          DateFormatError.copy(paths = Some(Seq("/seafarers/0/fromDate")))
-        )
-
-      }
-      "the toDate is invalid" in {
-        val badJson = Json.parse(
-          """
-            |{
-            |    "seafarers":[
-            |      {
-            |      "customerReference": "SEAFARERS1234",
-            |      "amountDeducted": 2342.22,
-            |      "nameOfShip": "Blue Bell",
-            |      "fromDate": "2018-08-17",
-            |      "toDate":"2018.10.02"
-            |      }
-            |    ]
-            |}
-            |""".stripMargin
-        )
-
-        validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
-          DateFormatError.copy(paths = Some(Seq("/seafarers/0/toDate")))
-        )
-
-      }
-      "the toDate is before fromDate" in {
-        val badJson = Json.parse(
-          """
-            |{
-            |    "seafarers":[
-            |      {
-            |      "customerReference": "SEAFARERS1234",
-            |      "amountDeducted": 2342.22,
-            |      "nameOfShip": "Blue Bell",
-            |      "fromDate": "2018-10-17",
-            |      "toDate":"2018-08-17"
-            |      }
-            |    ]
-            |}
-            |""".stripMargin
-        )
-
-        validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
-          RangeToDateBeforeFromDateError.copy(paths = Some(Seq("/seafarers/0/fromDate", "/seafarers/0/toDate")))
-        )
-
-      }
-    }
-
-    "return all types of field errors" when {
-      "the provided data violates all errors" in {
+      "return all types of field errors" when {
+        "the provided data violates all errors" in {
           val badJson = Json.parse(
             """
               |{
@@ -286,6 +299,7 @@ class AmendOtherDeductionsValidatorSpec extends UnitSpec {
             ValueFormatError.copy(paths = Some(Seq("/seafarers/0/amountDeducted", "/seafarers/1/amountDeducted"))),
             DateFormatError.copy(paths = Some(Seq("/seafarers/0/fromDate", "/seafarers/0/toDate", "/seafarers/1/fromDate", "/seafarers/1/toDate")))
           )
+        }
       }
     }
   }

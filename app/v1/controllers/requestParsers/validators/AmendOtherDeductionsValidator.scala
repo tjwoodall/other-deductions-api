@@ -16,18 +16,28 @@
 
 package v1.controllers.requestParsers.validators
 
+import config.AppConfig
+import javax.inject.Inject
+import utils.CurrentTaxYear
 import v1.controllers.requestParsers.validators.validations._
 import v1.models.errors.{MtdError, RuleIncorrectOrEmptyBodyError}
 import v1.models.request.amendOtherDeductions.{AmendOtherDeductionsBody, AmendOtherDeductionsRawData, Seafarers}
 
-class AmendOtherDeductionsValidator extends Validator[AmendOtherDeductionsRawData] {
+class AmendOtherDeductionsValidator @Inject()(implicit appConfig: AppConfig, currentTaxYear: CurrentTaxYear)
+  extends Validator[AmendOtherDeductionsRawData] {
 
-  private val validationSet = List(parameterFormatValidation, bodyFormatValidation, bodyFieldFormatValidation, dateRangeValidation)
+  private val validationSet = List(parameterFormatValidation, parameterRuleValidation, bodyFormatValidation, bodyFieldFormatValidation, dateRangeValidation)
 
   private def parameterFormatValidation: AmendOtherDeductionsRawData => List[List[MtdError]] = (data: AmendOtherDeductionsRawData) => {
     List(
       NinoValidation.validate(data.nino),
       TaxYearValidation.validate(data.taxYear)
+    )
+  }
+
+  private def parameterRuleValidation: AmendOtherDeductionsRawData => List[List[MtdError]] = (data: AmendOtherDeductionsRawData) => {
+    List(
+      MtdTaxYearValidation.validate(data.taxYear)
     )
   }
 
