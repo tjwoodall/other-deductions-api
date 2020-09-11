@@ -27,7 +27,7 @@ import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRawData
 class RetrieveOtherDeductionsValidatorSpec extends UnitSpec {
 
   private val validNino = "AA123456A"
-  private val validTaxYear = "2019-20"
+  private val validTaxYear = "2021-22"
 
   class Test extends MockCurrentTaxYear with MockAppConfig {
 
@@ -35,7 +35,7 @@ class RetrieveOtherDeductionsValidatorSpec extends UnitSpec {
     implicit val currentTaxYear: CurrentTaxYear = mockCurrentTaxYear
 
     MockedAppConfig.minimumPermittedTaxYear
-      .returns(2019)
+      .returns(2022)
 
     val validator = new RetrieveOtherDeductionsValidator()
 

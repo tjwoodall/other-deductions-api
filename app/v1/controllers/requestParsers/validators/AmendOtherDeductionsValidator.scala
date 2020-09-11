@@ -18,12 +18,11 @@ package v1.controllers.requestParsers.validators
 
 import config.AppConfig
 import javax.inject.Inject
-import utils.CurrentTaxYear
 import v1.controllers.requestParsers.validators.validations._
 import v1.models.errors.{MtdError, RuleIncorrectOrEmptyBodyError}
 import v1.models.request.amendOtherDeductions.{AmendOtherDeductionsBody, AmendOtherDeductionsRawData, Seafarers}
 
-class AmendOtherDeductionsValidator @Inject()(implicit appConfig: AppConfig, currentTaxYear: CurrentTaxYear)
+class AmendOtherDeductionsValidator @Inject()(implicit appConfig: AppConfig)
   extends Validator[AmendOtherDeductionsRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation, bodyFormatValidation, bodyFieldFormatValidation, dateRangeValidation)

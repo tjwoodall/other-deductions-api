@@ -27,7 +27,8 @@ import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRawData
 class DeleteOtherDeductionsValidatorSpec extends UnitSpec {
 
   private val validNino = "AA123456A"
-  private val validTaxYear = "2019-20"
+
+  private val validTaxYear = "2021-22"
 
   class Test extends MockCurrentTaxYear with MockAppConfig {
 
@@ -35,7 +36,7 @@ class DeleteOtherDeductionsValidatorSpec extends UnitSpec {
     implicit val currentTaxYear: CurrentTaxYear = mockCurrentTaxYear
 
     MockedAppConfig.minimumPermittedTaxYear
-      .returns(2019)
+      .returns(2022)
 
     val validator = new DeleteOtherDeductionsValidator()
 

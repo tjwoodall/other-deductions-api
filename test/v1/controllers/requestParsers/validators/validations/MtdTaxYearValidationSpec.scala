@@ -20,7 +20,6 @@ import config.AppConfig
 import mocks.MockAppConfig
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import support.UnitSpec
-import utils.CurrentTaxYear
 import v1.mocks.MockCurrentTaxYear
 import v1.models.errors.RuleTaxYearNotSupportedError
 import v1.models.utils.JsonErrorValidators
@@ -31,10 +30,9 @@ class MtdTaxYearValidationSpec extends UnitSpec with JsonErrorValidators {
     val dateTimeFormatter: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
 
     implicit val appConfig: AppConfig = mockAppConfig
-    implicit val currentTaxYear: CurrentTaxYear = mockCurrentTaxYear
 
     MockedAppConfig.minimumPermittedTaxYear
-      .returns(2020)
+      .returns(2022)
 
   }
 
@@ -42,7 +40,13 @@ class MtdTaxYearValidationSpec extends UnitSpec with JsonErrorValidators {
     "return no errors" when {
       "a valid tax year is supplied" in new Test {
 
-        val validTaxYear = "2019-20"
+        val validTaxYear = "2022-23"
+        val validationResult = MtdTaxYearValidation.validate(validTaxYear)
+        validationResult.isEmpty shouldBe true
+      }
+
+      "the minimum allowed tax year is supplied" in new Test {
+        val validTaxYear = "2021-22"
         val validationResult = MtdTaxYearValidation.validate(validTaxYear)
         validationResult.isEmpty shouldBe true
       }
@@ -51,12 +55,12 @@ class MtdTaxYearValidationSpec extends UnitSpec with JsonErrorValidators {
     "return the given error" when {
       "a tax year below the minimum is supplied" in new Test {
 
-        val invalidTaxYear = "2015-16"
+        val invalidTaxYear = "2020-21"
         val validationResult = MtdTaxYearValidation.validate(invalidTaxYear)
         validationResult.isEmpty shouldBe false
         validationResult.length shouldBe 1
         validationResult.head shouldBe RuleTaxYearNotSupportedError
       }
     }
-    }
+  }
 }

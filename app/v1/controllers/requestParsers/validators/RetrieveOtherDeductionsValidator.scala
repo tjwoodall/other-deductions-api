@@ -18,12 +18,11 @@ package v1.controllers.requestParsers.validators
 
 import config.AppConfig
 import javax.inject.Inject
-import utils.CurrentTaxYear
 import v1.controllers.requestParsers.validators.validations._
 import v1.models.errors.MtdError
 import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRawData
 
-class RetrieveOtherDeductionsValidator @Inject()(implicit appConfig: AppConfig, currentTaxYear: CurrentTaxYear)
+class RetrieveOtherDeductionsValidator @Inject()(implicit appConfig: AppConfig)
   extends Validator[RetrieveOtherDeductionsRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
