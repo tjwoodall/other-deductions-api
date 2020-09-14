@@ -23,6 +23,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockDeleteOtherDeductionsRequestParser
 import v1.mocks.services.{MockAuditService, MockDeleteOtherDeductionsService, MockEnrolmentsAuthService, MockMtdIdLookupService}
+import v1.models.audit.{AuditError, AuditEvent, AuditResponse, DeductionsAuditDetail}
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.deleteOtherDeductions.{DeleteOtherDeductionsRawData, DeleteOtherDeductionsRequest}
@@ -47,6 +48,7 @@ class DeleteOtherDeductionsControllerSpec
       lookupService = mockMtdIdLookupService,
       parser = mockDeleteOtherDeductionsRequestParser,
       service = mockDeleteOtherDeductionsService,
+      auditService = mockAuditService,
       cc = cc
     )
 
@@ -57,6 +59,20 @@ class DeleteOtherDeductionsControllerSpec
   private val nino = "AA123456A"
   private val taxYear = "2019-20"
   private val correlationId = "X-123"
+
+  def event(auditResponse: AuditResponse): AuditEvent[DeductionsAuditDetail] =
+    AuditEvent(
+      auditType = "DeleteOtherDeductions",
+      transactionName = "delete-other-deductions",
+      detail = DeductionsAuditDetail(
+        userType = "Individual",
+        agentReferenceNumber = None,
+        params = Map("nino" -> nino, "taxYear" -> taxYear),
+        requestBody = None,
+        `X-CorrelationId` = correlationId,
+        auditResponse = auditResponse
+      )
+    )
 
   private val rawData = DeleteOtherDeductionsRawData(nino, taxYear)
   private val requestData = DeleteOtherDeductionsRequest(Nino(nino), taxYear)
@@ -77,6 +93,9 @@ class DeleteOtherDeductionsControllerSpec
 
         status(result) shouldBe NO_CONTENT
         header("X-CorrelationId", result) shouldBe Some(correlationId)
+
+        val auditResponse: AuditResponse = AuditResponse(NO_CONTENT, None, None)
+        MockedAuditService.verifyAuditEvent(event(auditResponse)).once
       }
     }
     "return the error as per spec" when {
@@ -93,6 +112,9 @@ class DeleteOtherDeductionsControllerSpec
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(error)
             header("X-CorrelationId", result) shouldBe Some(correlationId)
+
+            val auditResponse: AuditResponse = AuditResponse(expectedStatus, Some(Seq(AuditError(error.code))), None)
+            MockedAuditService.verifyAuditEvent(event(auditResponse)).once
           }
         }
 
@@ -123,6 +145,9 @@ class DeleteOtherDeductionsControllerSpec
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(mtdError)
             header("X-CorrelationId", result) shouldBe Some(correlationId)
+
+            val auditResponse: AuditResponse = AuditResponse(expectedStatus, Some(Seq(AuditError(mtdError.code))), None)
+            MockedAuditService.verifyAuditEvent(event(auditResponse)).once
           }
         }
 
