@@ -62,7 +62,7 @@ class DeleteOtherDeductionsController @Inject()(val authService: EnrolmentsAuthS
               params = Map("nino" -> nino, "taxYear" -> taxYear),
               requestBody = None,
               `X-CorrelationId` = serviceResponse.correlationId,
-              auditResponse = AuditResponse(httpStatus = NO_CONTENT, None, None))
+              auditResponse = AuditResponse(httpStatus = NO_CONTENT, response = Right(None)))
           )
 
           NoContent.withApiHeaders(serviceResponse.correlationId)
