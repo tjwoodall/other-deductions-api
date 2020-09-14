@@ -16,16 +16,17 @@
 
 package v1.controllers
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockAmendOtherDeductionsRequestParser
 import v1.mocks.services.{MockAmendOtherDeductionsService, MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
+import v1.models.audit.{AuditError, AuditEvent, AuditResponse, DeductionsAuditDetail}
 import v1.models.errors._
 import v1.models.hateoas.{HateoasWrapper, Link}
-import v1.models.hateoas.Method.PUT
+import v1.models.hateoas.Method.{DELETE, GET, PUT}
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.amendOtherDeductions.{AmendOtherDeductionsBody, AmendOtherDeductionsRawData, AmendOtherDeductionsRequest, Seafarers}
 import v1.models.response.AmendOtherDeductionsHateoasData
@@ -51,6 +52,7 @@ class AmendOtherDeductionsControllerSpec
       parser = mockAmendOtherDeductionsRequestParser,
       service = mockService,
       hateoasFactory = mockHateoasFactory,
+      auditService = mockAuditService,
       cc = cc
     )
 
@@ -61,10 +63,13 @@ class AmendOtherDeductionsControllerSpec
   private val nino = "AA123456A"
   private val taxYear = "2019-20"
   private val correlationId = "X-123"
+  private val testHateoasLinks = Seq(
+    Link(href = s"/individuals/deductions/other/$nino/$taxYear", method = PUT, rel = "amend-deductions-other"),
+    Link(href = s"/individuals/deductions/other/$nino/$taxYear", method = GET, rel = "self"),
+    Link(href = s"/individuals/deductions/other/$nino/$taxYear", method = DELETE, rel = "delete-deductions-other")
+  )
 
-  private val testHateoasLink = Link(href = s"individuals/other/deductions/$nino/$taxYear", method = PUT, rel = "self")
-
-  private val requestJson = Json.parse(
+  private val requestBodyJson = Json.parse(
     """|
        |{
        |  "seafarers":[
@@ -90,9 +95,44 @@ class AmendOtherDeductionsControllerSpec
     )))
   )
 
+  val responseBody: JsValue = Json.parse(
+    s"""
+       |{
+       |   "links":[
+       |      {
+       |         "href":"/individuals/deductions/other/$nino/$taxYear",
+       |         "method":"PUT",
+       |         "rel":"amend-deductions-other"
+       |      },
+       |      {
+       |         "href":"/individuals/deductions/other/$nino/$taxYear",
+       |         "method":"GET",
+       |         "rel":"self"
+       |      },
+       |      {
+       |         "href":"/individuals/deductions/other/$nino/$taxYear",
+       |         "method":"DELETE",
+       |         "rel":"delete-deductions-other"
+       |      }
+       |   ]
+       |}
+       |""".stripMargin)
 
+  def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[DeductionsAuditDetail] =
+    AuditEvent(
+      auditType = "CreateAmendOtherDeductions",
+      transactionName = "create-amend-other-deductions",
+      detail = DeductionsAuditDetail(
+        userType = "Individual",
+        agentReferenceNumber = None,
+        params = Map("nino" -> nino, "taxYear" -> taxYear),
+        requestBody = requestBody,
+        `X-CorrelationId` = correlationId,
+        auditResponse = auditResponse
+      )
+    )
 
-  private val rawData = AmendOtherDeductionsRawData(nino, taxYear, requestJson)
+  private val rawData = AmendOtherDeductionsRawData(nino, taxYear, requestBodyJson)
   private val requestData = AmendOtherDeductionsRequest(Nino(nino), taxYear, requestBody)
 
   "handleRequest" should {
@@ -109,11 +149,14 @@ class AmendOtherDeductionsControllerSpec
 
         MockHateoasFactory
           .wrap((), AmendOtherDeductionsHateoasData(nino, taxYear))
-          .returns(HateoasWrapper((), Seq(testHateoasLink)))
+          .returns(HateoasWrapper((), testHateoasLinks))
 
-        val result: Future[Result] = controller.handleRequest(nino, taxYear)(fakePostRequest(requestJson))
+        val result: Future[Result] = controller.handleRequest(nino, taxYear)(fakePostRequest(requestBodyJson))
         status(result) shouldBe OK
         header("X-CorrelationId", result) shouldBe Some(correlationId)
+
+        val auditResponse: AuditResponse = AuditResponse(OK, None, Some(responseBody))
+        MockedAuditService.verifyAuditEvent(event(auditResponse, Some(requestBodyJson))).once
       }
     }
     "return the error as per spec" when {
@@ -125,11 +168,14 @@ class AmendOtherDeductionsControllerSpec
               .parseRequest(rawData)
               .returns(Left(ErrorWrapper(Some(correlationId), error, None)))
 
-            val result: Future[Result] = controller.handleRequest(nino, taxYear)(fakePostRequest(requestJson))
+            val result: Future[Result] = controller.handleRequest(nino, taxYear)(fakePostRequest(requestBodyJson))
 
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(error)
             header("X-CorrelationId", result) shouldBe Some(correlationId)
+
+            val auditResponse: AuditResponse = AuditResponse(expectedStatus, Some(Seq(AuditError(error.code))), None)
+            MockedAuditService.verifyAuditEvent(event(auditResponse, Some(requestBodyJson))).once
           }
         }
 
@@ -175,11 +221,14 @@ class AmendOtherDeductionsControllerSpec
               .amend(requestData)
               .returns(Future.successful(Left(ErrorWrapper(Some(correlationId), mtdError))))
 
-            val result: Future[Result] = controller.handleRequest(nino, taxYear)(fakePostRequest(requestJson))
+            val result: Future[Result] = controller.handleRequest(nino, taxYear)(fakePostRequest(requestBodyJson))
 
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(mtdError)
             header("X-CorrelationId", result) shouldBe Some(correlationId)
+
+            val auditResponse: AuditResponse = AuditResponse(expectedStatus, Some(Seq(AuditError(mtdError.code))), None)
+            MockedAuditService.verifyAuditEvent(event(auditResponse, Some(requestBodyJson))).once
           }
         }
 
