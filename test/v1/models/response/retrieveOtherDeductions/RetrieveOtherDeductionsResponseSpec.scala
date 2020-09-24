@@ -148,7 +148,7 @@ class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
         MockedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
 
         RetrieveOtherDeductionsResponse.RetrieveOtherLinksFactory.links(mockAppConfig, data) shouldBe Seq(
-          Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.PUT, rel = "amend-deductions-other"),
+          Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.PUT, rel = "create-and-amend-deductions-other"),
           Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.GET, rel = "self"),
           Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.DELETE, rel = "delete-deductions-other")
         )

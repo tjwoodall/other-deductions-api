@@ -55,7 +55,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
          |      {
          |         "href":"/individuals/deductions/other/$nino/$taxYear",
          |         "method":"PUT",
-         |         "rel":"amend-deductions-other"
+         |         "rel":"create-and-amend-deductions-other"
          |      },
          |      {
          |         "href":"/individuals/deductions/other/$nino/$taxYear",
