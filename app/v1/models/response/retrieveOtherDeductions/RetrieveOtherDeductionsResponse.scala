@@ -30,7 +30,7 @@ object RetrieveOtherDeductionsResponse extends HateoasLinks {
     override def links(appConfig: AppConfig, data: RetrieveOtherDeductionsHateoasData): Seq[Link] = {
       import data._
       Seq(
-        amendOtherDeductions(appConfig, nino, taxYear),
+        createAndAmendOtherDeductions(appConfig, nino, taxYear),
         retrieveOtherDeductions(appConfig, nino, taxYear),
         deleteOtherDeductions(appConfig, nino, taxYear)
       )
