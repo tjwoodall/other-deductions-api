@@ -18,7 +18,7 @@
     {
       "href":"/individuals/deductions/other/TC663795B/2019-20",
       "method":"PUT",
-      "rel":"amend-deductions-other"
+      "rel":"create-and-amend-deductions-other"
     },
     {
       "href":"/individuals/deductions/other/TC663795B/2019-20",

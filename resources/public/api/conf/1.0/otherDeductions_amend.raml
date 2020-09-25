@@ -14,8 +14,8 @@ is:
   - errors.formatDate
   - errors.incorrectOrEmptyBody
   - errors.rangeToDateBeforeFromDate
-displayName: Amend deductions [test only]
-description: 'This endpoint allows the developer to amend deductions. A National Insurance number and tax year must be provided.'
+displayName: Create and Amend deductions [test only]
+description: 'This endpoint allows the developer to create and amend deductions. A National Insurance number and tax year must be provided.'
 (annotations.sandboxData): !include scenarios/amend_other_deductions.md
 (annotations.scope): "write:self-assessment"
 securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]

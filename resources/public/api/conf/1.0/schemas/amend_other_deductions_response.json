@@ -29,7 +29,7 @@
             "type": "string",
             "enum": [
               "self",
-              "amend-deductions-other",
+              "create-and-amend-deductions-other",
               "delete-deductions-other"
             ]
           }
