@@ -404,7 +404,6 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           val input = Seq(
             (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
             (BAD_REQUEST, "FORMAT_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
-            (BAD_REQUEST, "NOT_FOUND", NOT_FOUND, NotFoundError),
             (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError),
             (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError))
 

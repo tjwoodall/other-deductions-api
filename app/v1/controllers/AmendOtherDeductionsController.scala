@@ -109,7 +109,6 @@ class AmendOtherDeductionsController @Inject()(val authService: EnrolmentsAuthSe
            MtdErrorWithCustomMessage(DateFormatError.code) |
            MtdErrorWithCustomMessage(RangeToDateBeforeFromDateError.code) => BadRequest(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
-      case NotFoundError => NotFound(Json.toJson(errorWrapper))
     }
   }
 
