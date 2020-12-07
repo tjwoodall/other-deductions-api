@@ -1,4 +1,4 @@
-API Example Microservice
+Other Deductions API
 ========================
 This API allows software packages to retrieve, create and amend, and delete deductions that have been previously populated.
 
@@ -22,14 +22,11 @@ sbt it:test
 
 ## To view the RAML
 
-Start api definition services
+To view documentation locally ensure the Obligations API is running, and run api-documentation-frontend:
+`./run_local_with_dependencies.sh`
 
-```
-sm --start COMBINED_API_DEFINITION API_DEFINITION API_EXAMPLE_MICROSERVICE API_DOCUMENTATION_FRONTEND -f
-sm --start ASSETS_FRONTEND -r 3.11.0 -f
-```
-
-Go to http://localhost:9680/api-documentation/docs/api/preview and enter http://localhost:7797/api/conf/1.0/application.raml 
+Then go to http://localhost:9680/api-documentation/docs/api/preview and use this port and version:
+`http://localhost:7797/api/conf/1.0/application.raml`
 
 ## Reporting Issues
 
