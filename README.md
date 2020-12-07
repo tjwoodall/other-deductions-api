@@ -34,7 +34,7 @@ You can create a GitHub issue [here](https://github.com/hmrc/other-deductions-ap
 
 
 ## API Reference / Documentation 
-Available on the [HMRC Developer Hub](https://developer.service.hmrc.gov.uk/api-documentation)
+Available on the [Other Deductions Documentation](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/other-deductions-api/1.0)
 
 # License
 
