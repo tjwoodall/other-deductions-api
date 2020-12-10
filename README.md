@@ -14,13 +14,13 @@ Run from the console using: `sbt run` (starts on port 7797 by default)
  
 Start the service manager profile: `sm --start MTDFB_ALL`
  
-# Run tests
+## Running tests
 ```
 sbt test
 sbt it:test
 ```
 
-## To view the RAML
+## Viewing RAML
 
 To view documentation locally ensure the Deductions API is running, and run api-documentation-frontend:
 `./run_local_with_dependencies.sh`
@@ -32,10 +32,9 @@ Then go to http://localhost:9680/api-documentation/docs/api/preview and use this
 
 You can create a GitHub issue [here](https://github.com/hmrc/other-deductions-api/issues)
 
-
 ## API Reference / Documentation 
 Available on the [Other Deductions Documentation](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/other-deductions-api/1.0)
 
-# License
+## License
 
-This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html")
+This code is open source software licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html)
