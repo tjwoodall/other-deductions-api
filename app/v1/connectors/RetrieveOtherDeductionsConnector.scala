@@ -34,7 +34,7 @@ class RetrieveOtherDeductionsConnector @Inject()(val http: HttpClient,
             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[DesOutcome[RetrieveOtherDeductionsResponse]] = {
 
     get(
-      DesUri[RetrieveOtherDeductionsResponse](s"deductions/other/${request.nino}/${request.taxYear}")
+      DesUri[RetrieveOtherDeductionsResponse](s"income-tax/deductions/${request.nino}/${request.taxYear}")
     )
   }
 }

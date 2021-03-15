@@ -33,7 +33,7 @@ class DeleteOtherDeductionsConnector @Inject()(val http: HttpClient,
             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[DesOutcome[Unit]] = {
 
     delete(
-      DesUri[Unit](s"deductions/other/${request.nino}/${request.taxYear}")
+      DesUri[Unit](s"income-tax/deductions/${request.nino}/${request.taxYear}")
     )
   }
 }

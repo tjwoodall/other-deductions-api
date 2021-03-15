@@ -75,7 +75,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
     def uri: String = s"/$nino/$taxYear"
 
-    def desUri: String = s"/deductions/other/$nino/$taxYear"
+    def desUri: String = s"/income-tax/deductions/$nino/$taxYear"
 
     def request(): WSRequest = {
       setupStubs()
@@ -403,7 +403,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
           val input = Seq(
             (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
-            (BAD_REQUEST, "FORMAT_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
+            (BAD_REQUEST, "INVALID_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
             (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError),
             (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError))
 

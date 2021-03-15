@@ -47,7 +47,7 @@ class AmendOtherDeductionsService @Inject()(connector: AmendOtherDeductionsConne
   private def desErrorMap =
     Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-      "FORMAT_TAX_YEAR" -> TaxYearFormatError,
+      "INVALID_TAX_YEAR" -> TaxYearFormatError,
       "SERVER_ERROR" -> DownstreamError,
       "SERVICE_UNAVAILABLE" -> DownstreamError
     )

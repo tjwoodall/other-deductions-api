@@ -70,8 +70,8 @@ class DeleteOtherDeductionsServiceSpec extends UnitSpec {
 
         val input = Seq(
           ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
-          ("FORMAT_TAX_YEAR", TaxYearFormatError),
-          ("NOT_FOUND", NotFoundError),
+          ("INVALID_TAX_YEAR", TaxYearFormatError),
+          ("NO_DATA_FOUND", NotFoundError),
           ("SERVER_ERROR", DownstreamError),
           ("SERVICE_UNAVAILABLE", DownstreamError)
         )

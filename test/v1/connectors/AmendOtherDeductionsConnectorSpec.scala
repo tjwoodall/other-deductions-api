@@ -54,7 +54,7 @@ class AmendOtherDeductionsConnectorSpec extends ConnectorSpec {
       val outcome = Right(ResponseWrapper(correlationId, ()))
       MockedHttpClient
         .put(
-          url = s"$baseUrl/deductions/other/$nino/$taxYear",
+          url = s"$baseUrl/income-tax/deductions/${request.nino}/${request.taxYear}",
           body = body,
           requiredHeaders = "Environment" -> "des-environment", "Authorization" -> s"Bearer des-token"
         )
