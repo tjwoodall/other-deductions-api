@@ -25,26 +25,27 @@ import v1.connectors.DeleteOtherDeductionsConnector
 import v1.controllers.EndpointLogContext
 import v1.models.errors.{DownstreamError, NinoFormatError, NotFoundError, TaxYearFormatError}
 import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequest
-import v1.support.DesResponseMappingSupport
+import v1.support.IfsResponseMappingSupport
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteOtherDeductionsService @Inject()(DeleteOtherDeductionsConnector: DeleteOtherDeductionsConnector) extends DesResponseMappingSupport with Logging {
+class DeleteOtherDeductionsService @Inject()(DeleteOtherDeductionsConnector: DeleteOtherDeductionsConnector) extends IfsResponseMappingSupport with Logging {
 
   def delete(request: DeleteOtherDeductionsRequest)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext,
-    logContext: EndpointLogContext): Future[DeleteOtherDeductionsServiceOutcome] = {
+    logContext: EndpointLogContext,
+    correlationId: String): Future[DeleteOtherDeductionsServiceOutcome] = {
 
     val result = for {
-      desResponseWrapper <- EitherT(DeleteOtherDeductionsConnector.delete(request)).leftMap(mapDesErrors(desErrorMap))
-    } yield desResponseWrapper
+      ifsResponseWrapper <- EitherT(DeleteOtherDeductionsConnector.delete(request)).leftMap(mapIfsErrors(ifsErrorMap))
+    } yield ifsResponseWrapper
 
     result.value
   }
 
-  private def desErrorMap =
+  private def ifsErrorMap =
     Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
       "INVALID_TAX_YEAR" -> TaxYearFormatError,

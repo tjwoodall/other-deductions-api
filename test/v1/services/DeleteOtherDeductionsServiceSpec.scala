@@ -16,8 +16,7 @@
 
 package v1.services
 
-import support.UnitSpec
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockDeleteOtherDeductionsConnector
@@ -25,15 +24,12 @@ import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequest
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class DeleteOtherDeductionsServiceSpec extends UnitSpec {
+class DeleteOtherDeductionsServiceSpec extends ServiceSpec {
 
   private val nino = "AA123456A"
   private val taxYear = "2017-18"
-  private val correlationId = "X-123"
-
 
   private val request = DeleteOtherDeductionsRequest(Nino(nino), taxYear)
 
@@ -59,13 +55,13 @@ class DeleteOtherDeductionsServiceSpec extends UnitSpec {
     "unsuccessful" must {
       "map errors according to spec" when {
 
-        def serviceError(desErrorCode: String, error: MtdError): Unit =
-          s"a $desErrorCode error is returned from the service" in new Test {
+        def serviceError(ifsErrorCode: String, error: MtdError): Unit =
+          s"a $ifsErrorCode error is returned from the service" in new Test {
 
             MockDeleteOtherDeductionsConnector.delete(request)
-              .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
+              .returns(Future.successful(Left(ResponseWrapper(correlationId, IfsErrors.single(IfsErrorCode(ifsErrorCode))))))
 
-            await(service.delete(request)) shouldBe Left(ErrorWrapper(Some(correlationId), error))
+            await(service.delete(request)) shouldBe Left(ErrorWrapper(correlationId, error))
           }
 
         val input = Seq(

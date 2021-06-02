@@ -20,22 +20,23 @@ import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpClient
-import v1.connectors.httpparsers.StandardDesHttpParser._
+import v1.connectors.httpparsers.StandardIfsHttpParser._
 import v1.models.request.amendOtherDeductions.AmendOtherDeductionsRequest
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AmendOtherDeductionsConnector @Inject() (val http: HttpClient,
-                                               val appConfig: AppConfig) extends BaseDesConnector {
+                                               val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def amend(request: AmendOtherDeductionsRequest)(
     implicit hc: HeaderCarrier,
-    ec: ExecutionContext): Future[DesOutcome[Unit]] = {
+    ec: ExecutionContext,
+    correlationId: String): Future[IfsOutcome[Unit]] = {
 
     put(
       body = request.body,
-      uri = DesUri[Unit](s"income-tax/deductions/${request.nino}/${request.taxYear}")
+      uri = IfsUri[Unit](s"income-tax/deductions/${request.nino.nino}/${request.taxYear}")
     )
   }
 }

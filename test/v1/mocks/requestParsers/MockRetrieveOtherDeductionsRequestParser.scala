@@ -29,7 +29,7 @@ trait MockRetrieveOtherDeductionsRequestParser extends MockFactory {
 
   object MockRetrieveOtherDeductionsRequestParser {
     def parse(data: RetrieveOtherDeductionsRawData): CallHandler[Either[ErrorWrapper, RetrieveOtherDeductionsRequest]] = {
-      (mockRetrieveOtherDeductionsRequestParser.parseRequest(_: RetrieveOtherDeductionsRawData)).expects(data)
+      (mockRetrieveOtherDeductionsRequestParser.parseRequest(_: RetrieveOtherDeductionsRawData)(_: String)).expects(data, *)
     }
   }
 }

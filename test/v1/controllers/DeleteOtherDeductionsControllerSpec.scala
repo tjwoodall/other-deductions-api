@@ -18,8 +18,9 @@ package v1.controllers
 
 import play.api.libs.json.Json
 import play.api.mvc.Result
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import v1.mocks.MockIdGenerator
 import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockDeleteOtherDeductionsRequestParser
 import v1.mocks.services.{MockAuditService, MockDeleteOtherDeductionsService, MockEnrolmentsAuthService, MockMtdIdLookupService}
@@ -38,7 +39,8 @@ class DeleteOtherDeductionsControllerSpec
     with MockDeleteOtherDeductionsService
     with MockDeleteOtherDeductionsRequestParser
     with MockHateoasFactory
-    with MockAuditService {
+    with MockAuditService
+    with MockIdGenerator {
 
   trait Test {
     val hc = HeaderCarrier()
@@ -49,11 +51,13 @@ class DeleteOtherDeductionsControllerSpec
       parser = mockDeleteOtherDeductionsRequestParser,
       service = mockDeleteOtherDeductionsService,
       auditService = mockAuditService,
-      cc = cc
+      cc = cc,
+      idGenerator = mockIdGenerator
     )
 
     MockedMtdIdLookupService.lookup(nino).returns(Future.successful(Right("test-mtd-id")))
     MockedEnrolmentsAuthService.authoriseUser()
+    MockIdGenerator.generateCorrelationId.returns(correlationId)
   }
 
   private val nino = "AA123456A"
@@ -105,7 +109,7 @@ class DeleteOtherDeductionsControllerSpec
 
             MockDeleteOtherDeductionsRequestParser
               .parse(rawData)
-              .returns(Left(ErrorWrapper(Some(correlationId), error, None)))
+              .returns(Left(ErrorWrapper(correlationId, error, None)))
 
             val result: Future[Result] = controller.handleRequest(nino, taxYear)(fakeRequest)
 
@@ -138,7 +142,7 @@ class DeleteOtherDeductionsControllerSpec
 
             MockDeleteOtherDeductionsService
               .delete(requestData)
-              .returns(Future.successful(Left(ErrorWrapper(Some(correlationId), mtdError))))
+              .returns(Future.successful(Left(ErrorWrapper(correlationId, mtdError))))
 
             val result: Future[Result] = controller.handleRequest(nino, taxYear)(fakeRequest)
 

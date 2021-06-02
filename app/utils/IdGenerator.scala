@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
-package v1.connectors
+package utils
 
-case class DesUri[Resp](value: String)
+import java.util.UUID
+import javax.inject.Singleton
+
+@Singleton
+class IdGenerator {
+
+  def generateCorrelationId: String = UUID.randomUUID().toString
+}

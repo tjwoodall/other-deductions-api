@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-package v1.controllers.requestParsers.validators.validations
+package v1.models.domain
 
-import config.AppConfig
-import v1.models.domain.IfsTaxYear
-import v1.models.errors.{MtdError, RuleTaxYearNotSupportedError}
+/**
+  * Represents a tax year for IFS
+  *
+  * @param value the tax year string (where 2018 represents 2017-18)
+  */
+case class IfsTaxYear(value: String) extends AnyVal {
+  override def toString: String = value
+}
 
-object MtdTaxYearValidation {
+object IfsTaxYear {
 
-  // @param taxYear In format YYYY-YY
-  def validate(taxYear: String)
-              (implicit appConfig: AppConfig): List[MtdError] = {
-
-    val ifsTaxYear = Integer.parseInt(IfsTaxYear.fromMtd(taxYear).value)
-
-    ifsTaxYear match {
-      case _ if ifsTaxYear < appConfig.minimumPermittedTaxYear => List(RuleTaxYearNotSupportedError)
-      case _ => NoValidationErrors
-    }
-  }
-
+  /**
+    * @param taxYear tax year in MTD format (e.g. 2017-18)
+    */
+  def fromMtd(taxYear: String): IfsTaxYear =
+    IfsTaxYear(taxYear.take(2) + taxYear.drop(5))
 }

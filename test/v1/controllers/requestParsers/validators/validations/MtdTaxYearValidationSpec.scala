@@ -31,7 +31,7 @@ class MtdTaxYearValidationSpec extends UnitSpec with JsonErrorValidators {
 
     implicit val appConfig: AppConfig = mockAppConfig
 
-    MockedAppConfig.minimumPermittedTaxYear
+    MockAppConfig.minimumPermittedTaxYear
       .returns(2022)
 
   }

@@ -35,8 +35,8 @@ trait MockRetrieveOtherDeductionsService extends MockFactory {
   object MockRetrieveOtherDeductionsService {
     def retrieve(requestData: RetrieveOtherDeductionsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[RetrieveOtherDeductionsResponse]]]] = {
       (mockRetrieveOtherDeductionsService
-        .retrieve(_: RetrieveOtherDeductionsRequest)(_: HeaderCarrier, _: ExecutionContext, _: EndpointLogContext))
-        .expects(requestData, *, *, *)
+        .retrieve(_: RetrieveOtherDeductionsRequest)(_: HeaderCarrier, _: ExecutionContext, _: EndpointLogContext, _: String))
+        .expects(requestData, *, *, *, *)
     }
   }
 }

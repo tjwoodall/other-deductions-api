@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.mocks
 
-import support.UnitSpec
+import org.scalamock.handlers.CallHandler
+import org.scalamock.scalatest.MockFactory
+import utils.IdGenerator
 
-class DesTaxYearSpec extends UnitSpec {
-  "toString" should {
-    "return the value inside the model as a String instead of the standard case class toString" in {
-      DesTaxYear("value").toString shouldBe "value"
-    }
-  }
 
-  "fromMtd" should {
-    "return the DES representation of an MTD tax year (XXYY-ZZ -> XXZZ)" in {
-      DesTaxYear.fromMtd("2018-19") shouldBe DesTaxYear("2019")
-    }
+trait MockIdGenerator extends MockFactory {
+
+  val mockIdGenerator: IdGenerator = mock[IdGenerator]
+
+  object MockIdGenerator {
+    def generateCorrelationId: CallHandler[String] = (mockIdGenerator.generateCorrelationId _).expects()
   }
 }

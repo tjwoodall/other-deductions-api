@@ -26,7 +26,7 @@ class AmendOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
       "called" in {
         val data: AmendOtherDeductionsHateoasData = AmendOtherDeductionsHateoasData("mynino", "mytaxyear")
 
-        MockedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
+        MockAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
 
         AmendOtherDeductionsResponse.AmendOtherLinksFactory.links(mockAppConfig, data) shouldBe Seq(
           Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.PUT, rel = "create-and-amend-deductions-other"),

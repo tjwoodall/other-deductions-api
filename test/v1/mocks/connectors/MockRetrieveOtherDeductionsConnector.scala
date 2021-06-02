@@ -19,7 +19,7 @@ package v1.mocks.connectors
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.connectors.{DesOutcome, RetrieveOtherDeductionsConnector}
+import v1.connectors.{IfsOutcome, RetrieveOtherDeductionsConnector}
 import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequest
 import v1.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsResponse
 
@@ -31,10 +31,10 @@ trait MockRetrieveOtherDeductionsConnector extends MockFactory {
 
   object MockRetrieveOtherDeductionsConnector {
 
-    def retrieve(requestData: RetrieveOtherDeductionsRequest): CallHandler[Future[DesOutcome[RetrieveOtherDeductionsResponse]]] = {
+    def retrieve(requestData: RetrieveOtherDeductionsRequest): CallHandler[Future[IfsOutcome[RetrieveOtherDeductionsResponse]]] = {
       (mockRetrieveOtherDeductionsConnector
-        .retrieve(_: RetrieveOtherDeductionsRequest)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(requestData, *, *)
+        .retrieve(_: RetrieveOtherDeductionsRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
+        .expects(requestData, *, *, *)
     }
   }
 }

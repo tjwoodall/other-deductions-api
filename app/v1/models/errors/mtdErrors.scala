@@ -16,26 +16,37 @@
 
 package v1.models.errors
 
-import play.api.libs.json.{Json, Writes}
+import play.api.libs.json.{ Json, OWrites }
 
 case class MtdError(code: String, message: String, paths: Option[Seq[String]] = None)
 
 object MtdError {
-  implicit val writes: Writes[MtdError] = Json.writes[MtdError]
+  implicit val writes: OWrites[MtdError] = Json.writes[MtdError]
+
+  implicit def genericWrites[T <: MtdError]: OWrites[T] =
+    writes.contramap[T](c => c: MtdError)
 }
 
 object MtdErrorWithCustomMessage {
   def unapply(arg: MtdError): Option[String] = Some(arg.code)
 }
 
-object NinoFormatError extends MtdError("FORMAT_NINO", "The provided NINO is invalid")
-object TaxYearFormatError extends MtdError("FORMAT_TAX_YEAR", "The provided tax year is invalid")
 object ValueFormatError extends MtdError("FORMAT_VALUE", "The field should be between 0 and 99999999999.99")
 object NameOfShipFormatError extends MtdError("FORMAT_NAME_OF_SHIP", "The provided name of ship is not valid")
 object CustomerReferenceFormatError extends MtdError("FORMAT_CUSTOMER_REFERENCE", "The provided customer reference is not valid")
 object DateFormatError extends MtdError("FORMAT_DATE", "The field should be in the format YYYY-MM-DD")
 
 object RangeToDateBeforeFromDateError extends MtdError("RANGE_TO_DATE_BEFORE_FROM_DATE", "The To date is before the From date")
+
+object NinoFormatError extends MtdError(
+  code = "FORMAT_NINO",
+  message = "The provided NINO is invalid"
+)
+
+object TaxYearFormatError extends MtdError(
+  code = "FORMAT_TAX_YEAR",
+  message = "The provided tax year is invalid"
+)
 
 // Rule Errors
 object RuleTaxYearNotSupportedError
@@ -47,23 +58,54 @@ object RuleTaxYearRangeInvalidError
     extends MtdError("RULE_TAX_YEAR_RANGE_INVALID", "Tax year range invalid. A tax year range of one year is required")
 
 //Standard Errors
-object NotFoundError extends MtdError("MATCHING_RESOURCE_NOT_FOUND", "Matching resource not found")
+object NotFoundError extends MtdError(
+  code = "MATCHING_RESOURCE_NOT_FOUND",
+  message = "Matching resource not found"
+)
 
-object DownstreamError extends MtdError("INTERNAL_SERVER_ERROR", "An internal server error occurred")
+object DownstreamError extends MtdError(
+  code = "INTERNAL_SERVER_ERROR",
+  message = "An internal server error occurred"
+)
 
-object BadRequestError extends MtdError("INVALID_REQUEST", "Invalid request")
+object BadRequestError extends MtdError(
+  code = "INVALID_REQUEST",
+  message = "Invalid request"
+)
 
-object BVRError extends MtdError("BUSINESS_ERROR", "Business validation error")
+object BVRError extends MtdError(
+  code = "BUSINESS_ERROR",
+  message = "Business validation error"
+)
 
-object ServiceUnavailableError extends MtdError("SERVICE_UNAVAILABLE", "Internal server error")
+object ServiceUnavailableError extends MtdError(
+  code = "SERVICE_UNAVAILABLE",
+  message = "Internal server error"
+)
 
 //Authorisation Errors
-object UnauthorisedError extends MtdError("CLIENT_OR_AGENT_NOT_AUTHORISED", "The client and/or agent is not authorised")
-object InvalidBearerTokenError extends MtdError("UNAUTHORIZED", "Bearer token is missing or not authorized")
+object UnauthorisedError extends MtdError(
+  code = "CLIENT_OR_AGENT_NOT_AUTHORISED",
+  message = "The client and/or agent is not authorised"
+)
+
+object InvalidBearerTokenError extends MtdError(
+  code = "UNAUTHORIZED",
+  message = "Bearer token is missing or not authorized"
+)
 
 // Accept header Errors
-object  InvalidAcceptHeaderError extends MtdError("ACCEPT_HEADER_INVALID", "The accept header is missing or invalid")
+object InvalidAcceptHeaderError extends MtdError(
+  code = "ACCEPT_HEADER_INVALID",
+  message = "The accept header is missing or invalid"
+)
 
-object  UnsupportedVersionError extends MtdError("NOT_FOUND", "The requested resource could not be found")
+object UnsupportedVersionError extends MtdError(
+  code = "NOT_FOUND",
+  message = "The requested resource could not be found"
+)
 
-object InvalidBodyTypeError extends MtdError("INVALID_BODY_TYPE", "Expecting text/json or application/json body")
+object InvalidBodyTypeError extends MtdError(
+code = "INVALID_BODY_TYPE",
+message = "Expecting text/json or application/json body"
+)

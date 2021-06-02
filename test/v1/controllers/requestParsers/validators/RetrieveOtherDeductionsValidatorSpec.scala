@@ -34,7 +34,7 @@ class RetrieveOtherDeductionsValidatorSpec extends UnitSpec {
     implicit val appConfig: AppConfig = mockAppConfig
     implicit val currentTaxYear: CurrentTaxYear = mockCurrentTaxYear
 
-    MockedAppConfig.minimumPermittedTaxYear
+    MockAppConfig.minimumPermittedTaxYear
       .returns(2022)
 
     val validator = new RetrieveOtherDeductionsValidator()

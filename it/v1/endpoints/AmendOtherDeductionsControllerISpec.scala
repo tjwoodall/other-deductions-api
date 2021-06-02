@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIED OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -23,7 +23,7 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
 import v1.models.errors._
-import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
+import v1.stubs.{AuditStub, AuthStub, IfsStub, MtdIdLookupStub}
 
 class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
@@ -75,7 +75,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
     def uri: String = s"/$nino/$taxYear"
 
-    def desUri: String = s"/income-tax/deductions/$nino/$taxYear"
+    def ifsUri: String = s"/income-tax/deductions/$nino/$taxYear"
 
     def request(): WSRequest = {
       setupStubs()
@@ -87,7 +87,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
       s"""
          |      {
          |        "code": "$code",
-         |        "reason": "des message"
+         |        "reason": "ifs message"
          |      }
     """.stripMargin
   }
@@ -102,7 +102,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.PUT, desUri, NO_CONTENT, JsObject.empty)
+          IfsStub.onSuccess(IfsStub.PUT, ifsUri, NO_CONTENT, JsObject.empty)
         }
 
         val response: WSResponse = await(request().put(requestBodyJson))
@@ -158,7 +158,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
                 )
 
                 val wrappedErrors: ErrorWrapper = ErrorWrapper(
-                  correlationId = Some(correlationId),
+                  correlationId = correlationId,
                   error = BadRequestError,
                   errors = Some(allInvalidValueRequestError)
                 )
@@ -384,15 +384,15 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           input.foreach(args => (validationErrorTest _).tupled(args))
         }
 
-        "des service error" when {
-          def serviceErrorTest(desStatus: Int, desCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-            s"des returns an $desCode error and status $desStatus" in new Test {
+        "ifs service error" when {
+          def serviceErrorTest(ifsStatus: Int, ifsCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+            s"ifs returns an $ifsCode error and status $ifsStatus" in new Test {
 
               override def setupStubs(): StubMapping = {
                 AuditStub.audit()
                 AuthStub.authorised()
                 MtdIdLookupStub.ninoFound(nino)
-                DesStub.onError(DesStub.PUT, desUri, desStatus, errorBody(desCode))
+                IfsStub.onError(IfsStub.PUT, ifsUri, ifsStatus, errorBody(ifsCode))
               }
 
               val response: WSResponse = await(request().put(requestBodyJson))

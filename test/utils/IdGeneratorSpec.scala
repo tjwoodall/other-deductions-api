@@ -14,24 +14,19 @@
  * limitations under the License.
  */
 
-package v1.controllers.requestParsers.validators.validations
+package utils
 
-import config.AppConfig
-import v1.models.domain.IfsTaxYear
-import v1.models.errors.{MtdError, RuleTaxYearNotSupportedError}
+import support.UnitSpec
 
-object MtdTaxYearValidation {
+class IdGeneratorSpec extends UnitSpec {
 
-  // @param taxYear In format YYYY-YY
-  def validate(taxYear: String)
-              (implicit appConfig: AppConfig): List[MtdError] = {
+  val generator: IdGenerator = new IdGenerator
 
-    val ifsTaxYear = Integer.parseInt(IfsTaxYear.fromMtd(taxYear).value)
-
-    ifsTaxYear match {
-      case _ if ifsTaxYear < appConfig.minimumPermittedTaxYear => List(RuleTaxYearNotSupportedError)
-      case _ => NoValidationErrors
+  "IdGenerator" should {
+    "generate a correlation id" when {
+      "generateCorrelationId is called" in {
+        generator.generateCorrelationId.matches("^[A-Za-z0-9\\-]{36}$") shouldBe true
+      }
     }
   }
-
 }
