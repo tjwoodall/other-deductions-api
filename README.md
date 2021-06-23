@@ -28,9 +28,13 @@ To view documentation locally ensure the Deductions API is running, and run api-
 Then go to http://localhost:9680/api-documentation/docs/api/preview and use this port and version:
 `http://localhost:7797/api/conf/1.0/application.raml`
 
-## Reporting Issues
+## Changelog
 
-You can create a GitHub issue [here](https://github.com/hmrc/other-deductions-api/issues)
+You can see our changelog [here](https://github.com/hmrc/income-tax-mtd-changelog/wiki)
+
+## Support and Reporting Issues
+
+You can create a GitHub issue [here](https://github.com/hmrc/income-tax-mtd-changelog/issues)
 
 ## API Reference / Documentation 
 Available on the [Other Deductions Documentation](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/other-deductions-api/1.0)
