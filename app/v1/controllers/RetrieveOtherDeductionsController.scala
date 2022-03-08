@@ -81,7 +81,7 @@ class RetrieveOtherDeductionsController @Inject()(val authService: EnrolmentsAut
     }
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
-    (errorWrapper.error: @unchecked) match {
+    errorWrapper.error match {
       case NinoFormatError |
            BadRequestError |
            TaxYearFormatError |

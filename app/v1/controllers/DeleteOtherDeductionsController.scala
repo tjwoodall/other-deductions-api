@@ -98,7 +98,7 @@ class DeleteOtherDeductionsController @Inject()(val authService: EnrolmentsAuthS
     }
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
-    (errorWrapper.error: @unchecked) match {
+    errorWrapper.error match {
       case NinoFormatError |
            BadRequestError |
            TaxYearFormatError |
