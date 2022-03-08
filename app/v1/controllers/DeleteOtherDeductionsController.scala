@@ -106,6 +106,7 @@ class DeleteOtherDeductionsController @Inject()(val authService: EnrolmentsAuthS
            RuleTaxYearRangeInvalidError => BadRequest(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
       case NotFoundError => NotFound(Json.toJson(errorWrapper))
+      case _ => unhandledError(errorWrapper)
     }
   }
 
