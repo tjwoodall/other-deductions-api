@@ -130,12 +130,6 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             |""".stripMargin)
 
                 val allInvalidValueRequestError: List[MtdError] = List(
-                  NameOfShipFormatError.copy(
-                    message = "The provided name of ship is not valid",
-                    paths = Some(List(
-                      "/seafarers/0/nameOfShip"
-                    ))
-                  ),
                   CustomerReferenceFormatError.copy(
                     message = "The provided customer reference is not valid",
                     paths = Some(List(
@@ -146,6 +140,12 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
                     message = "The field should be between 0 and 99999999999.99",
                     paths = Some(List(
                       "/seafarers/0/amountDeducted"
+                    ))
+                  ),
+                  NameOfShipFormatError.copy(
+                    message = "The provided name of ship is not valid",
+                    paths = Some(List(
+                      "/seafarers/0/nameOfShip"
                     ))
                   ),
                   DateFormatError.copy(

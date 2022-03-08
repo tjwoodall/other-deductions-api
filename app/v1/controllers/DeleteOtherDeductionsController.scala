@@ -98,7 +98,7 @@ class DeleteOtherDeductionsController @Inject()(val authService: EnrolmentsAuthS
     }
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
-    (errorWrapper.error: @unchecked) match {
+    errorWrapper.error match {
       case NinoFormatError |
            BadRequestError |
            TaxYearFormatError |
@@ -106,6 +106,7 @@ class DeleteOtherDeductionsController @Inject()(val authService: EnrolmentsAuthS
            RuleTaxYearRangeInvalidError => BadRequest(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
       case NotFoundError => NotFound(Json.toJson(errorWrapper))
+      case _ => unhandledError(errorWrapper)
     }
   }
 
