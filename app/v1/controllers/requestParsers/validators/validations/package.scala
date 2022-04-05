@@ -20,7 +20,7 @@ import java.time.format.DateTimeFormatter
 
 package object validations {
 
-  val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+  val dateFormat         = DateTimeFormatter.ofPattern("yyyy-MM-dd")
   val NoValidationErrors = List()
 
 }

@@ -25,7 +25,7 @@ object ToDateBeforeFromDateValidation {
   def validate(from: String, to: String, fromPath: String, toPath: String): List[MtdError] = {
 
     val fromDate = LocalDate.parse(from, dateFormat)
-    val toDate = LocalDate.parse(to, dateFormat)
+    val toDate   = LocalDate.parse(to, dateFormat)
 
     if (toDate.isBefore(fromDate)) List(RangeToDateBeforeFromDateError.copy(paths = Some(Seq(fromPath, toPath)))) else Nil
 

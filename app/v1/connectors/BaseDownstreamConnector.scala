@@ -29,24 +29,24 @@ trait BaseDownstreamConnector {
 
   val logger: Logger = Logger(this.getClass)
 
-  private def downstreamHeaderCarrier(additionalHeaders: Seq[String] = Seq.empty)(implicit hc: HeaderCarrier,
-                                                                                  correlationId: String): HeaderCarrier =
+  private def downstreamHeaderCarrier(additionalHeaders: Seq[String] = Seq.empty)(implicit hc: HeaderCarrier, correlationId: String): HeaderCarrier =
     HeaderCarrier(
       extraHeaders = hc.extraHeaders ++
         // Contract headers
         Seq(
           "Authorization" -> s"Bearer ${appConfig.ifsToken}",
-          "Environment" -> appConfig.ifsEnv,
+          "Environment"   -> appConfig.ifsEnv,
           "CorrelationId" -> correlationId
         ) ++
         // Other headers (i.e Gov-Test-Scenario, Content-Type)
         hc.headers(additionalHeaders ++ appConfig.ifsEnvironmentHeaders.getOrElse(Seq.empty))
     )
 
-  def get[Resp](uri: IfsUri[Resp])(implicit ec: ExecutionContext,
-                                   hc: HeaderCarrier,
-                                   httpReads: HttpReads[IfsOutcome[Resp]],
-                                   correlationId: String): Future[IfsOutcome[Resp]] = {
+  def get[Resp](uri: IfsUri[Resp])(implicit
+      ec: ExecutionContext,
+      hc: HeaderCarrier,
+      httpReads: HttpReads[IfsOutcome[Resp]],
+      correlationId: String): Future[IfsOutcome[Resp]] = {
 
     def doGet(implicit hc: HeaderCarrier): Future[IfsOutcome[Resp]] =
       http.GET(url = s"${appConfig.ifsBaseUrl}/${uri.value}")
@@ -54,10 +54,11 @@ trait BaseDownstreamConnector {
     doGet(downstreamHeaderCarrier())
   }
 
-  def delete[Resp](uri: IfsUri[Resp])(implicit ec: ExecutionContext,
-                                      hc: HeaderCarrier,
-                                      httpReads: HttpReads[IfsOutcome[Resp]],
-                                      correlationId: String): Future[IfsOutcome[Resp]] = {
+  def delete[Resp](uri: IfsUri[Resp])(implicit
+      ec: ExecutionContext,
+      hc: HeaderCarrier,
+      httpReads: HttpReads[IfsOutcome[Resp]],
+      correlationId: String): Future[IfsOutcome[Resp]] = {
 
     def doDelete(implicit hc: HeaderCarrier): Future[IfsOutcome[Resp]] = {
       http.DELETE(url = s"${appConfig.ifsBaseUrl}/${uri.value}")
@@ -66,10 +67,11 @@ trait BaseDownstreamConnector {
     doDelete(downstreamHeaderCarrier())
   }
 
-  def put[Body: Writes, Resp](body: Body, uri: IfsUri[Resp])(implicit ec: ExecutionContext,
-                                                             hc: HeaderCarrier,
-                                                             httpReads: HttpReads[IfsOutcome[Resp]],
-                                                             correlationId: String): Future[IfsOutcome[Resp]] = {
+  def put[Body: Writes, Resp](body: Body, uri: IfsUri[Resp])(implicit
+      ec: ExecutionContext,
+      hc: HeaderCarrier,
+      httpReads: HttpReads[IfsOutcome[Resp]],
+      correlationId: String): Future[IfsOutcome[Resp]] = {
 
     def doPut(implicit hc: HeaderCarrier): Future[IfsOutcome[Resp]] = {
       http.PUT(url = s"${appConfig.ifsBaseUrl}/${uri.value}", body)
@@ -77,4 +79,5 @@ trait BaseDownstreamConnector {
 
     doPut(downstreamHeaderCarrier(Seq("Content-Type")))
   }
+
 }

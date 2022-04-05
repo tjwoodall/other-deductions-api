@@ -21,6 +21,7 @@ import support.UnitSpec
 import v1.models.hateoas.{Link, Method}
 
 class AmendOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
+
   "LinksFactory" should {
     "produce the correct links" when {
       "called" in {
@@ -36,4 +37,5 @@ class AmendOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
       }
     }
   }
+
 }

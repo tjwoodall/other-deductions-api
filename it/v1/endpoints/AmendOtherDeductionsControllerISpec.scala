@@ -29,12 +29,11 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String = "AA123456A"
-    val taxYear: String = "2021-22"
+    val nino: String          = "AA123456A"
+    val taxYear: String       = "2021-22"
     val correlationId: String = "X-123"
 
-    val requestBodyJson: JsValue = Json.parse(
-      s"""
+    val requestBodyJson: JsValue = Json.parse(s"""
          |{
          |  "seafarers":[
          |    {
@@ -48,8 +47,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
          |}
     """.stripMargin)
 
-    val responseBody: JsValue = Json.parse(
-      s"""
+    val responseBody: JsValue = Json.parse(s"""
          |{
          |   "links":[
          |      {
@@ -90,6 +88,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
          |        "reason": "ifs message"
          |      }
     """.stripMargin
+
   }
 
   "Calling the amend other deductions endpoint" should {
@@ -114,8 +113,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
     "return a 400 with multiple errors" when {
       "all field value validations fail on the request body" in new Test {
 
-        val allInvalidValueRequestBodyJson: JsValue = Json.parse(
-          """
+        val allInvalidValueRequestBodyJson: JsValue = Json.parse("""
             |{
             |  "seafarers":[
             |    {
@@ -129,55 +127,58 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             |}
             |""".stripMargin)
 
-                val allInvalidValueRequestError: List[MtdError] = List(
-                  CustomerReferenceFormatError.copy(
-                    message = "The provided customer reference is not valid",
-                    paths = Some(List(
-                      "/seafarers/0/customerReference"
-                    ))
-                  ),
-                  ValueFormatError.copy(
-                    message = "The field should be between 0 and 99999999999.99",
-                    paths = Some(List(
-                      "/seafarers/0/amountDeducted"
-                    ))
-                  ),
-                  NameOfShipFormatError.copy(
-                    message = "The provided name of ship is not valid",
-                    paths = Some(List(
-                      "/seafarers/0/nameOfShip"
-                    ))
-                  ),
-                  DateFormatError.copy(
-                    message = "The field should be in the format YYYY-MM-DD",
-                    paths =Some(List(
-                      "/seafarers/0/fromDate",
-                      "/seafarers/0/toDate"
-                    ))
-                  )
-                )
+        val allInvalidValueRequestError: List[MtdError] = List(
+          CustomerReferenceFormatError.copy(
+            message = "The provided customer reference is not valid",
+            paths = Some(
+              List(
+                "/seafarers/0/customerReference"
+              ))
+          ),
+          ValueFormatError.copy(
+            message = "The field should be between 0 and 99999999999.99",
+            paths = Some(
+              List(
+                "/seafarers/0/amountDeducted"
+              ))
+          ),
+          NameOfShipFormatError.copy(
+            message = "The provided name of ship is not valid",
+            paths = Some(
+              List(
+                "/seafarers/0/nameOfShip"
+              ))
+          ),
+          DateFormatError.copy(
+            message = "The field should be in the format YYYY-MM-DD",
+            paths = Some(
+              List(
+                "/seafarers/0/fromDate",
+                "/seafarers/0/toDate"
+              ))
+          )
+        )
 
-                val wrappedErrors: ErrorWrapper = ErrorWrapper(
-                  correlationId = correlationId,
-                  error = BadRequestError,
-                  errors = Some(allInvalidValueRequestError)
-                )
+        val wrappedErrors: ErrorWrapper = ErrorWrapper(
+          correlationId = correlationId,
+          error = BadRequestError,
+          errors = Some(allInvalidValueRequestError)
+        )
 
-                override def setupStubs(): StubMapping = {
-                  AuditStub.audit()
-                  AuthStub.authorised()
-                  MtdIdLookupStub.ninoFound(nino)
-                }
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+        }
 
-                val response: WSResponse = await(request().put(allInvalidValueRequestBodyJson))
-                response.status shouldBe BAD_REQUEST
-                response.json shouldBe Json.toJson(wrappedErrors)
+        val response: WSResponse = await(request().put(allInvalidValueRequestBodyJson))
+        response.status shouldBe BAD_REQUEST
+        response.json shouldBe Json.toJson(wrappedErrors)
       }
 
       "return an error according to spec" when {
 
-        val validRequestBodyJson = Json.parse(
-          """
+        val validRequestBodyJson = Json.parse("""
             |{
             |  "seafarers":[
             |    {
@@ -198,8 +199,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             |}
             |""".stripMargin)
 
-        val RangeToDateBeforeFromDateJson = Json.parse(
-          """
+        val RangeToDateBeforeFromDateJson = Json.parse("""
             |{
             |  "seafarers":[
             |    {
@@ -220,8 +220,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             |}
             |""".stripMargin)
 
-        val allInvalidValueFormatRequestBodyJson = Json.parse(
-          """
+        val allInvalidValueFormatRequestBodyJson = Json.parse("""
             |{
             |  "seafarers":[
             |    {
@@ -242,8 +241,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             |}
             |""".stripMargin)
 
-        val allDatesInvalidRequestBodyJson = Json.parse(
-          """
+        val allDatesInvalidRequestBodyJson = Json.parse("""
             |{
             |  "seafarers":[
             |    {
@@ -264,8 +262,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             |}
             |""".stripMargin)
 
-        val allCustomerReferencesInvalidRequestBodyJson = Json.parse(
-          """
+        val allCustomerReferencesInvalidRequestBodyJson = Json.parse("""
             |{
             |  "seafarers":[
             |    {
@@ -286,8 +283,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             |}
             |""".stripMargin)
 
-        val allNamesOfShipsInvalidRequestBodyJson = Json.parse(
-          """
+        val allNamesOfShipsInvalidRequestBodyJson = Json.parse("""
             |{
             |  "seafarers":[
             |    {
@@ -310,52 +306,63 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
         val allValueFormatError: MtdError = ValueFormatError.copy(
           message = "The field should be between 0 and 99999999999.99",
-          paths = Some(Seq(
-            "/seafarers/0/amountDeducted",
-            "/seafarers/1/amountDeducted"
-          ))
+          paths = Some(
+            Seq(
+              "/seafarers/0/amountDeducted",
+              "/seafarers/1/amountDeducted"
+            ))
         )
 
         val allDateFormatError: MtdError = DateFormatError.copy(
           message = "The field should be in the format YYYY-MM-DD",
-          paths = Some(List(
-            "/seafarers/0/fromDate",
-            "/seafarers/0/toDate",
-            "/seafarers/1/fromDate",
-            "/seafarers/1/toDate"
-          ))
+          paths = Some(
+            List(
+              "/seafarers/0/fromDate",
+              "/seafarers/0/toDate",
+              "/seafarers/1/fromDate",
+              "/seafarers/1/toDate"
+            ))
         )
 
         val allCustomerReferenceFormatErrors: MtdError = CustomerReferenceFormatError.copy(
           message = "The provided customer reference is not valid",
-          paths = Some(List(
-            "/seafarers/0/customerReference",
-            "/seafarers/1/customerReference"
-          ))
+          paths = Some(
+            List(
+              "/seafarers/0/customerReference",
+              "/seafarers/1/customerReference"
+            ))
         )
 
         val allNamesOfShipsFormatErrors: MtdError = NameOfShipFormatError.copy(
           message = "The provided name of ship is not valid",
-          paths = Some(List(
-            "/seafarers/0/nameOfShip",
-            "/seafarers/1/nameOfShip"
-          ))
+          paths = Some(
+            List(
+              "/seafarers/0/nameOfShip",
+              "/seafarers/1/nameOfShip"
+            ))
         )
 
         val aRangeToDateBeforeFromDateError: MtdError = RangeToDateBeforeFromDateError.copy(
           message = "The To date is before the From date",
-          paths = Some(List(
-            "/seafarers/0/fromDate","/seafarers/0/toDate",
-            "/seafarers/1/fromDate","/seafarers/1/toDate"
-          ))
+          paths = Some(
+            List(
+              "/seafarers/0/fromDate",
+              "/seafarers/0/toDate",
+              "/seafarers/1/fromDate",
+              "/seafarers/1/toDate"
+            ))
         )
 
         "validation error" when {
-          def validationErrorTest(requestNino: String, requestTaxYear: String, requestBody: JsValue, expectedStatus: Int, expectedBody: MtdError): Unit = {
+          def validationErrorTest(requestNino: String,
+                                  requestTaxYear: String,
+                                  requestBody: JsValue,
+                                  expectedStatus: Int,
+                                  expectedBody: MtdError): Unit = {
             s"validation fails with ${expectedBody.code} error" in new Test {
 
-              override val nino: String = requestNino
-              override val taxYear: String = requestTaxYear
+              override val nino: String             = requestNino
+              override val taxYear: String          = requestTaxYear
               override val requestBodyJson: JsValue = requestBody
 
               override def setupStubs(): StubMapping = {
@@ -405,11 +412,13 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
             (BAD_REQUEST, "INVALID_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
             (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError),
-            (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError))
+            (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError)
+          )
 
           input.foreach(args => (serviceErrorTest _).tupled(args))
         }
       }
     }
   }
+
 }

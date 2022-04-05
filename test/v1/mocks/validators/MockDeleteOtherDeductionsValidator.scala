@@ -33,5 +33,7 @@ class MockDeleteOtherDeductionsValidator extends MockFactory {
         .validate(_: DeleteOtherDeductionsRawData))
         .expects(data)
     }
+
   }
+
 }

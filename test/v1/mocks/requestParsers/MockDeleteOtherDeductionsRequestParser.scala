@@ -27,9 +27,11 @@ trait MockDeleteOtherDeductionsRequestParser extends MockFactory {
   val mockDeleteOtherDeductionsRequestParser: DeleteOtherDeductionsRequestParser = mock[DeleteOtherDeductionsRequestParser]
 
   object MockDeleteOtherDeductionsRequestParser {
+
     def parse(data: DeleteOtherDeductionsRawData): CallHandler[Either[ErrorWrapper, DeleteOtherDeductionsRequest]] = {
       (mockDeleteOtherDeductionsRequestParser.parseRequest(_: DeleteOtherDeductionsRawData)(_: String)).expects(data, *)
     }
+
   }
 
 }

@@ -33,5 +33,7 @@ class MockAmendOtherDeductionsValidator extends MockFactory {
         .validate(_: AmendOtherDeductionsRawData))
         .expects(data)
     }
+
   }
+
 }

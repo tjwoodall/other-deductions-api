@@ -24,7 +24,7 @@ object CustomerReferenceValidation {
 
   def validateOptional(field: Option[String], path: String): List[MtdError] = {
     field match {
-      case None => NoValidationErrors
+      case None        => NoValidationErrors
       case Some(value) => validate(value, path)
     }
   }
@@ -32,4 +32,5 @@ object CustomerReferenceValidation {
   private def validate(customerRef: String, path: String): List[MtdError] = {
     if (customerRef.matches(customerRefRegex)) NoValidationErrors else List(CustomerReferenceFormatError.copy(paths = Some(Seq(path))))
   }
+
 }

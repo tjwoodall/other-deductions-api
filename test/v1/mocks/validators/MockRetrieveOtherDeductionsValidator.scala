@@ -33,5 +33,7 @@ class MockRetrieveOtherDeductionsValidator extends MockFactory {
         .validate(_: RetrieveOtherDeductionsRawData))
         .expects(data)
     }
+
   }
+
 }

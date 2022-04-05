@@ -29,7 +29,7 @@ import scala.concurrent.Future
 
 class RetrieveOtherDeductionsServiceSpec extends ServiceSpec {
 
-  private val nino = "AA123456A"
+  private val nino    = "AA123456A"
   private val taxYear = "2017-18"
 
   private val responseModel = RetrieveOtherDeductionsResponse(
@@ -39,18 +39,20 @@ class RetrieveOtherDeductionsServiceSpec extends ServiceSpec {
   private val requestData = RetrieveOtherDeductionsRequest(Nino(nino), taxYear)
 
   trait Test extends MockRetrieveOtherDeductionsConnector {
-    implicit val hc: HeaderCarrier = HeaderCarrier()
+    implicit val hc: HeaderCarrier              = HeaderCarrier()
     implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
 
     val service = new RetrieveOtherDeductionsService(
       connector = mockRetrieveOtherDeductionsConnector
     )
+
   }
 
   "service" should {
     "return a successful response" when {
       "a successful response is passed through" in new Test {
-        MockRetrieveOtherDeductionsConnector.retrieve(requestData)
+        MockRetrieveOtherDeductionsConnector
+          .retrieve(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
 
         await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, responseModel))
@@ -60,7 +62,8 @@ class RetrieveOtherDeductionsServiceSpec extends ServiceSpec {
       def serviceError(ifsErrorCode: String, error: MtdError): Unit =
         s"a $ifsErrorCode error is returned from the service" in new Test {
 
-          MockRetrieveOtherDeductionsConnector.retrieve(requestData)
+          MockRetrieveOtherDeductionsConnector
+            .retrieve(requestData)
             .returns(Future.successful(Left(ResponseWrapper(correlationId, IfsErrors.single(IfsErrorCode(ifsErrorCode))))))
 
           await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
@@ -77,4 +80,5 @@ class RetrieveOtherDeductionsServiceSpec extends ServiceSpec {
       input.foreach(args => (serviceError _).tupled(args))
     }
   }
+
 }

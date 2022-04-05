@@ -33,10 +33,14 @@ trait MockRetrieveOtherDeductionsService extends MockFactory {
   val mockRetrieveOtherDeductionsService: RetrieveOtherDeductionsService = mock[RetrieveOtherDeductionsService]
 
   object MockRetrieveOtherDeductionsService {
-    def retrieve(requestData: RetrieveOtherDeductionsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[RetrieveOtherDeductionsResponse]]]] = {
+
+    def retrieve(
+        requestData: RetrieveOtherDeductionsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[RetrieveOtherDeductionsResponse]]]] = {
       (mockRetrieveOtherDeductionsService
         .retrieve(_: RetrieveOtherDeductionsRequest)(_: HeaderCarrier, _: ExecutionContext, _: EndpointLogContext, _: String))
         .expects(requestData, *, *, *, *)
     }
+
   }
+
 }

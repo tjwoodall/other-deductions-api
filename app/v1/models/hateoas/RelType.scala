@@ -17,7 +17,7 @@
 package v1.models.hateoas
 
 object RelType {
-  val SELF = "self"
+  val SELF                              = "self"
   val CREATE_AND_AMEND_DEDUCTIONS_OTHER = "create-and-amend-deductions-other"
-  val DELETE_DEDUCTIONS_OTHER = "delete-deductions-other"
+  val DELETE_DEDUCTIONS_OTHER           = "delete-deductions-other"
 }

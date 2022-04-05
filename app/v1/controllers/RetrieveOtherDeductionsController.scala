@@ -33,21 +33,22 @@ import v1.services.{EnrolmentsAuthService, MtdIdLookupService, RetrieveOtherDedu
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrieveOtherDeductionsController @Inject()(val authService: EnrolmentsAuthService,
-                                                val lookupService: MtdIdLookupService,
-                                                parser: RetrieveOtherDeductionsRequestParser,
-                                                service: RetrieveOtherDeductionsService,
-                                                hateoasFactory: HateoasFactory,
-                                                cc: ControllerComponents,
-                                                  idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-  extends AuthorisedController(cc) with BaseController with Logging {
+class RetrieveOtherDeductionsController @Inject() (val authService: EnrolmentsAuthService,
+                                                   val lookupService: MtdIdLookupService,
+                                                   parser: RetrieveOtherDeductionsRequestParser,
+                                                   service: RetrieveOtherDeductionsService,
+                                                   hateoasFactory: HateoasFactory,
+                                                   cc: ControllerComponents,
+                                                   idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+    extends AuthorisedController(cc)
+    with BaseController
+    with Logging {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "RetrieveOtherDeductionsController", endpointName = "retrieveOtherDeductions")
 
   def handleRequest(nino: String, taxYear: String): Action[AnyContent] =
     authorisedAction(nino).async { implicit request =>
-
       implicit val correlationId: String = idGenerator.generateCorrelationId
       logger.info(
         s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] " +
@@ -56,7 +57,7 @@ class RetrieveOtherDeductionsController @Inject()(val authService: EnrolmentsAut
       val rawData = RetrieveOtherDeductionsRawData(nino, taxYear)
       val result =
         for {
-          parsedRequest <- EitherT.fromEither[Future](parser.parseRequest(rawData))
+          parsedRequest   <- EitherT.fromEither[Future](parser.parseRequest(rawData))
           serviceResponse <- EitherT(service.retrieve(parsedRequest))
           vendorResponse <- EitherT.fromEither[Future](
             hateoasFactory.wrap(serviceResponse.responseData, RetrieveOtherDeductionsHateoasData(nino, taxYear)).asRight[ErrorWrapper])
@@ -71,7 +72,7 @@ class RetrieveOtherDeductionsController @Inject()(val authService: EnrolmentsAut
         }
       result.leftMap { errorWrapper =>
         val resCorrelationId = errorWrapper.correlationId
-        val result = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
+        val result           = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
         logger.warn(
           s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
             s"Error response received with CorrelationId: $resCorrelationId")
@@ -82,14 +83,12 @@ class RetrieveOtherDeductionsController @Inject()(val authService: EnrolmentsAut
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
     errorWrapper.error match {
-      case NinoFormatError |
-           BadRequestError |
-           TaxYearFormatError |
-           RuleTaxYearNotSupportedError |
-           RuleTaxYearRangeInvalidError => BadRequest(Json.toJson(errorWrapper))
+      case NinoFormatError | BadRequestError | TaxYearFormatError | RuleTaxYearNotSupportedError | RuleTaxYearRangeInvalidError =>
+        BadRequest(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
-      case NotFoundError => NotFound(Json.toJson(errorWrapper))
-      case _ => unhandledError(errorWrapper)
+      case NotFoundError   => NotFound(Json.toJson(errorWrapper))
+      case _               => unhandledError(errorWrapper)
     }
   }
+
 }

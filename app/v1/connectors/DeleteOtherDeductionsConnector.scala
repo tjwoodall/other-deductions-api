@@ -26,16 +26,14 @@ import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequest
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteOtherDeductionsConnector @Inject()(val http: HttpClient,
-                                               val appConfig: AppConfig) extends BaseDownstreamConnector {
+class DeleteOtherDeductionsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  def delete(request: DeleteOtherDeductionsRequest)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    correlationId: String): Future[IfsOutcome[Unit]] = {
+  def delete(
+      request: DeleteOtherDeductionsRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[IfsOutcome[Unit]] = {
 
     delete(
       IfsUri[Unit](s"income-tax/deductions/${request.nino.nino}/${request.taxYear}")
     )
   }
+
 }

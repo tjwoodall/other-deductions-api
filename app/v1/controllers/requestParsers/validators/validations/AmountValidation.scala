@@ -21,7 +21,7 @@ import v1.models.errors.{MtdError, ValueFormatError}
 object AmountValidation {
 
   def validate(field: BigDecimal, path: String): List[MtdError] = {
-    if (field >= 0 && field < 99999999999.99 && field.scale <= 2){
+    if (field >= 0 && field < 99999999999.99 && field.scale <= 2) {
       Nil
     } else {
       List(
@@ -29,4 +29,5 @@ object AmountValidation {
       )
     }
   }
+
 }

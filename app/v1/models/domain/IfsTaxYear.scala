@@ -16,10 +16,10 @@
 
 package v1.models.domain
 
-/**
-  * Represents a tax year for IFS
+/** Represents a tax year for IFS
   *
-  * @param value the tax year string (where 2018 represents 2017-18)
+  * @param value
+  *   the tax year string (where 2018 represents 2017-18)
   */
 case class IfsTaxYear(value: String) extends AnyVal {
   override def toString: String = value
@@ -27,9 +27,10 @@ case class IfsTaxYear(value: String) extends AnyVal {
 
 object IfsTaxYear {
 
-  /**
-    * @param taxYear tax year in MTD format (e.g. 2017-18)
+  /** @param taxYear
+    *   tax year in MTD format (e.g. 2017-18)
     */
   def fromMtd(taxYear: String): IfsTaxYear =
     IfsTaxYear(taxYear.take(2) + taxYear.drop(5))
+
 }

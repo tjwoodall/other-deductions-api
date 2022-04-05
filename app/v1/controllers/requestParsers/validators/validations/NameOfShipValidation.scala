@@ -27,4 +27,5 @@ object NameOfShipValidation {
       List(NameOfShipFormatError.copy(paths = Some(Seq(path))))
     }
   }
+
 }

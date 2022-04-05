@@ -29,11 +29,10 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino = "AA123456A"
+    val nino    = "AA123456A"
     val taxYear = "2021-22"
 
-    val responseBody = Json.parse(
-      s"""
+    val responseBody = Json.parse(s"""
          |{
          |   "submittedOn": "2019-04-04T01:01:01Z",
          |   "seafarers": [{
@@ -63,8 +62,7 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
          |}
          |""".stripMargin)
 
-    val ifsResponseBody = Json.parse(
-      s"""
+    val ifsResponseBody = Json.parse(s"""
          |{
          |  "submittedOn": "2019-04-04T01:01:01Z",
          |   "seafarers": [{
@@ -96,6 +94,7 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
          |        "reason": "ifs message"
          |      }
     """.stripMargin
+
   }
 
   "calling the retrieve endpoint" should {
@@ -124,7 +123,7 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
         def validationErrorTest(requestNino: String, requestTaxYear: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
           s"validation fails with ${expectedBody.code} error" in new Test {
 
-            override val nino: String = requestNino
+            override val nino: String    = requestNino
             override val taxYear: String = requestTaxYear
 
             override def setupStubs(): StubMapping = {
@@ -145,7 +144,6 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           ("AA123456A", "2017-18", Status.BAD_REQUEST, RuleTaxYearNotSupportedError),
           ("AA123456A", "2018-20", Status.BAD_REQUEST, RuleTaxYearRangeInvalidError)
         )
-
 
         input.foreach(args => (validationErrorTest _).tupled(args))
       }
@@ -179,4 +177,5 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
       }
     }
   }
+
 }

@@ -24,39 +24,42 @@ import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.amendOtherDeductions.{AmendOtherDeductionsBody, AmendOtherDeductionsRequest, Seafarers}
 
-
 import scala.concurrent.Future
 
 class AmendOtherDeductionsServiceSpec extends ServiceSpec {
 
   val taxYear = "2018-04-06"
-  val nino = "AA123456A"
+  val nino    = "AA123456A"
 
   val body = AmendOtherDeductionsBody(
-    Some(Seq(Seafarers(
-      Some("myRef"),
-      2000.99,
-      "Blue Bell",
-      "2018-04-06",
-      "2019-04-06"
-    )))
+    Some(
+      Seq(
+        Seafarers(
+          Some("myRef"),
+          2000.99,
+          "Blue Bell",
+          "2018-04-06",
+          "2019-04-06"
+        )))
   )
 
   private val requestData = AmendOtherDeductionsRequest(Nino(nino), taxYear, body)
 
   trait Test extends MockAmendOtherDeductionsConnector {
-    implicit val hc: HeaderCarrier = HeaderCarrier()
+    implicit val hc: HeaderCarrier              = HeaderCarrier()
     implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
 
     val service = new AmendOtherDeductionsService(
       connector = mockAmendOtherDeductionsConnector
     )
+
   }
 
   "service" should {
     "service call successful" when {
       "return mapped result" in new Test {
-        MockAmendOtherDeductionsConnector.amend(requestData)
+        MockAmendOtherDeductionsConnector
+          .amend(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
         await(service.amend(requestData)) shouldBe Right(ResponseWrapper(correlationId, ()))
@@ -70,7 +73,8 @@ class AmendOtherDeductionsServiceSpec extends ServiceSpec {
       def serviceError(ifsErrorCode: String, error: MtdError): Unit =
         s"a $ifsErrorCode error is returned from the service" in new Test {
 
-          MockAmendOtherDeductionsConnector.amend(requestData)
+          MockAmendOtherDeductionsConnector
+            .amend(requestData)
             .returns(Future.successful(Left(ResponseWrapper(correlationId, IfsErrors.single(IfsErrorCode(ifsErrorCode))))))
 
           await(service.amend(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
@@ -78,12 +82,13 @@ class AmendOtherDeductionsServiceSpec extends ServiceSpec {
 
       val input = Seq(
         "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-        "INVALID_TAX_YEAR" -> TaxYearFormatError,
-        "SERVER_ERROR" -> DownstreamError,
-        "SERVICE_UNAVAILABLE" -> DownstreamError
+        "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+        "SERVER_ERROR"              -> DownstreamError,
+        "SERVICE_UNAVAILABLE"       -> DownstreamError
       )
 
       input.foreach(args => (serviceError _).tupled(args))
     }
   }
+
 }

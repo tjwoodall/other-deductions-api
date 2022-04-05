@@ -19,6 +19,7 @@ package v1.models.domain
 import support.UnitSpec
 
 class IfsTaxYearSpec extends UnitSpec {
+
   "toString" should {
     "return the value inside the model as a String instead of the standard case class toString" in {
       IfsTaxYear("value").toString shouldBe "value"
@@ -30,4 +31,5 @@ class IfsTaxYearSpec extends UnitSpec {
       IfsTaxYear.fromMtd("2018-19") shouldBe IfsTaxYear("2019")
     }
   }
+
 }

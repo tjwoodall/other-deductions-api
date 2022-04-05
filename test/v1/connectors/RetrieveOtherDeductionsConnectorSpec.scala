@@ -27,7 +27,7 @@ import scala.concurrent.Future
 class RetrieveOtherDeductionsConnectorSpec extends ConnectorSpec {
 
   val taxYear = "2017-18"
-  val nino = "AA123456A"
+  val nino    = "AA123456A"
 
   class Test extends MockHttpClient with MockAppConfig {
     val connector: RetrieveOtherDeductionsConnector = new RetrieveOtherDeductionsConnector(http = mockHttpClient, appConfig = mockAppConfig)
@@ -57,4 +57,5 @@ class RetrieveOtherDeductionsConnectorSpec extends ConnectorSpec {
       }
     }
   }
+
 }

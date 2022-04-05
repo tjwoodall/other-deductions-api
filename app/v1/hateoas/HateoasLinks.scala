@@ -23,11 +23,11 @@ import v1.models.hateoas.RelType._
 
 trait HateoasLinks {
 
-  //Domain URIs
+  // Domain URIs
   private def otherDeductionsUri(appConfig: AppConfig, nino: String, taxYear: String): String =
     s"/${appConfig.apiGatewayContext}/$nino/$taxYear"
 
-  //API resource links
+  // API resource links
   def createAndAmendOtherDeductions(appConfig: AppConfig, nino: String, taxYear: String): Link =
     Link(href = otherDeductionsUri(appConfig, nino, taxYear), method = PUT, rel = CREATE_AND_AMEND_DEDUCTIONS_OTHER)
 
@@ -36,4 +36,5 @@ trait HateoasLinks {
 
   def retrieveOtherDeductions(appConfig: AppConfig, nino: String, taxYear: String): Link =
     Link(href = otherDeductionsUri(appConfig, nino, taxYear), method = GET, rel = SELF)
+
 }

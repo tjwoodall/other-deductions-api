@@ -59,14 +59,15 @@ class ErrorWrapperSpec extends UnitSpec {
   }
 
   "Rendering a error response with two errors" should {
-    val error = ErrorWrapper(correlationId, BadRequestError,
-      Some (
+    val error = ErrorWrapper(
+      correlationId,
+      BadRequestError,
+      Some(
         Seq(
           NinoFormatError,
           TaxYearFormatError
         )
-      )
-    )
+      ))
 
     val json = Json.parse(
       """
@@ -102,7 +103,5 @@ class ErrorWrapperSpec extends UnitSpec {
       errorWrapper.auditErrors shouldBe Seq(AuditError(NinoFormatError.code), AuditError(TaxYearFormatError.code))
     }
   }
-
-
 
 }

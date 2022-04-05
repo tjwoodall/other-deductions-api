@@ -22,8 +22,7 @@ import v1.controllers.requestParsers.validators.validations._
 import v1.models.errors.MtdError
 import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRawData
 
-class DeleteOtherDeductionsValidator @Inject()(implicit appConfig: AppConfig)
-  extends Validator[DeleteOtherDeductionsRawData] {
+class DeleteOtherDeductionsValidator @Inject() (implicit appConfig: AppConfig) extends Validator[DeleteOtherDeductionsRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
 
@@ -43,4 +42,5 @@ class DeleteOtherDeductionsValidator @Inject()(implicit appConfig: AppConfig)
   override def validate(data: DeleteOtherDeductionsRawData): List[MtdError] = {
     run(validationSet, data).distinct
   }
+
 }

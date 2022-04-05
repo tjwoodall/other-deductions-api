@@ -28,24 +28,26 @@ import scala.concurrent.Future
 
 class DeleteOtherDeductionsServiceSpec extends ServiceSpec {
 
-  private val nino = "AA123456A"
+  private val nino    = "AA123456A"
   private val taxYear = "2017-18"
 
   private val request = DeleteOtherDeductionsRequest(Nino(nino), taxYear)
 
   trait Test extends MockDeleteOtherDeductionsConnector {
-    implicit val hc: HeaderCarrier = HeaderCarrier()
+    implicit val hc: HeaderCarrier              = HeaderCarrier()
     implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
 
     val service = new DeleteOtherDeductionsService(
       DeleteOtherDeductionsConnector = mockDeleteOtherDeductionsConnector
     )
+
   }
 
   "service" when {
     "service call successsful" must {
       "return mapped result" in new Test {
-        MockDeleteOtherDeductionsConnector.delete(request)
+        MockDeleteOtherDeductionsConnector
+          .delete(request)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
         await(service.delete(request)) shouldBe Right(ResponseWrapper(correlationId, ()))
@@ -58,7 +60,8 @@ class DeleteOtherDeductionsServiceSpec extends ServiceSpec {
         def serviceError(ifsErrorCode: String, error: MtdError): Unit =
           s"a $ifsErrorCode error is returned from the service" in new Test {
 
-            MockDeleteOtherDeductionsConnector.delete(request)
+            MockDeleteOtherDeductionsConnector
+              .delete(request)
               .returns(Future.successful(Left(ResponseWrapper(correlationId, IfsErrors.single(IfsErrorCode(ifsErrorCode))))))
 
             await(service.delete(request)) shouldBe Left(ErrorWrapper(correlationId, error))
@@ -76,4 +79,5 @@ class DeleteOtherDeductionsServiceSpec extends ServiceSpec {
       }
     }
   }
+
 }

@@ -21,10 +21,10 @@ import v1.models.errors.CustomerReferenceFormatError
 
 class CustomerReferenceValidationSpec extends UnitSpec {
 
-  val validCustomerRef = "SEAFARERS1234"
-  val invalidCustomerRefMax = "JJJAHHSUUSNNNAMMSMMSMSIIAAALLLAOOo982031813jJJAMMMAAmmmAAAPPPAOAOAOAJJJSSSAJNDUDNUNDUDNKI9B"
+  val validCustomerRef         = "SEAFARERS1234"
+  val invalidCustomerRefMax    = "JJJAHHSUUSNNNAMMSMMSMSIIAAALLLAOOo982031813jJJAMMMAAmmmAAAPPPAOAOAOAJJJSSSAJNDUDNUNDUDNKI9B"
   val invalidCustomerRefFormat = "+=@,."
-  val path = "/seafarers/0/customerReference"
+  val path                     = "/seafarers/0/customerReference"
 
   "validate" should {
     "return no errors" when {
@@ -44,16 +44,17 @@ class CustomerReferenceValidationSpec extends UnitSpec {
         val validationResult = CustomerReferenceValidation.validateOptional(Some(invalidCustomerRefMax), path)
 
         validationResult.isEmpty shouldBe false
-        validationResult.length  shouldBe 1
+        validationResult.length shouldBe 1
         validationResult.head shouldBe CustomerReferenceFormatError.copy(paths = Some(Seq(path)))
       }
       "the customer reference has invalid characters" in {
         val validationResult = CustomerReferenceValidation.validateOptional(Some(invalidCustomerRefFormat), path)
 
         validationResult.isEmpty shouldBe false
-        validationResult.length  shouldBe 1
+        validationResult.length shouldBe 1
         validationResult.head shouldBe CustomerReferenceFormatError.copy(paths = Some(Seq(path)))
       }
     }
   }
+
 }

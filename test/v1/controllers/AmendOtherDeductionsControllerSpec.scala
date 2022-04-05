@@ -36,7 +36,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class AmendOtherDeductionsControllerSpec
-  extends ControllerBaseSpec
+    extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockAmendOtherDeductionsService
@@ -64,9 +64,10 @@ class AmendOtherDeductionsControllerSpec
     MockIdGenerator.generateCorrelationId.returns(correlationId)
   }
 
-  private val nino = "AA123456A"
-  private val taxYear = "2019-20"
+  private val nino          = "AA123456A"
+  private val taxYear       = "2019-20"
   private val correlationId = "X-123"
+
   private val testHateoasLinks = Seq(
     Link(href = s"/individuals/deductions/other/$nino/$taxYear", method = PUT, rel = "amend-deductions-other"),
     Link(href = s"/individuals/deductions/other/$nino/$taxYear", method = GET, rel = "self"),
@@ -90,17 +91,18 @@ class AmendOtherDeductionsControllerSpec
   )
 
   private val requestBody = AmendOtherDeductionsBody(
-    Some(Seq(Seafarers(
-      Some("myRef"),
-      2342.22,
-      "Blue Bell",
-      "2018-08-17",
-      "2018-10-02"
-    )))
+    Some(
+      Seq(
+        Seafarers(
+          Some("myRef"),
+          2342.22,
+          "Blue Bell",
+          "2018-08-17",
+          "2018-10-02"
+        )))
   )
 
-  val responseBody: JsValue = Json.parse(
-    s"""
+  val responseBody: JsValue = Json.parse(s"""
        |{
        |   "links":[
        |      {
@@ -136,7 +138,7 @@ class AmendOtherDeductionsControllerSpec
       )
     )
 
-  private val rawData = AmendOtherDeductionsRawData(nino, taxYear, requestBodyJson)
+  private val rawData     = AmendOtherDeductionsRawData(nino, taxYear, requestBodyJson)
   private val requestData = AmendOtherDeductionsRequest(Nino(nino), taxYear, requestBody)
 
   "handleRequest" should {
@@ -188,26 +190,17 @@ class AmendOtherDeductionsControllerSpec
           (NinoFormatError, BAD_REQUEST),
           (TaxYearFormatError, BAD_REQUEST),
           (RuleTaxYearRangeInvalidError, BAD_REQUEST),
-          (ValueFormatError.copy(paths = Some(Seq(
-            "seafarers/0/amountDeducted",
-            "seafarers/1/amountDeducted"))), BAD_REQUEST),
-          (NameOfShipFormatError.copy(paths = Some(Seq(
-            "seafarers/0/nameOfShip",
-            "seafarers/1/nameOfShip"))), BAD_REQUEST),
-          (CustomerReferenceFormatError.copy(paths = Some(Seq(
-            "seafarers/0/customerReference",
-            "seafarers/1/customerReference"))), BAD_REQUEST),
-          (DateFormatError.copy(paths = Some(Seq(
-            "seafarers/0/fromDate",
-            "seafarers/0/toDate",
-            "seafarers/1/fromDate",
-            "seafarers/1/toDate"))), BAD_REQUEST),
+          (ValueFormatError.copy(paths = Some(Seq("seafarers/0/amountDeducted", "seafarers/1/amountDeducted"))), BAD_REQUEST),
+          (NameOfShipFormatError.copy(paths = Some(Seq("seafarers/0/nameOfShip", "seafarers/1/nameOfShip"))), BAD_REQUEST),
+          (CustomerReferenceFormatError.copy(paths = Some(Seq("seafarers/0/customerReference", "seafarers/1/customerReference"))), BAD_REQUEST),
+          (
+            DateFormatError.copy(paths = Some(Seq("seafarers/0/fromDate", "seafarers/0/toDate", "seafarers/1/fromDate", "seafarers/1/toDate"))),
+            BAD_REQUEST),
           (RuleIncorrectOrEmptyBodyError, BAD_REQUEST),
-          (RangeToDateBeforeFromDateError.copy(paths = Some(Seq(
-            "seafarers/0/fromDate",
-            "seafarers/0/toDate",
-            "seafarers/1/fromDate",
-            "seafarers/1/toDate"))), BAD_REQUEST)
+          (
+            RangeToDateBeforeFromDateError.copy(paths =
+              Some(Seq("seafarers/0/fromDate", "seafarers/0/toDate", "seafarers/1/fromDate", "seafarers/1/toDate"))),
+            BAD_REQUEST)
         )
 
         input.foreach(args => (errorsFromParserTester _).tupled(args))
@@ -246,4 +239,5 @@ class AmendOtherDeductionsControllerSpec
       }
     }
   }
+
 }

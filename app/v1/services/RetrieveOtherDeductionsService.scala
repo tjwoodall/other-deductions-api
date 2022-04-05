@@ -30,13 +30,13 @@ import v1.support.IfsResponseMappingSupport
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrieveOtherDeductionsService @Inject()(connector: RetrieveOtherDeductionsConnector) extends IfsResponseMappingSupport with Logging {
+class RetrieveOtherDeductionsService @Inject() (connector: RetrieveOtherDeductionsConnector) extends IfsResponseMappingSupport with Logging {
 
-  def retrieve(request: RetrieveOtherDeductionsRequest)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    logContext: EndpointLogContext,
-    correlationId: String): Future[RetrieveOtherDeductionsServiceOutcome] = {
+  def retrieve(request: RetrieveOtherDeductionsRequest)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      logContext: EndpointLogContext,
+      correlationId: String): Future[RetrieveOtherDeductionsServiceOutcome] = {
 
     val result = for {
       ifsResponseWrapper <- EitherT(connector.retrieve(request)).leftMap(mapIfsErrors(ifsErrorMap))
@@ -48,9 +48,10 @@ class RetrieveOtherDeductionsService @Inject()(connector: RetrieveOtherDeduction
   private def ifsErrorMap =
     Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-      "INVALID_TAX_YEAR" -> TaxYearFormatError,
-      "NO_DATA_FOUND" -> NotFoundError,
-      "SERVER_ERROR" -> DownstreamError,
-      "SERVICE_UNAVAILABLE" -> DownstreamError
+      "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+      "NO_DATA_FOUND"             -> NotFoundError,
+      "SERVER_ERROR"              -> DownstreamError,
+      "SERVICE_UNAVAILABLE"       -> DownstreamError
     )
+
 }

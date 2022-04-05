@@ -21,9 +21,10 @@ import v1.models.domain.Nino
 import v1.controllers.requestParsers.validators.AmendOtherDeductionsValidator
 import v1.models.request.amendOtherDeductions.{AmendOtherDeductionsBody, AmendOtherDeductionsRawData, AmendOtherDeductionsRequest}
 
-class AmendOtherDeductionsRequestParser @Inject()(val validator: AmendOtherDeductionsValidator)
-  extends RequestParser[AmendOtherDeductionsRawData, AmendOtherDeductionsRequest] {
+class AmendOtherDeductionsRequestParser @Inject() (val validator: AmendOtherDeductionsValidator)
+    extends RequestParser[AmendOtherDeductionsRawData, AmendOtherDeductionsRequest] {
 
   override protected def requestFor(data: AmendOtherDeductionsRawData): AmendOtherDeductionsRequest =
     AmendOtherDeductionsRequest(Nino(data.nino), data.taxYear, data.body.as[AmendOtherDeductionsBody])
+
 }

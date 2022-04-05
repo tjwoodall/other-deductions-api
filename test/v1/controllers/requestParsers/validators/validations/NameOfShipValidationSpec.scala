@@ -21,9 +21,9 @@ import v1.models.errors.NameOfShipFormatError
 
 class NameOfShipValidationSpec extends UnitSpec {
 
-  val validName = "Blue Bell"
+  val validName   = "Blue Bell"
   val invalidName = "Ships. Of Blue Red Yellow Green Orange Purple Violet Indigo Brown Black White Beige Cream Grey Gold Silver"
-  val path = "/seafarers/3/nameOfShip"
+  val path        = "/seafarers/3/nameOfShip"
 
   "validate" should {
     "return no errors" when {
@@ -43,4 +43,5 @@ class NameOfShipValidationSpec extends UnitSpec {
       }
     }
   }
+
 }

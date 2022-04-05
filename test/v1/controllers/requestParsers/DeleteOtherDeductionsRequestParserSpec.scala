@@ -23,8 +23,8 @@ import v1.models.errors._
 import v1.models.request.deleteOtherDeductions.{DeleteOtherDeductionsRawData, DeleteOtherDeductionsRequest}
 
 class DeleteOtherDeductionsRequestParserSpec extends UnitSpec {
-  val nino = "AA123456B"
-  val taxYear = "2017-18"
+  val nino                           = "AA123456B"
+  val taxYear                        = "2017-18"
   implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val inputData: DeleteOtherDeductionsRawData =
@@ -48,7 +48,8 @@ class DeleteOtherDeductionsRequestParserSpec extends UnitSpec {
     "return an ErrorWrapper" when {
 
       "a single validation error occurs" in new Test {
-        MockDeleteOtherDeductionsValidator.validate(inputData)
+        MockDeleteOtherDeductionsValidator
+          .validate(inputData)
           .returns(List(NinoFormatError))
 
         parser.parseRequest(inputData) shouldBe
@@ -56,7 +57,8 @@ class DeleteOtherDeductionsRequestParserSpec extends UnitSpec {
       }
 
       "multiple validation errors occur" in new Test {
-        MockDeleteOtherDeductionsValidator.validate(inputData)
+        MockDeleteOtherDeductionsValidator
+          .validate(inputData)
           .returns(List(NinoFormatError, TaxYearFormatError))
 
         parser.parseRequest(inputData) shouldBe
@@ -64,4 +66,5 @@ class DeleteOtherDeductionsRequestParserSpec extends UnitSpec {
       }
     }
   }
+
 }

@@ -22,47 +22,54 @@ import support.UnitSpec
 import v1.models.hateoas.{Link, Method}
 
 class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
+
   val retrieveOtherDeductionsResponse: RetrieveOtherDeductionsResponse = RetrieveOtherDeductionsResponse(
     "2019-04-04T01:01:01Z",
-    Some(Seq(Seafarers(
-      Some("myRef"),
-      2000.99,
-      "Blue Bell",
-      "2018-04-06",
-      "2019-04-06"
-    )))
+    Some(
+      Seq(
+        Seafarers(
+          Some("myRef"),
+          2000.99,
+          "Blue Bell",
+          "2018-04-06",
+          "2019-04-06"
+        )))
   )
+
   val multipleSeafarersRetrieveOtherDeductionsResponse: RetrieveOtherDeductionsResponse = RetrieveOtherDeductionsResponse(
     "2019-04-04T01:01:01Z",
-    Some(Seq(Seafarers(
-      Some("myRef"),
-      2000.99,
-      "Blue Bell",
-      "2018-04-06",
-      "2019-04-06"
-    ),
-    Seafarers(
-      Some("myRef"),
-      2000.99,
-      "Blue Bell",
-      "2018-04-06",
-      "2019-04-06"
-    )))
+    Some(
+      Seq(
+        Seafarers(
+          Some("myRef"),
+          2000.99,
+          "Blue Bell",
+          "2018-04-06",
+          "2019-04-06"
+        ),
+        Seafarers(
+          Some("myRef"),
+          2000.99,
+          "Blue Bell",
+          "2018-04-06",
+          "2019-04-06"
+        )))
   )
 
   val noRefRetrieveOtherDeductionsResponse: RetrieveOtherDeductionsResponse = RetrieveOtherDeductionsResponse(
     "2019-04-04T01:01:01Z",
-    Some(Seq(Seafarers(
-      None,
-      2000.99,
-      "Blue Bell",
-      "2018-04-06",
-      "2019-04-06"
-    )))
+    Some(
+      Seq(
+        Seafarers(
+          None,
+          2000.99,
+          "Blue Bell",
+          "2018-04-06",
+          "2019-04-06"
+        )))
   )
 
-  val json = Json.parse(
-    """{
+  val json = Json.parse("""{
       | "submittedOn": "2019-04-04T01:01:01Z",
       | "seafarers": [{
       |   "customerReference": "myRef",
@@ -73,8 +80,7 @@ class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
       |   }]
       |}""".stripMargin)
 
-  val jsonMultipleSeafarers = Json.parse(
-    """{
+  val jsonMultipleSeafarers = Json.parse("""{
       | "submittedOn": "2019-04-04T01:01:01Z",
       | "seafarers": [{
       |   "customerReference": "myRef",
@@ -93,8 +99,7 @@ class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
       |   ]
       |}""".stripMargin)
 
-  val jsonNoRef = Json.parse(
-    """{
+  val jsonNoRef = Json.parse("""{
       | "submittedOn": "2019-04-04T01:01:01Z",
       | "seafarers": [{
       |   "amountDeducted": 2000.99,
@@ -155,4 +160,5 @@ class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
       }
     }
   }
+
 }

@@ -23,14 +23,13 @@ import v1.models.errors.{MtdError, RuleTaxYearNotSupportedError}
 object MtdTaxYearValidation {
 
   // @param taxYear In format YYYY-YY
-  def validate(taxYear: String)
-              (implicit appConfig: AppConfig): List[MtdError] = {
+  def validate(taxYear: String)(implicit appConfig: AppConfig): List[MtdError] = {
 
     val ifsTaxYear = Integer.parseInt(IfsTaxYear.fromMtd(taxYear).value)
 
     ifsTaxYear match {
       case _ if ifsTaxYear < appConfig.minimumPermittedTaxYear => List(RuleTaxYearNotSupportedError)
-      case _ => NoValidationErrors
+      case _                                                   => NoValidationErrors
     }
   }
 

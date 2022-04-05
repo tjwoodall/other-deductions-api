@@ -26,17 +26,15 @@ import v1.models.request.amendOtherDeductions.AmendOtherDeductionsRequest
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendOtherDeductionsConnector @Inject() (val http: HttpClient,
-                                               val appConfig: AppConfig) extends BaseDownstreamConnector {
+class AmendOtherDeductionsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  def amend(request: AmendOtherDeductionsRequest)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    correlationId: String): Future[IfsOutcome[Unit]] = {
+  def amend(
+      request: AmendOtherDeductionsRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[IfsOutcome[Unit]] = {
 
     put(
       body = request.body,
       uri = IfsUri[Unit](s"income-tax/deductions/${request.nino.nino}/${request.taxYear}")
     )
   }
+
 }

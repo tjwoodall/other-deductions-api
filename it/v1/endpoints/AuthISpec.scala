@@ -28,9 +28,9 @@ class AuthISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino          = "AA123456A"
-    val taxYear       = "2021-22"
-    val data        = "someData"
+    val nino    = "AA123456A"
+    val taxYear = "2021-22"
+    val data    = "someData"
 
     val ifsResponseBody: JsValue = Json.parse(
       """
@@ -47,7 +47,7 @@ class AuthISpec extends IntegrationBaseSpec {
         |""".stripMargin
     )
 
-    def uri: String = s"/$nino/$taxYear"
+    def uri: String    = s"/$nino/$taxYear"
     def ifsUri: String = s"/income-tax/deductions/$nino/$taxYear"
 
     def setupStubs(): StubMapping

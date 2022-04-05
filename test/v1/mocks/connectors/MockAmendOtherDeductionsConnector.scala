@@ -35,5 +35,7 @@ trait MockAmendOtherDeductionsConnector extends MockFactory {
         .amend(_: AmendOtherDeductionsRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
         .expects(requestData, *, *, *)
     }
+
   }
+
 }

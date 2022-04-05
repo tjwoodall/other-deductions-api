@@ -25,12 +25,11 @@ import v1.models.request.amendOtherDeductions.{AmendOtherDeductionsBody, AmendOt
 
 class AmendOtherDeductionsRequestParserSpec extends UnitSpec {
 
-  private val nino = "AA123456A"
-  private val taxYear = "2019-20"
+  private val nino                   = "AA123456A"
+  private val taxYear                = "2019-20"
   implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-  private val requestBodyJson = Json.parse(
-    """
+  private val requestBodyJson = Json.parse("""
       |{
       |    "seafarers":[
       |      {
@@ -43,8 +42,6 @@ class AmendOtherDeductionsRequestParserSpec extends UnitSpec {
       |    ]
       |}
         """.stripMargin)
-
-
 
   val inputData =
     AmendOtherDeductionsRawData(nino, taxYear, requestBodyJson)
@@ -63,21 +60,28 @@ class AmendOtherDeductionsRequestParserSpec extends UnitSpec {
         MockAmendOtherDeductionsValidator.validate(inputData).returns(Nil)
 
         parser.parseRequest(inputData) shouldBe
-          Right(AmendOtherDeductionsRequest(Nino(nino), taxYear, AmendOtherDeductionsBody(
-            Some(Seq(Seafarers(
-              Some("SEAFARERS1234"),
-              2342.22,
-              "Blue Wave",
-              "2018-08-17",
-              "2018-10-02"
-            )))
-          )))
+          Right(
+            AmendOtherDeductionsRequest(
+              Nino(nino),
+              taxYear,
+              AmendOtherDeductionsBody(
+                Some(
+                  Seq(
+                    Seafarers(
+                      Some("SEAFARERS1234"),
+                      2342.22,
+                      "Blue Wave",
+                      "2018-08-17",
+                      "2018-10-02"
+                    )))
+              )))
       }
     }
     "return an ErrorWrapper" when {
 
       "a single validation error occurs" in new Test {
-        MockAmendOtherDeductionsValidator.validate(inputData)
+        MockAmendOtherDeductionsValidator
+          .validate(inputData)
           .returns(List(NinoFormatError))
 
         parser.parseRequest(inputData) shouldBe
@@ -85,7 +89,8 @@ class AmendOtherDeductionsRequestParserSpec extends UnitSpec {
       }
 
       "multiple validation errors occur" in new Test {
-        MockAmendOtherDeductionsValidator.validate(inputData)
+        MockAmendOtherDeductionsValidator
+          .validate(inputData)
           .returns(List(NinoFormatError, TaxYearFormatError))
 
         parser.parseRequest(inputData) shouldBe
@@ -93,4 +98,5 @@ class AmendOtherDeductionsRequestParserSpec extends UnitSpec {
       }
     }
   }
+
 }

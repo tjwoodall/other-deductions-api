@@ -27,16 +27,16 @@ import v1.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsRespons
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrieveOtherDeductionsConnector @Inject()(val http: HttpClient,
-                                                 val appConfig: AppConfig) extends BaseDownstreamConnector {
+class RetrieveOtherDeductionsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  def retrieve(request: RetrieveOtherDeductionsRequest)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    correlationId: String): Future[IfsOutcome[RetrieveOtherDeductionsResponse]] = {
+  def retrieve(request: RetrieveOtherDeductionsRequest)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      correlationId: String): Future[IfsOutcome[RetrieveOtherDeductionsResponse]] = {
 
     get(
       IfsUri[RetrieveOtherDeductionsResponse](s"income-tax/deductions/${request.nino.nino}/${request.taxYear}")
     )
   }
+
 }

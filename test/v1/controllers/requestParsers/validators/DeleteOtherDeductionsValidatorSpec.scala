@@ -32,7 +32,7 @@ class DeleteOtherDeductionsValidatorSpec extends UnitSpec {
 
   class Test extends MockCurrentTaxYear with MockAppConfig {
 
-    implicit val appConfig: AppConfig = mockAppConfig
+    implicit val appConfig: AppConfig           = mockAppConfig
     implicit val currentTaxYear: CurrentTaxYear = mockCurrentTaxYear
 
     MockAppConfig.minimumPermittedTaxYear
@@ -75,5 +75,7 @@ class DeleteOtherDeductionsValidatorSpec extends UnitSpec {
         }
       }
     }
+
   }
+
 }

@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class DeleteOtherDeductionsControllerSpec
-  extends ControllerBaseSpec
+    extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockDeleteOtherDeductionsService
@@ -60,8 +60,8 @@ class DeleteOtherDeductionsControllerSpec
     MockIdGenerator.generateCorrelationId.returns(correlationId)
   }
 
-  private val nino = "AA123456A"
-  private val taxYear = "2019-20"
+  private val nino          = "AA123456A"
+  private val taxYear       = "2019-20"
   private val correlationId = "X-123"
 
   def event(auditResponse: AuditResponse): AuditEvent[DeductionsAuditDetail] =
@@ -78,7 +78,7 @@ class DeleteOtherDeductionsControllerSpec
       )
     )
 
-  private val rawData = DeleteOtherDeductionsRawData(nino, taxYear)
+  private val rawData     = DeleteOtherDeductionsRawData(nino, taxYear)
   private val requestData = DeleteOtherDeductionsRequest(Nino(nino), taxYear)
 
   "handleRequest" should {
@@ -166,4 +166,5 @@ class DeleteOtherDeductionsControllerSpec
       }
     }
   }
+
 }

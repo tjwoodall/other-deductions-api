@@ -36,5 +36,7 @@ trait MockRetrieveOtherDeductionsConnector extends MockFactory {
         .retrieve(_: RetrieveOtherDeductionsRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
         .expects(requestData, *, *, *)
     }
+
   }
+
 }

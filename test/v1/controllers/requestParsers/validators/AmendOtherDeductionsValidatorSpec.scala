@@ -27,8 +27,9 @@ import v1.models.request.amendOtherDeductions.AmendOtherDeductionsRawData
 
 class AmendOtherDeductionsValidatorSpec extends UnitSpec {
 
-  private val validNino = "AA123456A"
+  private val validNino    = "AA123456A"
   private val validTaxYear = "2021-22"
+
   private val requestBodyJson = Json.parse(
     """
       |{
@@ -91,11 +92,11 @@ class AmendOtherDeductionsValidatorSpec extends UnitSpec {
 
   class Test extends MockCurrentTaxYear with MockAppConfig {
 
-      implicit val appConfig: AppConfig = mockAppConfig
-      implicit val currentTaxYear: CurrentTaxYear = mockCurrentTaxYear
+    implicit val appConfig: AppConfig           = mockAppConfig
+    implicit val currentTaxYear: CurrentTaxYear = mockCurrentTaxYear
 
-      MockAppConfig.minimumPermittedTaxYear
-        .returns(2022)
+    MockAppConfig.minimumPermittedTaxYear
+      .returns(2022)
 
     val validator = new AmendOtherDeductionsValidator
 
@@ -301,5 +302,7 @@ class AmendOtherDeductionsValidatorSpec extends UnitSpec {
         }
       }
     }
+
   }
+
 }

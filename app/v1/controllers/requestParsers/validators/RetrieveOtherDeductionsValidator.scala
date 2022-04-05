@@ -22,8 +22,7 @@ import v1.controllers.requestParsers.validators.validations._
 import v1.models.errors.MtdError
 import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRawData
 
-class RetrieveOtherDeductionsValidator @Inject()(implicit appConfig: AppConfig)
-  extends Validator[RetrieveOtherDeductionsRawData] {
+class RetrieveOtherDeductionsValidator @Inject() (implicit appConfig: AppConfig) extends Validator[RetrieveOtherDeductionsRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
 

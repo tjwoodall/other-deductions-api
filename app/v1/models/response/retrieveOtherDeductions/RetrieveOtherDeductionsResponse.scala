@@ -27,6 +27,7 @@ object RetrieveOtherDeductionsResponse extends HateoasLinks {
   implicit val format: OFormat[RetrieveOtherDeductionsResponse] = Json.format[RetrieveOtherDeductionsResponse]
 
   implicit object RetrieveOtherLinksFactory extends HateoasLinksFactory[RetrieveOtherDeductionsResponse, RetrieveOtherDeductionsHateoasData] {
+
     override def links(appConfig: AppConfig, data: RetrieveOtherDeductionsHateoasData): Seq[Link] = {
       import data._
       Seq(
@@ -35,7 +36,9 @@ object RetrieveOtherDeductionsResponse extends HateoasLinks {
         deleteOtherDeductions(appConfig, nino, taxYear)
       )
     }
+
   }
+
 }
 
 case class RetrieveOtherDeductionsHateoasData(nino: String, taxYear: String) extends HateoasData

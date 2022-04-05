@@ -20,12 +20,11 @@ import play.api.libs.json.Json
 import support.UnitSpec
 
 class SeafarersSpec extends UnitSpec {
-  val seafarers = Seafarers(Some("myRef"), 2000.99, "Blue Bell",  "2018-04-06", "2019-04-06")
+  val seafarers = Seafarers(Some("myRef"), 2000.99, "Blue Bell", "2018-04-06", "2019-04-06")
 
   val noRefSeafares = Seafarers(None, 2000.99, "Blue Bell", "2018-04-06", "2019-04-06")
 
-  val json = Json.parse(
-    """
+  val json = Json.parse("""
       |{
       |   "customerReference": "myRef",
       |   "amountDeducted": 2000.99,
@@ -34,8 +33,7 @@ class SeafarersSpec extends UnitSpec {
       |   "toDate": "2019-04-06"
       |}""".stripMargin)
 
-  val noRefJson = Json.parse(
-    """
+  val noRefJson = Json.parse("""
       |{
       |   "amountDeducted": 2000.99,
       |   "nameOfShip": "Blue Bell",
@@ -50,6 +48,7 @@ class SeafarersSpec extends UnitSpec {
       }
     }
   }
+
   "reads from a JSON with no reference" when {
     "passed a JSON with no customer reference" should {
       "return a model with no customer reference " in {
@@ -57,6 +56,7 @@ class SeafarersSpec extends UnitSpec {
       }
     }
   }
+
   "writes" when {
     "passed valid model" should {
       "return valid JSON" in {
@@ -64,6 +64,7 @@ class SeafarersSpec extends UnitSpec {
       }
     }
   }
+
   "writes from a model with no reference" when {
     "passed a model with no customer reference" should {
       "return a JSON with no customer reference" in {
@@ -71,4 +72,5 @@ class SeafarersSpec extends UnitSpec {
       }
     }
   }
+
 }

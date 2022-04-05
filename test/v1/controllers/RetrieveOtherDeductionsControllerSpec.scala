@@ -35,7 +35,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class RetrieveOtherDeductionsControllerSpec
-  extends ControllerBaseSpec
+    extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockRetrieveOtherDeductionsService
@@ -62,24 +62,26 @@ class RetrieveOtherDeductionsControllerSpec
     MockIdGenerator.generateCorrelationId.returns(correlationId)
   }
 
-  private val nino = "AA123456A"
-  private val taxYear = "2019-20"
+  private val nino          = "AA123456A"
+  private val taxYear       = "2019-20"
   private val correlationId = "X-123"
 
-  private val rawData = RetrieveOtherDeductionsRawData(nino, taxYear)
+  private val rawData     = RetrieveOtherDeductionsRawData(nino, taxYear)
   private val requestData = RetrieveOtherDeductionsRequest(Nino(nino), taxYear)
 
   private val testHateoasLink = Link(href = s"/individuals/deductions/other/{nino}/{taxYear}", method = GET, rel = "self")
 
   private val responseBody = RetrieveOtherDeductionsResponse(
     "2019-04-04T01:01:01Z",
-    Some(Seq(Seafarers(
-      Some("myRef"),
-      2000.99,
-      "Blue Bell",
-      "2018-04-06",
-      "2019-04-06"
-    )))
+    Some(
+      Seq(
+        Seafarers(
+          Some("myRef"),
+          2000.99,
+          "Blue Bell",
+          "2018-04-06",
+          "2019-04-06"
+        )))
   )
 
   "handleRequest" should {
@@ -112,7 +114,7 @@ class RetrieveOtherDeductionsControllerSpec
               .parse(rawData)
               .returns(Left(ErrorWrapper(correlationId, error, None)))
 
-            val result: Future[Result] = controller.handleRequest(nino,taxYear)(fakeRequest)
+            val result: Future[Result] = controller.handleRequest(nino, taxYear)(fakeRequest)
 
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(error)
@@ -160,4 +162,5 @@ class RetrieveOtherDeductionsControllerSpec
       }
     }
   }
+
 }

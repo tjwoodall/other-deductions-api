@@ -21,44 +21,48 @@ import support.UnitSpec
 import v1.models.utils.JsonErrorValidators
 
 class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
-  val amendOtherDeductionsBody = AmendOtherDeductionsBody(Some(Seq(
-    Seafarers(
-      Some("myRef"),
-      2000.99,
-      "Blue Bell",
-      "2018-04-06",
-      "2019-04-06"
-    )))
-  )
-  val multipleSeafarersAmendOtherDeductionsBody = AmendOtherDeductionsBody(Some(Seq(
-    Seafarers(
-      Some("myRef"),
-      2000.99,
-      "Blue Bell",
-      "2018-04-06",
-      "2019-04-06"
-    ),
-    Seafarers(
-      Some("myRef"),
-      2000.99,
-      "Blue Bell",
-      "2018-04-06",
-      "2019-04-06"
-    )))
-  )
 
-  val noRefAmendOtherDeductionsBody = AmendOtherDeductionsBody(Some(Seq(
-    Seafarers(
-      None,
-      2000.99,
-      "Blue Bell",
-      "2018-04-06",
-      "2019-04-06"
-    )))
-  )
+  val amendOtherDeductionsBody = AmendOtherDeductionsBody(
+    Some(
+      Seq(
+        Seafarers(
+          Some("myRef"),
+          2000.99,
+          "Blue Bell",
+          "2018-04-06",
+          "2019-04-06"
+        ))))
 
-  val json = Json.parse(
-    """{
+  val multipleSeafarersAmendOtherDeductionsBody = AmendOtherDeductionsBody(
+    Some(
+      Seq(
+        Seafarers(
+          Some("myRef"),
+          2000.99,
+          "Blue Bell",
+          "2018-04-06",
+          "2019-04-06"
+        ),
+        Seafarers(
+          Some("myRef"),
+          2000.99,
+          "Blue Bell",
+          "2018-04-06",
+          "2019-04-06"
+        ))))
+
+  val noRefAmendOtherDeductionsBody = AmendOtherDeductionsBody(
+    Some(
+      Seq(
+        Seafarers(
+          None,
+          2000.99,
+          "Blue Bell",
+          "2018-04-06",
+          "2019-04-06"
+        ))))
+
+  val json = Json.parse("""{
       | "seafarers": [{
       |   "customerReference": "myRef",
       |   "amountDeducted": 2000.99,
@@ -68,8 +72,7 @@ class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
       |   }]
       |}""".stripMargin)
 
-  val jsonMultipleSeafarers = Json.parse(
-    """{
+  val jsonMultipleSeafarers = Json.parse("""{
       | "seafarers": [{
       |   "customerReference": "myRef",
       |   "amountDeducted": 2000.99,
@@ -87,8 +90,7 @@ class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
       |   ]
       |}""".stripMargin)
 
-  val jsonNoRef = Json.parse(
-    """{
+  val jsonNoRef = Json.parse("""{
       | "seafarers": [{
       |   "amountDeducted": 2000.99,
       |   "nameOfShip": "Blue Bell",
@@ -114,6 +116,7 @@ class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
       }
     }
   }
+
   "writes" when {
     "passed valid model" should {
       "return valid JSON" in {
@@ -131,4 +134,5 @@ class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
       }
     }
   }
+
 }

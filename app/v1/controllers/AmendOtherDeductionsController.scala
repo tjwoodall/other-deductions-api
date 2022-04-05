@@ -37,22 +37,23 @@ import v1.services.{AmendOtherDeductionsService, AuditService, EnrolmentsAuthSer
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendOtherDeductionsController @Inject()(val authService: EnrolmentsAuthService,
-                                               val lookupService: MtdIdLookupService,
-                                               parser: AmendOtherDeductionsRequestParser,
-                                               service: AmendOtherDeductionsService,
-                                               auditService: AuditService,
-                                               hateoasFactory: HateoasFactory,
-                                               cc: ControllerComponents,
-                                               idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-  extends AuthorisedController(cc) with BaseController with Logging {
+class AmendOtherDeductionsController @Inject() (val authService: EnrolmentsAuthService,
+                                                val lookupService: MtdIdLookupService,
+                                                parser: AmendOtherDeductionsRequestParser,
+                                                service: AmendOtherDeductionsService,
+                                                auditService: AuditService,
+                                                hateoasFactory: HateoasFactory,
+                                                cc: ControllerComponents,
+                                                idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+    extends AuthorisedController(cc)
+    with BaseController
+    with Logging {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "AmendOtherDeductionsController", endpointName = "amendOtherDeductions")
 
   def handleRequest(nino: String, taxYear: String): Action[JsValue] =
     authorisedAction(nino).async(parse.json) { implicit request =>
-
       implicit val correlationId: String = idGenerator.generateCorrelationId
       logger.info(
         s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] " +
@@ -61,7 +62,7 @@ class AmendOtherDeductionsController @Inject()(val authService: EnrolmentsAuthSe
       val rawData = AmendOtherDeductionsRawData(nino, taxYear, request.body)
       val result =
         for {
-          parsedRequest <- EitherT.fromEither[Future](parser.parseRequest(rawData))
+          parsedRequest   <- EitherT.fromEither[Future](parser.parseRequest(rawData))
           serviceResponse <- EitherT(service.amend(parsedRequest))
           vendorResponse <- EitherT.fromEither[Future](
             hateoasFactory.wrap(serviceResponse.responseData, AmendOtherDeductionsHateoasData(nino, taxYear)).asRight[ErrorWrapper])
@@ -86,7 +87,7 @@ class AmendOtherDeductionsController @Inject()(val authService: EnrolmentsAuthSe
 
       result.leftMap { errorWrapper =>
         val resCorrelationId = errorWrapper.correlationId
-        val result = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
+        val result           = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
         logger.warn(
           s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
             s"Error response received with CorrelationId: $resCorrelationId")
@@ -108,25 +109,17 @@ class AmendOtherDeductionsController @Inject()(val authService: EnrolmentsAuthSe
   private def errorResult(errorWrapper: ErrorWrapper) = {
 
     errorWrapper.error match {
-      case NinoFormatError |
-           TaxYearFormatError |
-           BadRequestError |
-           RuleTaxYearRangeInvalidError |
-           RuleIncorrectOrEmptyBodyError |
-           RuleTaxYearNotSupportedError |
-           MtdErrorWithCustomMessage(ValueFormatError.code) |
-           MtdErrorWithCustomMessage(NameOfShipFormatError.code) |
-           MtdErrorWithCustomMessage(CustomerReferenceFormatError.code) |
-           MtdErrorWithCustomMessage(DateFormatError.code) |
-           MtdErrorWithCustomMessage(RangeToDateBeforeFromDateError.code) => BadRequest(Json.toJson(errorWrapper))
+      case NinoFormatError | TaxYearFormatError | BadRequestError | RuleTaxYearRangeInvalidError | RuleIncorrectOrEmptyBodyError |
+          RuleTaxYearNotSupportedError | MtdErrorWithCustomMessage(ValueFormatError.code) | MtdErrorWithCustomMessage(NameOfShipFormatError.code) |
+          MtdErrorWithCustomMessage(CustomerReferenceFormatError.code) | MtdErrorWithCustomMessage(DateFormatError.code) | MtdErrorWithCustomMessage(
+            RangeToDateBeforeFromDateError.code) =>
+        BadRequest(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
-      case _ => unhandledError(errorWrapper)
+      case _               => unhandledError(errorWrapper)
     }
   }
 
-  private def auditSubmission(details: DeductionsAuditDetail)
-                             (implicit hc: HeaderCarrier,
-                              ec: ExecutionContext): Future[AuditResult] = {
+  private def auditSubmission(details: DeductionsAuditDetail)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
 
     val event = AuditEvent(
       auditType = "CreateAmendOtherDeductions",
@@ -136,4 +129,5 @@ class AmendOtherDeductionsController @Inject()(val authService: EnrolmentsAuthSe
 
     auditService.auditEvent(event)
   }
+
 }

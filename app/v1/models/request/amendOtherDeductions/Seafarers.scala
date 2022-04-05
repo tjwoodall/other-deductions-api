@@ -18,8 +18,7 @@ package v1.models.request.amendOtherDeductions
 
 import play.api.libs.json.{Json, OFormat}
 
-case class Seafarers(customerReference: Option[String], amountDeducted: BigDecimal,
-                     nameOfShip: String, fromDate: String, toDate: String)
+case class Seafarers(customerReference: Option[String], amountDeducted: BigDecimal, nameOfShip: String, fromDate: String, toDate: String)
 
 object Seafarers {
   implicit val format: OFormat[Seafarers] = Json.format[Seafarers]

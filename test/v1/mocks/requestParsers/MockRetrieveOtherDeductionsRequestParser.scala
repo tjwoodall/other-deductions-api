@@ -22,14 +22,16 @@ import v1.controllers.requestParsers.RetrieveOtherDeductionsRequestParser
 import v1.models.errors.ErrorWrapper
 import v1.models.request.retrieveOtherDeductions.{RetrieveOtherDeductionsRawData, RetrieveOtherDeductionsRequest}
 
-
 trait MockRetrieveOtherDeductionsRequestParser extends MockFactory {
 
   val mockRetrieveOtherDeductionsRequestParser: RetrieveOtherDeductionsRequestParser = mock[RetrieveOtherDeductionsRequestParser]
 
   object MockRetrieveOtherDeductionsRequestParser {
+
     def parse(data: RetrieveOtherDeductionsRawData): CallHandler[Either[ErrorWrapper, RetrieveOtherDeductionsRequest]] = {
       (mockRetrieveOtherDeductionsRequestParser.parseRequest(_: RetrieveOtherDeductionsRawData)(_: String)).expects(data, *)
     }
+
   }
+
 }

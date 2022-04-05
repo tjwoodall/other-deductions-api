@@ -21,11 +21,11 @@ import v1.models.errors.ValueFormatError
 
 class AmountValidationSpec extends UnitSpec {
 
-  val validAmount = 2000.99
-  val invalidAmountMin = -10
-  val invalidAmountMax = 100000000000.00
+  val validAmount           = 2000.99
+  val invalidAmountMin      = -10
+  val invalidAmountMax      = 100000000000.00
   val invalidAmountDecimals = 42102.39142
-  val path = "/seafarers/1/amountDeducted"
+  val path                  = "/seafarers/1/amountDeducted"
 
   "validate" should {
     "return no errors" when {

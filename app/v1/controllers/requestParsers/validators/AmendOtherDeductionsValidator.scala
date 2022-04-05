@@ -22,10 +22,10 @@ import v1.controllers.requestParsers.validators.validations._
 import v1.models.errors.{MtdError, RuleIncorrectOrEmptyBodyError}
 import v1.models.request.amendOtherDeductions.{AmendOtherDeductionsBody, AmendOtherDeductionsRawData, Seafarers}
 
-class AmendOtherDeductionsValidator @Inject()(implicit appConfig: AppConfig)
-  extends Validator[AmendOtherDeductionsRawData] {
+class AmendOtherDeductionsValidator @Inject() (implicit appConfig: AppConfig) extends Validator[AmendOtherDeductionsRawData] {
 
-  private val validationSet = List(parameterFormatValidation, parameterRuleValidation, bodyFormatValidation, bodyFieldFormatValidation, dateRangeValidation)
+  private val validationSet =
+    List(parameterFormatValidation, parameterRuleValidation, bodyFormatValidation, bodyFieldFormatValidation, dateRangeValidation)
 
   private def parameterFormatValidation: AmendOtherDeductionsRawData => List[List[MtdError]] = (data: AmendOtherDeductionsRawData) => {
     List(
@@ -49,13 +49,14 @@ class AmendOtherDeductionsValidator @Inject()(implicit appConfig: AppConfig)
   private def bodyFieldFormatValidation: AmendOtherDeductionsRawData => List[List[MtdError]] = { data =>
     val body = data.body.as[AmendOtherDeductionsBody]
 
-    List(flattenErrors(
-      List(
-        body.seafarers.map(_.zipWithIndex.flatMap {
-          case (item, i) => validateSeafarers(item, i)
-        })
-      ).map(_.getOrElse(NoValidationErrors).toList)
-    ))
+    List(
+      flattenErrors(
+        List(
+          body.seafarers.map(_.zipWithIndex.flatMap { case (item, i) =>
+            validateSeafarers(item, i)
+          })
+        ).map(_.getOrElse(NoValidationErrors).toList)
+      ))
   }
 
   private def validateSeafarers(seafarers: Seafarers, arrayIndex: Int): List[MtdError] = {
@@ -86,13 +87,14 @@ class AmendOtherDeductionsValidator @Inject()(implicit appConfig: AppConfig)
   private def dateRangeValidation: AmendOtherDeductionsRawData => List[List[MtdError]] = { data =>
     val body = data.body.as[AmendOtherDeductionsBody]
 
-    List(flattenErrors(
-      List(
-        body.seafarers.map(_.zipWithIndex.flatMap {
-          case (item, i) => validateToDateBeforeFromDate(item, i)
-        })
-      ).map(_.getOrElse(NoValidationErrors).toList)
-    ))
+    List(
+      flattenErrors(
+        List(
+          body.seafarers.map(_.zipWithIndex.flatMap { case (item, i) =>
+            validateToDateBeforeFromDate(item, i)
+          })
+        ).map(_.getOrElse(NoValidationErrors).toList)
+      ))
   }
 
   private def validateToDateBeforeFromDate(seafarers: Seafarers, arrayIndex: Int): List[MtdError] = {
@@ -109,4 +111,5 @@ class AmendOtherDeductionsValidator @Inject()(implicit appConfig: AppConfig)
   override def validate(data: AmendOtherDeductionsRawData): List[MtdError] = {
     run(validationSet, data).distinct
   }
+
 }

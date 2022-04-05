@@ -30,13 +30,15 @@ import v1.support.IfsResponseMappingSupport
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteOtherDeductionsService @Inject()(DeleteOtherDeductionsConnector: DeleteOtherDeductionsConnector) extends IfsResponseMappingSupport with Logging {
+class DeleteOtherDeductionsService @Inject() (DeleteOtherDeductionsConnector: DeleteOtherDeductionsConnector)
+    extends IfsResponseMappingSupport
+    with Logging {
 
-  def delete(request: DeleteOtherDeductionsRequest)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    logContext: EndpointLogContext,
-    correlationId: String): Future[DeleteOtherDeductionsServiceOutcome] = {
+  def delete(request: DeleteOtherDeductionsRequest)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      logContext: EndpointLogContext,
+      correlationId: String): Future[DeleteOtherDeductionsServiceOutcome] = {
 
     val result = for {
       ifsResponseWrapper <- EitherT(DeleteOtherDeductionsConnector.delete(request)).leftMap(mapIfsErrors(ifsErrorMap))
@@ -48,9 +50,10 @@ class DeleteOtherDeductionsService @Inject()(DeleteOtherDeductionsConnector: Del
   private def ifsErrorMap =
     Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-      "INVALID_TAX_YEAR" -> TaxYearFormatError,
-      "NO_DATA_FOUND" -> NotFoundError,
-      "SERVER_ERROR" -> DownstreamError,
-      "SERVICE_UNAVAILABLE" -> DownstreamError
+      "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+      "NO_DATA_FOUND"             -> NotFoundError,
+      "SERVER_ERROR"              -> DownstreamError,
+      "SERVICE_UNAVAILABLE"       -> DownstreamError
     )
+
 }

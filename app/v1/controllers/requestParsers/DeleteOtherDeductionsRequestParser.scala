@@ -21,8 +21,8 @@ import v1.models.domain.Nino
 import v1.controllers.requestParsers.validators.DeleteOtherDeductionsValidator
 import v1.models.request.deleteOtherDeductions.{DeleteOtherDeductionsRawData, DeleteOtherDeductionsRequest}
 
-class DeleteOtherDeductionsRequestParser @Inject()(val validator: DeleteOtherDeductionsValidator)
-  extends RequestParser[DeleteOtherDeductionsRawData, DeleteOtherDeductionsRequest] {
+class DeleteOtherDeductionsRequestParser @Inject() (val validator: DeleteOtherDeductionsValidator)
+    extends RequestParser[DeleteOtherDeductionsRawData, DeleteOtherDeductionsRequest] {
 
   override protected def requestFor(data: DeleteOtherDeductionsRawData): DeleteOtherDeductionsRequest =
     DeleteOtherDeductionsRequest(Nino(data.nino), data.taxYear)

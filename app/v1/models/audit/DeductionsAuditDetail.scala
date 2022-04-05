@@ -36,7 +36,7 @@ object DeductionsAuditDetail {
       (JsPath \ "request").writeNullable[JsValue] and
       (JsPath \ "X-CorrelationId").write[String] and
       (JsPath \ "response").write[AuditResponse]
-    ) (unlift(DeductionsAuditDetail.unapply))
+  )(unlift(DeductionsAuditDetail.unapply))
 
   def apply(userDetails: UserDetails,
             params: Map[String, String],
@@ -53,4 +53,5 @@ object DeductionsAuditDetail {
       auditResponse = auditResponse
     )
   }
+
 }

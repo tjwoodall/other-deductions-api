@@ -21,9 +21,9 @@ import v1.models.errors.DateFormatError
 
 class DateValidationSpec extends UnitSpec {
 
-  val validDate = "2019-02-18"
+  val validDate   = "2019-02-18"
   val invalidDate = "01-10-2039"
-  val path  = "/seafarers/2/fromDate"
+  val path        = "/seafarers/2/fromDate"
 
   "validate" should {
     "return no errors" when {
