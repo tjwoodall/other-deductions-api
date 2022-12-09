@@ -32,10 +32,13 @@ object MtdErrorWithCustomMessage {
   def unapply(arg: MtdError): Option[String] = Some(arg.code)
 }
 
-object ValueFormatError             extends MtdError("FORMAT_VALUE", "The field should be between 0 and 99999999999.99")
-object NameOfShipFormatError        extends MtdError("FORMAT_NAME_OF_SHIP", "The provided name of ship is not valid")
+object ValueFormatError extends MtdError("FORMAT_VALUE", "The field should be between 0 and 99999999999.99")
+
+object NameOfShipFormatError extends MtdError("FORMAT_NAME_OF_SHIP", "The provided name of ship is not valid")
+
 object CustomerReferenceFormatError extends MtdError("FORMAT_CUSTOMER_REFERENCE", "The provided customer reference is not valid")
-object DateFormatError              extends MtdError("FORMAT_DATE", "The field should be in the format YYYY-MM-DD")
+
+object DateFormatError extends MtdError("FORMAT_DATE", "The field should be in the format YYYY-MM-DD")
 
 object RangeToDateBeforeFromDateError extends MtdError("RANGE_TO_DATE_BEFORE_FROM_DATE", "The To date is before the From date")
 
@@ -53,7 +56,9 @@ object TaxYearFormatError
 
 // Rule Errors
 object RuleTaxYearNotSupportedError
-    extends MtdError("RULE_TAX_YEAR_NOT_SUPPORTED", "Tax year not supported, because it precedes the earliest allowable tax year")
+    extends MtdError(
+      "RULE_TAX_YEAR_NOT_SUPPORTED",
+      "The specified tax year is not supported. That is, the tax year specified is before the minimum tax year value")
 
 object RuleIncorrectOrEmptyBodyError extends MtdError("RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED", "An empty or non-matching body was submitted")
 
