@@ -25,13 +25,13 @@ import v1.connectors.DeleteOtherDeductionsConnector
 import v1.controllers.EndpointLogContext
 import v1.models.errors.{DownstreamError, NinoFormatError, NotFoundError, TaxYearFormatError}
 import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequest
-import v1.support.IfsResponseMappingSupport
+import v1.support.DownstreamResponseMappingSupport
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class DeleteOtherDeductionsService @Inject() (DeleteOtherDeductionsConnector: DeleteOtherDeductionsConnector)
-    extends IfsResponseMappingSupport
+    extends DownstreamResponseMappingSupport
     with Logging {
 
   def delete(request: DeleteOtherDeductionsRequest)(implicit
@@ -41,8 +41,8 @@ class DeleteOtherDeductionsService @Inject() (DeleteOtherDeductionsConnector: De
       correlationId: String): Future[DeleteOtherDeductionsServiceOutcome] = {
 
     val result = for {
-      ifsResponseWrapper <- EitherT(DeleteOtherDeductionsConnector.delete(request)).leftMap(mapIfsErrors(ifsErrorMap))
-    } yield ifsResponseWrapper
+      downstreamResponseWrapper <- EitherT(DeleteOtherDeductionsConnector.delete(request)).leftMap(mapDownstreamErrors(ifsErrorMap))
+    } yield downstreamResponseWrapper
 
     result.value
   }

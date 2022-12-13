@@ -25,12 +25,12 @@ import v1.connectors.RetrieveOtherDeductionsConnector
 import v1.controllers.EndpointLogContext
 import v1.models.errors.{DownstreamError, NinoFormatError, NotFoundError, TaxYearFormatError}
 import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequest
-import v1.support.IfsResponseMappingSupport
+import v1.support.DownstreamResponseMappingSupport
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrieveOtherDeductionsService @Inject() (connector: RetrieveOtherDeductionsConnector) extends IfsResponseMappingSupport with Logging {
+class RetrieveOtherDeductionsService @Inject() (connector: RetrieveOtherDeductionsConnector) extends DownstreamResponseMappingSupport with Logging {
 
   def retrieve(request: RetrieveOtherDeductionsRequest)(implicit
       hc: HeaderCarrier,
@@ -39,8 +39,8 @@ class RetrieveOtherDeductionsService @Inject() (connector: RetrieveOtherDeductio
       correlationId: String): Future[RetrieveOtherDeductionsServiceOutcome] = {
 
     val result = for {
-      ifsResponseWrapper <- EitherT(connector.retrieve(request)).leftMap(mapIfsErrors(ifsErrorMap))
-    } yield ifsResponseWrapper
+      downstreamResponseWrapper <- EitherT(connector.retrieve(request)).leftMap(mapDownstreamErrors(ifsErrorMap))
+    } yield downstreamResponseWrapper
 
     result.value
   }

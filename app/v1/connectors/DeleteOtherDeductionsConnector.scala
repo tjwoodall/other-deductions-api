@@ -16,11 +16,13 @@
 
 package v1.connectors
 
+import api.connectors.DownstreamUri.IfsUri
 import config.AppConfig
+
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpClient
-import v1.connectors.httpparsers.StandardIfsHttpParser._
+import v1.connectors.httpparsers.StandardDownstreamHttpParser._
 import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequest
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class DeleteOtherDeductionsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def delete(
-      request: DeleteOtherDeductionsRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[IfsOutcome[Unit]] = {
+      request: DeleteOtherDeductionsRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
     delete(
       IfsUri[Unit](s"income-tax/deductions/${request.nino.nino}/${request.taxYear}")

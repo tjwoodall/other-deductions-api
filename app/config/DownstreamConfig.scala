@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-package v1
+package config
 
-import api.models.errors.DownstreamError
-import v1.models.errors.MtdError
-import v1.models.outcomes.ResponseWrapper
-
-package object connectors {
-
-  type MtdIdLookupOutcome = Either[MtdError, String]
-
-  type DownstreamOutcome[A] = Either[ResponseWrapper[DownstreamError], ResponseWrapper[A]]
-
-}
+case class DownstreamConfig(
+                             baseUrl: String,
+                             env: String,
+                             token: String,
+                             environmentHeaders: Option[Seq[String]]
+                           )

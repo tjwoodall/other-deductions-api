@@ -16,11 +16,12 @@
 
 package v1.services
 
+import api.models.errors.{DownstreamErrorCode, DownstreamErrors}
 import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockRetrieveOtherDeductionsConnector
-import v1.models.errors.{IfsErrorCode, IfsErrors, DownstreamError, ErrorWrapper, MtdError, NinoFormatError, NotFoundError, TaxYearFormatError}
+import v1.models.errors.{DownstreamError, ErrorWrapper, MtdError, NinoFormatError, NotFoundError, TaxYearFormatError}
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequest
 import v1.models.response.retrieveOtherDeductions.{RetrieveOtherDeductionsResponse, Seafarers}
@@ -64,7 +65,7 @@ class RetrieveOtherDeductionsServiceSpec extends ServiceSpec {
 
           MockRetrieveOtherDeductionsConnector
             .retrieve(requestData)
-            .returns(Future.successful(Left(ResponseWrapper(correlationId, IfsErrors.single(IfsErrorCode(ifsErrorCode))))))
+            .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(ifsErrorCode))))))
 
           await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
         }

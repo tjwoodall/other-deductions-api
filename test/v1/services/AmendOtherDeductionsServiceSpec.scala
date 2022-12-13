@@ -16,6 +16,7 @@
 
 package v1.services
 
+import api.models.errors.{DownstreamErrorCode, DownstreamErrors}
 import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.controllers.EndpointLogContext
@@ -75,7 +76,7 @@ class AmendOtherDeductionsServiceSpec extends ServiceSpec {
 
           MockAmendOtherDeductionsConnector
             .amend(requestData)
-            .returns(Future.successful(Left(ResponseWrapper(correlationId, IfsErrors.single(IfsErrorCode(ifsErrorCode))))))
+            .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(ifsErrorCode))))))
 
           await(service.amend(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
         }

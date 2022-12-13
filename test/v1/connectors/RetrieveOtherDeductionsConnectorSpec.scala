@@ -47,7 +47,7 @@ class RetrieveOtherDeductionsConnectorSpec extends ConnectorSpec {
         MockedHttpClient
           .get(
             url = s"$baseUrl/income-tax/deductions/$nino/$taxYear",
-            config = dummyIfsHeaderCarrierConfig,
+            config = dummyHeaderCarrierConfig,
             requiredHeaders = requiredIfsHeaders,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
           )

@@ -46,7 +46,7 @@ class DeleteOtherDeductionsConnectorSpec extends ConnectorSpec {
         MockedHttpClient
           .delete(
             url = s"$baseUrl/income-tax/deductions/$nino/$taxYear",
-            config = dummyIfsHeaderCarrierConfig,
+            config = dummyHeaderCarrierConfig,
             requiredHeaders = requiredIfsHeaders,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
           )

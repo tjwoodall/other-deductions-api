@@ -62,7 +62,7 @@ class AmendOtherDeductionsConnectorSpec extends ConnectorSpec {
       MockedHttpClient
         .put(
           url = s"$baseUrl/income-tax/deductions/$nino/$taxYear",
-          config = dummyIfsHeaderCarrierConfig,
+          config = dummyHeaderCarrierConfig,
           body = body,
           requiredHeaders = requiredIfsHeadersPut,
           excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")

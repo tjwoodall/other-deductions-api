@@ -16,6 +16,7 @@
 
 package v1.services
 
+import api.models.errors.{DownstreamErrorCode, DownstreamErrors}
 import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.controllers.EndpointLogContext
@@ -62,7 +63,7 @@ class DeleteOtherDeductionsServiceSpec extends ServiceSpec {
 
             MockDeleteOtherDeductionsConnector
               .delete(request)
-              .returns(Future.successful(Left(ResponseWrapper(correlationId, IfsErrors.single(IfsErrorCode(ifsErrorCode))))))
+              .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(ifsErrorCode))))))
 
             await(service.delete(request)) shouldBe Left(ErrorWrapper(correlationId, error))
           }

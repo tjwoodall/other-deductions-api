@@ -104,4 +104,25 @@ class ErrorWrapperSpec extends UnitSpec {
     }
   }
 
+  "When ErrorWrapper has several errors, containsAnyOf" should {
+    val errorWrapper = ErrorWrapper("correlationId", BadRequestError, Some(List(NinoFormatError, TaxYearFormatError, ServiceUnavailableError)))
+
+    "return false" when {
+      "given no matching errors" in {
+        val result = errorWrapper.containsAnyOf(TaxYearFormatError, ServiceUnavailableError)
+        result shouldBe false
+      }
+      "given a matching error in 'errors' but not the single 'error' which should be a BadRequestError" in {
+        val result = errorWrapper.containsAnyOf(NinoFormatError, TaxYearFormatError, ServiceUnavailableError)
+        result shouldBe false
+      }
+    }
+    "return true" when {
+      "given the 'single' BadRequestError" in {
+        val result = errorWrapper.containsAnyOf(NinoFormatError, BadRequestError, TaxYearFormatError, ServiceUnavailableError)
+        result shouldBe true
+      }
+    }
+  }
+
 }

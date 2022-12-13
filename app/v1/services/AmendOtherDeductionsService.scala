@@ -25,12 +25,12 @@ import v1.connectors.AmendOtherDeductionsConnector
 import v1.controllers.EndpointLogContext
 import v1.models.errors._
 import v1.models.request.amendOtherDeductions.AmendOtherDeductionsRequest
-import v1.support.IfsResponseMappingSupport
+import v1.support.DownstreamResponseMappingSupport
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendOtherDeductionsService @Inject() (connector: AmendOtherDeductionsConnector) extends IfsResponseMappingSupport with Logging {
+class AmendOtherDeductionsService @Inject() (connector: AmendOtherDeductionsConnector) extends DownstreamResponseMappingSupport with Logging {
 
   def amend(request: AmendOtherDeductionsRequest)(implicit
       hc: HeaderCarrier,
@@ -39,8 +39,8 @@ class AmendOtherDeductionsService @Inject() (connector: AmendOtherDeductionsConn
       correlationId: String): Future[AmendOtherDeductionsServiceOutcome] = {
 
     val result = for {
-      ifsResponseWrapper <- EitherT(connector.amend(request)).leftMap(mapIfsErrors(ifsErrorMap))
-    } yield ifsResponseWrapper
+      downstreamResponseWrapper <- EitherT(connector.amend(request)).leftMap(mapDownstreamErrors(ifsErrorMap))
+    } yield downstreamResponseWrapper
 
     result.value
   }

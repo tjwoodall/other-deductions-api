@@ -16,6 +16,7 @@
 
 package v1.connectors
 
+import api.connectors.DownstreamUri.IfsUri
 import config.AppConfig
 import mocks.MockAppConfig
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads}
@@ -35,9 +36,10 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
   val url         = "some/url?param=value"
   val absoluteUrl = s"$baseUrl/$url"
 
-  implicit val httpReads: HttpReads[IfsOutcome[Result]] = mock[HttpReads[IfsOutcome[Result]]]
+  implicit val httpReads: HttpReads[DownstreamOutcome[Result]] = mock[HttpReads[DownstreamOutcome[Result]]]
 
-  class Test(ifsEnvironmentHeaders: Option[Seq[String]]) extends MockHttpClient with MockAppConfig {
+
+  class Test(environmentHeaders: Option[Seq[String]]) extends MockHttpClient with MockAppConfig {
 
     val connector: BaseDownstreamConnector = new BaseDownstreamConnector {
       val http: HttpClient     = mockHttpClient
@@ -47,10 +49,12 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
     MockAppConfig.ifsBaseUrl returns baseUrl
     MockAppConfig.ifsToken returns "ifs-token"
     MockAppConfig.ifsEnvironment returns "ifs-environment"
-    MockAppConfig.ifsEnvironmentHeaders returns ifsEnvironmentHeaders
+    MockAppConfig.ifsEnvironmentHeaders returns environmentHeaders
+
   }
 
-  "BaseDownstreamConnector" when {
+
+  "BaseDownstreamConnector for IFS" when {
     val requiredHeaders: Seq[(String, String)] = Seq(
       "Environment"       -> "ifs-environment",
       "Authorization"     -> s"Bearer ifs-token",
@@ -64,7 +68,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
     )
 
     "making a HTTP request to a downstream service (i.e IFS)" must {
-      testHttpMethods(dummyIfsHeaderCarrierConfig, requiredHeaders, excludedHeaders, Some(allowedIfsHeaders))
+      testHttpMethods(dummyHeaderCarrierConfig, requiredHeaders, excludedHeaders, Some(allowedIfsHeaders))
 
       "exclude all `otherHeaders` when no external service header allow-list is found" should {
         val requiredHeaders: Seq[(String, String)] = Seq(
@@ -74,7 +78,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
           "CorrelationId" -> correlationId
         )
 
-        testHttpMethods(dummyIfsHeaderCarrierConfig, requiredHeaders, otherHeaders, None)
+        testHttpMethods(dummyHeaderCarrierConfig, requiredHeaders, otherHeaders, None)
       }
     }
   }

@@ -16,11 +16,15 @@
 
 package v1.connectors
 
+import mocks.MockAppConfig
+import org.scalamock.handlers.CallHandler
+import play.api.Configuration
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
+import v1.mocks.MockHttpClient
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames {
 
@@ -35,7 +39,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
   implicit val hc: HeaderCarrier    = HeaderCarrier(otherHeaders = otherHeaders)
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  val dummyIfsHeaderCarrierConfig: HeaderCarrier.Config =
+  val dummyHeaderCarrierConfig: HeaderCarrier.Config =
     HeaderCarrier.Config(
       Seq("^not-test-BaseUrl?$".r),
       Seq.empty[String],
@@ -58,5 +62,74 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
     "X-Request-Timestamp",
     "X-Session-Id"
   )
+
+  val requiredTysIfsHeaders: Seq[(String, String)] = Seq(
+    "Environment"   -> "TYS-IFS-environment",
+    "Authorization" -> s"Bearer TYS-IFS-token",
+    "CorrelationId" -> s"$correlationId"
+  )
+
+  protected trait ConnectorTest extends MockHttpClient with MockAppConfig {
+    protected val baseUrl: String = "http://test-BaseUrl"
+
+    implicit protected val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders)
+
+    protected val requiredHeaders: Seq[(String, String)]
+
+    protected def willGet[T](url: String): CallHandler[Future[T]] = {
+      MockedHttpClient
+        .get(
+          url = url,
+          config = dummyHeaderCarrierConfig,
+          requiredHeaders = requiredHeaders,
+          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+        )
+    }
+
+    protected def willPut[BODY, T](url: String, body: BODY): CallHandler[Future[T]] = {
+      MockedHttpClient
+        .put(
+          url = url,
+          config = dummyHeaderCarrierConfig,
+          body = body,
+          requiredHeaders = requiredHeaders ++ Seq("Content-Type" -> "application/json"),
+          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+        )
+    }
+
+    protected def willDelete[T](url: String): CallHandler[Future[T]] = {
+      MockedHttpClient
+        .delete(
+          url = url,
+          config = dummyHeaderCarrierConfig,
+          requiredHeaders = requiredHeaders,
+          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+        )
+    }
+
+  }
+  protected trait IfsTest extends ConnectorTest {
+
+    protected lazy val requiredHeaders: Seq[(String, String)] = requiredIfsHeaders
+
+    MockAppConfig.ifsBaseUrl returns baseUrl
+    MockAppConfig.ifsToken returns "ifs-token"
+    MockAppConfig.ifsEnvironment returns "ifs-environment"
+    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
+
+    MockAppConfig.featureSwitches returns Configuration("tys-api.enabled" -> false)
+  }
+
+  protected trait TysIfsTest extends ConnectorTest {
+
+    protected lazy val requiredHeaders: Seq[(String, String)] = requiredTysIfsHeaders
+
+    MockAppConfig.tysIfsBaseUrl returns baseUrl
+    MockAppConfig.tysIfsToken returns "TYS-IFS-token"
+    MockAppConfig.tysIfsEnvironment returns "TYS-IFS-environment"
+    MockAppConfig.tysIfsEnvironmentHeaders returns Some(allowedIfsHeaders)
+
+    MockAppConfig.featureSwitches returns Configuration("tys-api.enabled" -> true)
+  }
 
 }
