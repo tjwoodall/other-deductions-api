@@ -37,7 +37,7 @@ class RetrieveOtherDeductionsConnector @Inject() (val http: HttpClient, val appC
       correlationId: String): Future[DownstreamOutcome[RetrieveOtherDeductionsResponse]] = {
 
     get(
-      IfsUri[RetrieveOtherDeductionsResponse](s"income-tax/deductions/${request.nino.nino}/${request.taxYear}")
+      IfsUri[RetrieveOtherDeductionsResponse](s"income-tax/deductions/${request.nino}/${request.taxYear}")
     )
   }
 
