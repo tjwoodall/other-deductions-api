@@ -24,7 +24,7 @@ package object services {
 
   private type ServiceOutcome[A] = Either[ErrorWrapper, ResponseWrapper[A]]
 
-  type AmendOtherDeductionsServiceOutcome = ServiceOutcome[Unit]
+  type CreateAndAmendOtherDeductionsServiceOutcome = ServiceOutcome[Unit]
 
   type DeleteOtherDeductionsServiceOutcome = ServiceOutcome[Unit]
 

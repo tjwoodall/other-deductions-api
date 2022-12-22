@@ -20,34 +20,36 @@ import config.AppConfig
 import javax.inject.Inject
 import v1.controllers.requestParsers.validators.validations._
 import v1.models.errors.{MtdError, RuleIncorrectOrEmptyBodyError}
-import v1.models.request.amendOtherDeductions.{AmendOtherDeductionsBody, AmendOtherDeductionsRawData, Seafarers}
+import v1.models.request.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsBody, CreateAndAmendOtherDeductionsRawData, Seafarers}
 
-class AmendOtherDeductionsValidator @Inject() (implicit appConfig: AppConfig) extends Validator[AmendOtherDeductionsRawData] {
+class CreateAndAmendOtherDeductionsValidator @Inject() (implicit appConfig: AppConfig) extends Validator[CreateAndAmendOtherDeductionsRawData] {
 
   private val validationSet =
     List(parameterFormatValidation, parameterRuleValidation, bodyFormatValidation, bodyFieldFormatValidation, dateRangeValidation)
 
-  private def parameterFormatValidation: AmendOtherDeductionsRawData => List[List[MtdError]] = (data: AmendOtherDeductionsRawData) => {
+  private def parameterFormatValidation: CreateAndAmendOtherDeductionsRawData => List[List[MtdError]] =
+    (data: CreateAndAmendOtherDeductionsRawData) => {
+      List(
+        NinoValidation.validate(data.nino),
+        TaxYearValidation.validate(data.taxYear)
+      )
+    }
+
+  private def parameterRuleValidation: CreateAndAmendOtherDeductionsRawData => List[List[MtdError]] = (data: CreateAndAmendOtherDeductionsRawData) =>
+    {
+      List(
+        MtdTaxYearValidation.validate(data.taxYear)
+      )
+    }
+
+  private def bodyFormatValidation: CreateAndAmendOtherDeductionsRawData => List[List[MtdError]] = { data =>
     List(
-      NinoValidation.validate(data.nino),
-      TaxYearValidation.validate(data.taxYear)
+      JsonFormatValidation.validate[CreateAndAmendOtherDeductionsBody](data.body, RuleIncorrectOrEmptyBodyError)
     )
   }
 
-  private def parameterRuleValidation: AmendOtherDeductionsRawData => List[List[MtdError]] = (data: AmendOtherDeductionsRawData) => {
-    List(
-      MtdTaxYearValidation.validate(data.taxYear)
-    )
-  }
-
-  private def bodyFormatValidation: AmendOtherDeductionsRawData => List[List[MtdError]] = { data =>
-    List(
-      JsonFormatValidation.validate[AmendOtherDeductionsBody](data.body, RuleIncorrectOrEmptyBodyError)
-    )
-  }
-
-  private def bodyFieldFormatValidation: AmendOtherDeductionsRawData => List[List[MtdError]] = { data =>
-    val body = data.body.as[AmendOtherDeductionsBody]
+  private def bodyFieldFormatValidation: CreateAndAmendOtherDeductionsRawData => List[List[MtdError]] = { data =>
+    val body = data.body.as[CreateAndAmendOtherDeductionsBody]
 
     List(
       flattenErrors(
@@ -84,8 +86,8 @@ class AmendOtherDeductionsValidator @Inject() (implicit appConfig: AppConfig) ex
     ).flatten
   }
 
-  private def dateRangeValidation: AmendOtherDeductionsRawData => List[List[MtdError]] = { data =>
-    val body = data.body.as[AmendOtherDeductionsBody]
+  private def dateRangeValidation: CreateAndAmendOtherDeductionsRawData => List[List[MtdError]] = { data =>
+    val body = data.body.as[CreateAndAmendOtherDeductionsBody]
 
     List(
       flattenErrors(
@@ -108,7 +110,7 @@ class AmendOtherDeductionsValidator @Inject() (implicit appConfig: AppConfig) ex
     ).flatten
   }
 
-  override def validate(data: AmendOtherDeductionsRawData): List[MtdError] = {
+  override def validate(data: CreateAndAmendOtherDeductionsRawData): List[MtdError] = {
     run(validationSet, data).distinct
   }
 

@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package v1.models.request.amendOtherDeductions
+package v1.models.request.createAndAmendOtherDeductions
 
-import v1.models.domain.Nino
+import play.api.libs.json.{Json, OFormat}
 
-case class AmendOtherDeductionsRequest(nino: Nino, taxYear: String, body: AmendOtherDeductionsBody)
+case class Seafarers(customerReference: Option[String], amountDeducted: BigDecimal, nameOfShip: String, fromDate: String, toDate: String)
+
+object Seafarers {
+  implicit val format: OFormat[Seafarers] = Json.format[Seafarers]
+}

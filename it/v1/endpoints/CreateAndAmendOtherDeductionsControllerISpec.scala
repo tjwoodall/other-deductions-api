@@ -26,7 +26,7 @@ import support.IntegrationBaseSpec
 import v1.models.errors._
 import v1.stubs.{AuditStub, AuthStub, IfsStub, MtdIdLookupStub}
 
-class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
+class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
@@ -82,7 +82,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.1.0+json"),
           (AUTHORIZATION, "Bearer 123") // some bearer token
-      )
+        )
     }
 
     def errorBody(code: String): String =
@@ -95,7 +95,7 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
   }
 
-  "Calling the amend other deductions endpoint" should {
+  "Calling the create and amend other deductions endpoint" should {
 
     "return a 200 status code" when {
 
@@ -422,4 +422,5 @@ class AmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
       }
     }
   }
+
 }

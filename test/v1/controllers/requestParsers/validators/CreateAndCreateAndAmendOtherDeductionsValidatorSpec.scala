@@ -23,9 +23,9 @@ import support.UnitSpec
 import utils.CurrentTaxYear
 import v1.mocks.MockCurrentTaxYear
 import v1.models.errors._
-import v1.models.request.amendOtherDeductions.AmendOtherDeductionsRawData
+import v1.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRawData
 
-class AmendOtherDeductionsValidatorSpec extends UnitSpec {
+class CreateAndAmendOtherDeductionsValidatorSpec extends UnitSpec {
 
   private val validNino    = "AA123456A"
   private val validTaxYear = "2021-22"
@@ -98,39 +98,41 @@ class AmendOtherDeductionsValidatorSpec extends UnitSpec {
     MockAppConfig.minimumPermittedTaxYear
       .returns(2022)
 
-    val validator = new AmendOtherDeductionsValidator
+    val validator = new CreateAndAmendOtherDeductionsValidator
 
     "running a validation" should {
       "return no errors" when {
         "a valid request is supplied" in {
-          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, requestBodyJson)) shouldBe Nil
+          validator.validate(CreateAndAmendOtherDeductionsRawData(validNino, validTaxYear, requestBodyJson)) shouldBe Nil
         }
         "a valid request is supplied with no customerRef" in {
-          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, requestBodyJsonNoRef)) shouldBe Nil
+          validator.validate(CreateAndAmendOtherDeductionsRawData(validNino, validTaxYear, requestBodyJsonNoRef)) shouldBe Nil
         }
         "a valid request is supplied with multiple objects in the seafarers array" in {
-          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, requestBodyJsonMultiple)) shouldBe Nil
+          validator.validate(CreateAndAmendOtherDeductionsRawData(validNino, validTaxYear, requestBodyJsonMultiple)) shouldBe Nil
         }
       }
 
       "return a path parameter error" when {
         "an invalid nino is supplied" in {
-          validator.validate(AmendOtherDeductionsRawData("AAUH881", validTaxYear, requestBodyJson)) shouldBe List(NinoFormatError)
+          validator.validate(CreateAndAmendOtherDeductionsRawData("AAUH881", validTaxYear, requestBodyJson)) shouldBe List(NinoFormatError)
         }
         "an invalid taxYear is supplied" in {
-          validator.validate(AmendOtherDeductionsRawData(validNino, "20319", requestBodyJson)) shouldBe List(TaxYearFormatError)
+          validator.validate(CreateAndAmendOtherDeductionsRawData(validNino, "20319", requestBodyJson)) shouldBe List(TaxYearFormatError)
         }
         "a taxYear with too long of a range is supplied" in {
-          validator.validate(AmendOtherDeductionsRawData(validNino, "2018-20", requestBodyJson)) shouldBe List(RuleTaxYearRangeInvalidError)
+          validator.validate(CreateAndAmendOtherDeductionsRawData(validNino, "2018-20", requestBodyJson)) shouldBe List(RuleTaxYearRangeInvalidError)
         }
         "all path parameters are invalid" in {
-          validator.validate(AmendOtherDeductionsRawData("AANNAA12", "20319", requestBodyJson)) shouldBe List(NinoFormatError, TaxYearFormatError)
+          validator.validate(CreateAndAmendOtherDeductionsRawData("AANNAA12", "20319", requestBodyJson)) shouldBe List(
+            NinoFormatError,
+            TaxYearFormatError)
         }
       }
 
       "return RuleIncorrectOrEmptyBodyError" when {
         "an empty JSON body is submitted" in {
-          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, emptyJson)) shouldBe Nil
+          validator.validate(CreateAndAmendOtherDeductionsRawData(validNino, validTaxYear, emptyJson)) shouldBe Nil
         }
       }
 
@@ -152,7 +154,7 @@ class AmendOtherDeductionsValidatorSpec extends UnitSpec {
               |""".stripMargin
           )
 
-          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
+          validator.validate(CreateAndAmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
             CustomerReferenceFormatError.copy(paths = Some(Seq("/seafarers/0/customerReference")))
           )
         }
@@ -173,7 +175,7 @@ class AmendOtherDeductionsValidatorSpec extends UnitSpec {
               |""".stripMargin
           )
 
-          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
+          validator.validate(CreateAndAmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
             ValueFormatError.copy(paths = Some(Seq("/seafarers/0/amountDeducted")))
           )
 
@@ -195,7 +197,7 @@ class AmendOtherDeductionsValidatorSpec extends UnitSpec {
               |""".stripMargin
           )
 
-          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
+          validator.validate(CreateAndAmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
             NameOfShipFormatError.copy(paths = Some(Seq("/seafarers/0/nameOfShip")))
           )
 
@@ -217,7 +219,7 @@ class AmendOtherDeductionsValidatorSpec extends UnitSpec {
               |""".stripMargin
           )
 
-          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
+          validator.validate(CreateAndAmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
             DateFormatError.copy(paths = Some(Seq("/seafarers/0/fromDate")))
           )
 
@@ -239,7 +241,7 @@ class AmendOtherDeductionsValidatorSpec extends UnitSpec {
               |""".stripMargin
           )
 
-          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
+          validator.validate(CreateAndAmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
             DateFormatError.copy(paths = Some(Seq("/seafarers/0/toDate")))
           )
 
@@ -261,7 +263,7 @@ class AmendOtherDeductionsValidatorSpec extends UnitSpec {
               |""".stripMargin
           )
 
-          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
+          validator.validate(CreateAndAmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
             RangeToDateBeforeFromDateError.copy(paths = Some(Seq("/seafarers/0/fromDate", "/seafarers/0/toDate")))
           )
 
@@ -293,7 +295,7 @@ class AmendOtherDeductionsValidatorSpec extends UnitSpec {
               |""".stripMargin
           )
 
-          validator.validate(AmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
+          validator.validate(CreateAndAmendOtherDeductionsRawData(validNino, validTaxYear, badJson)) shouldBe List(
             NameOfShipFormatError.copy(paths = Some(Seq("/seafarers/0/nameOfShip", "/seafarers/1/nameOfShip"))),
             CustomerReferenceFormatError.copy(paths = Some(Seq("/seafarers/0/customerReference", "/seafarers/1/customerReference"))),
             ValueFormatError.copy(paths = Some(Seq("/seafarers/0/amountDeducted", "/seafarers/1/amountDeducted"))),

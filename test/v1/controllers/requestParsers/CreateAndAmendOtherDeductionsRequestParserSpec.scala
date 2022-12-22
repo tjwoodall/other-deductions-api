@@ -19,11 +19,16 @@ package v1.controllers.requestParsers
 import play.api.libs.json.Json
 import support.UnitSpec
 import v1.models.domain.Nino
-import v1.mocks.validators.MockAmendOtherDeductionsValidator
+import v1.mocks.validators.MockCreateAndAmendOtherDeductionsValidator
 import v1.models.errors.{BadRequestError, ErrorWrapper, NinoFormatError, TaxYearFormatError}
-import v1.models.request.amendOtherDeductions.{AmendOtherDeductionsBody, AmendOtherDeductionsRawData, AmendOtherDeductionsRequest, Seafarers}
+import v1.models.request.createAndAmendOtherDeductions.{
+  CreateAndAmendOtherDeductionsBody,
+  CreateAndAmendOtherDeductionsRawData,
+  CreateAndAmendOtherDeductionsRequest,
+  Seafarers
+}
 
-class AmendOtherDeductionsRequestParserSpec extends UnitSpec {
+class CreateAndAmendOtherDeductionsRequestParserSpec extends UnitSpec {
 
   private val nino                   = "AA123456A"
   private val taxYear                = "2019-20"
@@ -44,27 +49,27 @@ class AmendOtherDeductionsRequestParserSpec extends UnitSpec {
         """.stripMargin)
 
   val inputData =
-    AmendOtherDeductionsRawData(nino, taxYear, requestBodyJson)
+    CreateAndAmendOtherDeductionsRawData(nino, taxYear, requestBodyJson)
 
   val inputNone =
-    AmendOtherDeductionsRawData(nino, taxYear, Json.obj())
+    CreateAndAmendOtherDeductionsRawData(nino, taxYear, Json.obj())
 
-  trait Test extends MockAmendOtherDeductionsValidator {
-    lazy val parser = new AmendOtherDeductionsRequestParser(mockValidator)
+  trait Test extends MockCreateAndAmendOtherDeductionsValidator {
+    lazy val parser = new CreateAndAmendOtherDeductionsRequestParser(mockValidator)
   }
 
   "parse" should {
 
     "return a request object" when {
       "valid request data is supplied" in new Test {
-        MockAmendOtherDeductionsValidator.validate(inputData).returns(Nil)
+        MockCreateAndAmendOtherDeductionsValidator.validate(inputData).returns(Nil)
 
         parser.parseRequest(inputData) shouldBe
           Right(
-            AmendOtherDeductionsRequest(
+            CreateAndAmendOtherDeductionsRequest(
               Nino(nino),
               taxYear,
-              AmendOtherDeductionsBody(
+              CreateAndAmendOtherDeductionsBody(
                 Some(
                   Seq(
                     Seafarers(
@@ -80,7 +85,7 @@ class AmendOtherDeductionsRequestParserSpec extends UnitSpec {
     "return an ErrorWrapper" when {
 
       "a single validation error occurs" in new Test {
-        MockAmendOtherDeductionsValidator
+        MockCreateAndAmendOtherDeductionsValidator
           .validate(inputData)
           .returns(List(NinoFormatError))
 
@@ -89,7 +94,7 @@ class AmendOtherDeductionsRequestParserSpec extends UnitSpec {
       }
 
       "multiple validation errors occur" in new Test {
-        MockAmendOtherDeductionsValidator
+        MockCreateAndAmendOtherDeductionsValidator
           .validate(inputData)
           .returns(List(NinoFormatError, TaxYearFormatError))
 

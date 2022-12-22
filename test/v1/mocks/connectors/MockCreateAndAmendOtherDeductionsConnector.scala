@@ -19,20 +19,20 @@ package v1.mocks.connectors
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.connectors.{AmendOtherDeductionsConnector, DownstreamOutcome}
-import v1.models.request.amendOtherDeductions.AmendOtherDeductionsRequest
+import v1.connectors.{CreateAndAmendOtherDeductionsConnector, DownstreamOutcome}
+import v1.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRequest
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockAmendOtherDeductionsConnector extends MockFactory {
+trait MockCreateAndAmendOtherDeductionsConnector extends MockFactory {
 
-  val mockAmendOtherDeductionsConnector: AmendOtherDeductionsConnector = mock[AmendOtherDeductionsConnector]
+  val mockCreateAndAmendOtherDeductionsConnector: CreateAndAmendOtherDeductionsConnector = mock[CreateAndAmendOtherDeductionsConnector]
 
-  object MockAmendOtherDeductionsConnector {
+  object MockCreateAndAmendOtherDeductionsConnector {
 
-    def amend(requestData: AmendOtherDeductionsRequest): CallHandler[Future[DownstreamOutcome[Unit]]] = {
-      (mockAmendOtherDeductionsConnector
-        .amend(_: AmendOtherDeductionsRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
+    def createAndAmend(requestData: CreateAndAmendOtherDeductionsRequest): CallHandler[Future[DownstreamOutcome[Unit]]] = {
+      (mockCreateAndAmendOtherDeductionsConnector
+        .createAndAmend(_: CreateAndAmendOtherDeductionsRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
         .expects(requestData, *, *, *)
     }
 

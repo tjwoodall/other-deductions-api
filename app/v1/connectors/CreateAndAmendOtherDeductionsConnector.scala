@@ -23,15 +23,17 @@ import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpClient
 import v1.connectors.httpparsers.StandardDownstreamHttpParser._
-import v1.models.request.amendOtherDeductions.AmendOtherDeductionsRequest
+import v1.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRequest
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendOtherDeductionsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
+class CreateAndAmendOtherDeductionsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  def amend(
-      request: AmendOtherDeductionsRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[DownstreamOutcome[Unit]] = {
+  def createAndAmend(request: CreateAndAmendOtherDeductionsRequest)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
     put(
       body = request.body,

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package v1.models.request.amendOtherDeductions
+package v1.models.request.createAndAmendOtherDeductions
 
 import play.api.libs.json.Json
 import support.UnitSpec
 import v1.models.utils.JsonErrorValidators
 
-class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
+class CreateAndAmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
 
-  val amendOtherDeductionsBody = AmendOtherDeductionsBody(
+  val createAndAmendOtherDeductionsBody = CreateAndAmendOtherDeductionsBody(
     Some(
       Seq(
         Seafarers(
@@ -33,7 +33,7 @@ class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
           "2019-04-06"
         ))))
 
-  val multipleSeafarersAmendOtherDeductionsBody = AmendOtherDeductionsBody(
+  val multipleSeafarersCreateAndAmendOtherDeductionsBody = CreateAndAmendOtherDeductionsBody(
     Some(
       Seq(
         Seafarers(
@@ -51,7 +51,7 @@ class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
           "2019-04-06"
         ))))
 
-  val noRefAmendOtherDeductionsBody = AmendOtherDeductionsBody(
+  val noRefCreateAndAmendOtherDeductionsBody = CreateAndAmendOtherDeductionsBody(
     Some(
       Seq(
         Seafarers(
@@ -102,17 +102,17 @@ class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
   "reads" when {
     "passed a valid JSON" should {
       "return a valid model" in {
-        json.as[AmendOtherDeductionsBody] shouldBe amendOtherDeductionsBody
+        json.as[CreateAndAmendOtherDeductionsBody] shouldBe createAndAmendOtherDeductionsBody
       }
     }
     "passed a JSON with multiple seafarers" should {
       "return a valid model with multiple seafarers" in {
-        jsonMultipleSeafarers.as[AmendOtherDeductionsBody] shouldBe multipleSeafarersAmendOtherDeductionsBody
+        jsonMultipleSeafarers.as[CreateAndAmendOtherDeductionsBody] shouldBe multipleSeafarersCreateAndAmendOtherDeductionsBody
       }
     }
     "passed JSON with no customer reference" should {
       "return a model with no customer reference" in {
-        jsonNoRef.as[AmendOtherDeductionsBody] shouldBe noRefAmendOtherDeductionsBody
+        jsonNoRef.as[CreateAndAmendOtherDeductionsBody] shouldBe noRefCreateAndAmendOtherDeductionsBody
       }
     }
   }
@@ -120,17 +120,17 @@ class AmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {
   "writes" when {
     "passed valid model" should {
       "return valid JSON" in {
-        Json.toJson(amendOtherDeductionsBody) shouldBe json
+        Json.toJson(createAndAmendOtherDeductionsBody) shouldBe json
       }
     }
     "passed a model with multiple seafarers" should {
       "return a JSON with multiple seafarers" in {
-        Json.toJson(multipleSeafarersAmendOtherDeductionsBody) shouldBe jsonMultipleSeafarers
+        Json.toJson(multipleSeafarersCreateAndAmendOtherDeductionsBody) shouldBe jsonMultipleSeafarers
       }
     }
     "passed a body with no customer reference" should {
       "return a JSON with no customer reference" in {
-        Json.toJson(noRefAmendOtherDeductionsBody) shouldBe jsonNoRef
+        Json.toJson(noRefCreateAndAmendOtherDeductionsBody) shouldBe jsonNoRef
       }
     }
   }

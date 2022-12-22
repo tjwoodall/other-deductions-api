@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package v1.models.request.amendOtherDeductions
+package v1.models.request.createAndAmendOtherDeductions
 
 import play.api.libs.json.{Json, OFormat}
 
-case class Seafarers(customerReference: Option[String], amountDeducted: BigDecimal, nameOfShip: String, fromDate: String, toDate: String)
+case class CreateAndAmendOtherDeductionsBody(seafarers: Option[Seq[Seafarers]])
 
-object Seafarers {
-  implicit val format: OFormat[Seafarers] = Json.format[Seafarers]
+object CreateAndAmendOtherDeductionsBody {
+  implicit val format: OFormat[CreateAndAmendOtherDeductionsBody] = Json.format[CreateAndAmendOtherDeductionsBody]
 }

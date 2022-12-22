@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package v1.models.request.amendOtherDeductions
+package v1.models.request.createAndAmendOtherDeductions
 
 import play.api.libs.json.JsValue
 import v1.models.request.RawData
 
-case class AmendOtherDeductionsRawData(nino: String, taxYear: String, body: JsValue) extends RawData
+case class CreateAndAmendOtherDeductionsRawData(nino: String, taxYear: String, body: JsValue) extends RawData

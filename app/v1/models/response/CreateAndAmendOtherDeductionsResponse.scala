@@ -20,11 +20,11 @@ import config.AppConfig
 import v1.hateoas.{HateoasLinks, HateoasLinksFactory}
 import v1.models.hateoas.{HateoasData, Link}
 
-object AmendOtherDeductionsResponse extends HateoasLinks {
+object CreateAndAmendOtherDeductionsResponse extends HateoasLinks {
 
-  implicit object AmendOtherLinksFactory extends HateoasLinksFactory[Unit, AmendOtherDeductionsHateoasData] {
+  implicit object CreateAndAmendOtherLinksFactory extends HateoasLinksFactory[Unit, CreateAndAmendOtherDeductionsHateoasData] {
 
-    override def links(appConfig: AppConfig, data: AmendOtherDeductionsHateoasData): Seq[Link] = {
+    override def links(appConfig: AppConfig, data: CreateAndAmendOtherDeductionsHateoasData): Seq[Link] = {
       import data._
       Seq(
         createAndAmendOtherDeductions(appConfig, nino, taxYear),
@@ -37,4 +37,4 @@ object AmendOtherDeductionsResponse extends HateoasLinks {
 
 }
 
-case class AmendOtherDeductionsHateoasData(nino: String, taxYear: String) extends HateoasData
+case class CreateAndAmendOtherDeductionsHateoasData(nino: String, taxYear: String) extends HateoasData

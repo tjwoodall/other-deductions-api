@@ -22,25 +22,30 @@ import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.MockIdGenerator
 import v1.mocks.hateoas.MockHateoasFactory
-import v1.mocks.requestParsers.MockAmendOtherDeductionsRequestParser
-import v1.mocks.services.{MockAmendOtherDeductionsService, MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
+import v1.mocks.requestParsers.MockCreateAndAmendOtherDeductionsRequestParser
+import v1.mocks.services.{MockAuditService, MockCreateAndAmendOtherDeductionsService, MockEnrolmentsAuthService, MockMtdIdLookupService}
 import v1.models.audit.{AuditError, AuditEvent, AuditResponse, DeductionsAuditDetail}
 import v1.models.errors._
 import v1.models.hateoas.{HateoasWrapper, Link}
 import v1.models.hateoas.Method.{DELETE, GET, PUT}
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.amendOtherDeductions.{AmendOtherDeductionsBody, AmendOtherDeductionsRawData, AmendOtherDeductionsRequest, Seafarers}
-import v1.models.response.AmendOtherDeductionsHateoasData
+import v1.models.request.createAndAmendOtherDeductions.{
+  CreateAndAmendOtherDeductionsBody,
+  CreateAndAmendOtherDeductionsRawData,
+  CreateAndAmendOtherDeductionsRequest,
+  Seafarers
+}
+import v1.models.response.CreateAndAmendOtherDeductionsHateoasData
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AmendOtherDeductionsControllerSpec
+class CreateAndAmendOtherDeductionsControllerSpec
     extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
-    with MockAmendOtherDeductionsService
-    with MockAmendOtherDeductionsRequestParser
+    with MockCreateAndAmendOtherDeductionsService
+    with MockCreateAndAmendOtherDeductionsRequestParser
     with MockHateoasFactory
     with MockAuditService
     with MockIdGenerator {
@@ -48,10 +53,10 @@ class AmendOtherDeductionsControllerSpec
   trait Test {
     val hc = HeaderCarrier()
 
-    val controller = new AmendOtherDeductionsController(
+    val controller = new CreateAndAmendOtherDeductionsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
-      parser = mockAmendOtherDeductionsRequestParser,
+      parser = mockCreateAndAmendOtherDeductionsRequestParser,
       service = mockService,
       hateoasFactory = mockHateoasFactory,
       auditService = mockAuditService,
@@ -90,7 +95,7 @@ class AmendOtherDeductionsControllerSpec
        |""".stripMargin
   )
 
-  private val requestBody = AmendOtherDeductionsBody(
+  private val requestBody = CreateAndAmendOtherDeductionsBody(
     Some(
       Seq(
         Seafarers(
@@ -138,23 +143,23 @@ class AmendOtherDeductionsControllerSpec
       )
     )
 
-  private val rawData     = AmendOtherDeductionsRawData(nino, taxYear, requestBodyJson)
-  private val requestData = AmendOtherDeductionsRequest(Nino(nino), taxYear, requestBody)
+  private val rawData     = CreateAndAmendOtherDeductionsRawData(nino, taxYear, requestBodyJson)
+  private val requestData = CreateAndAmendOtherDeductionsRequest(Nino(nino), taxYear, requestBody)
 
   "handleRequest" should {
     "return Ok" when {
       "the request received is valid" in new Test {
 
-        MockAmendOtherDeductionsRequestParser
+        MockCreateAndAmendOtherDeductionsRequestParser
           .parseRequest(rawData)
           .returns(Right(requestData))
 
-        MockAmendOtherDeductionsService
-          .amend(requestData)
+        MockCreateAndAmendOtherDeductionsService
+          .createAndAmend(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
         MockHateoasFactory
-          .wrap((), AmendOtherDeductionsHateoasData(nino, taxYear))
+          .wrap((), CreateAndAmendOtherDeductionsHateoasData(nino, taxYear))
           .returns(HateoasWrapper((), testHateoasLinks))
 
         val result: Future[Result] = controller.handleRequest(nino, taxYear)(fakePostRequest(requestBodyJson))
@@ -170,7 +175,7 @@ class AmendOtherDeductionsControllerSpec
         def errorsFromParserTester(error: MtdError, expectedStatus: Int): Unit = {
           s"a ${error.code} error is returned from the parser" in new Test {
 
-            MockAmendOtherDeductionsRequestParser
+            MockCreateAndAmendOtherDeductionsRequestParser
               .parseRequest(rawData)
               .returns(Left(ErrorWrapper(correlationId, error, None)))
 
@@ -210,12 +215,12 @@ class AmendOtherDeductionsControllerSpec
         def serviceErrors(mtdError: MtdError, expectedStatus: Int): Unit = {
           s"a $mtdError error is returned from the service" in new Test {
 
-            MockAmendOtherDeductionsRequestParser
+            MockCreateAndAmendOtherDeductionsRequestParser
               .parseRequest(rawData)
               .returns(Right(requestData))
 
-            MockAmendOtherDeductionsService
-              .amend(requestData)
+            MockCreateAndAmendOtherDeductionsService
+              .createAndAmend(requestData)
               .returns(Future.successful(Left(ErrorWrapper(correlationId, mtdError))))
 
             val result: Future[Result] = controller.handleRequest(nino, taxYear)(fakePostRequest(requestBodyJson))

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package v1.models.request.amendOtherDeductions
+package v1.models.request.createAndAmendOtherDeductions
 
 import play.api.libs.json.Json
 import support.UnitSpec

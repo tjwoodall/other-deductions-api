@@ -20,19 +20,19 @@ import api.models.errors.{DownstreamErrorCode, DownstreamErrors}
 import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.controllers.EndpointLogContext
-import v1.mocks.connectors.MockAmendOtherDeductionsConnector
+import v1.mocks.connectors.MockCreateAndAmendOtherDeductionsConnector
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.amendOtherDeductions.{AmendOtherDeductionsBody, AmendOtherDeductionsRequest, Seafarers}
+import v1.models.request.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsBody, CreateAndAmendOtherDeductionsRequest, Seafarers}
 
 import scala.concurrent.Future
 
-class AmendOtherDeductionsServiceSpec extends ServiceSpec {
+class CreateAndAmendOtherDeductionsServiceSpec extends ServiceSpec {
 
   val taxYear = "2018-04-06"
   val nino    = "AA123456A"
 
-  val body = AmendOtherDeductionsBody(
+  val body = CreateAndAmendOtherDeductionsBody(
     Some(
       Seq(
         Seafarers(
@@ -44,14 +44,14 @@ class AmendOtherDeductionsServiceSpec extends ServiceSpec {
         )))
   )
 
-  private val requestData = AmendOtherDeductionsRequest(Nino(nino), taxYear, body)
+  private val requestData = CreateAndAmendOtherDeductionsRequest(Nino(nino), taxYear, body)
 
-  trait Test extends MockAmendOtherDeductionsConnector {
+  trait Test extends MockCreateAndAmendOtherDeductionsConnector {
     implicit val hc: HeaderCarrier              = HeaderCarrier()
     implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
 
-    val service = new AmendOtherDeductionsService(
-      connector = mockAmendOtherDeductionsConnector
+    val service = new CreateAndAmendOtherDeductionsService(
+      connector = mockCreateAndAmendOtherDeductionsConnector
     )
 
   }
@@ -59,11 +59,11 @@ class AmendOtherDeductionsServiceSpec extends ServiceSpec {
   "service" should {
     "service call successful" when {
       "return mapped result" in new Test {
-        MockAmendOtherDeductionsConnector
-          .amend(requestData)
+        MockCreateAndAmendOtherDeductionsConnector
+          .createAndAmend(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
-        await(service.amend(requestData)) shouldBe Right(ResponseWrapper(correlationId, ()))
+        await(service.createAndAmend(requestData)) shouldBe Right(ResponseWrapper(correlationId, ()))
       }
     }
   }
@@ -74,11 +74,11 @@ class AmendOtherDeductionsServiceSpec extends ServiceSpec {
       def serviceError(ifsErrorCode: String, error: MtdError): Unit =
         s"a $ifsErrorCode error is returned from the service" in new Test {
 
-          MockAmendOtherDeductionsConnector
-            .amend(requestData)
+          MockCreateAndAmendOtherDeductionsConnector
+            .createAndAmend(requestData)
             .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(ifsErrorCode))))))
 
-          await(service.amend(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
+          await(service.createAndAmend(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
         }
 
       val input = Seq(

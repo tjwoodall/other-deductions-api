@@ -21,16 +21,16 @@ import uk.gov.hmrc.http.HeaderCarrier
 import v1.models.domain.Nino
 import v1.mocks.MockHttpClient
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.amendOtherDeductions.{AmendOtherDeductionsBody, AmendOtherDeductionsRequest, Seafarers}
+import v1.models.request.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsBody, CreateAndAmendOtherDeductionsRequest, Seafarers}
 
 import scala.concurrent.Future
 
-class AmendOtherDeductionsConnectorSpec extends ConnectorSpec {
+class CreateAndAmendOtherDeductionsConnectorSpec extends ConnectorSpec {
 
   val taxYear = "2018-04-06"
   val nino    = "AA123456A"
 
-  val body = AmendOtherDeductionsBody(
+  val body = CreateAndAmendOtherDeductionsBody(
     Some(
       Seq(
         Seafarers(
@@ -43,7 +43,10 @@ class AmendOtherDeductionsConnectorSpec extends ConnectorSpec {
   )
 
   class Test extends MockHttpClient with MockAppConfig {
-    val connector: AmendOtherDeductionsConnector = new AmendOtherDeductionsConnector(http = mockHttpClient, appConfig = mockAppConfig)
+
+    val connector: CreateAndAmendOtherDeductionsConnector =
+      new CreateAndAmendOtherDeductionsConnector(http = mockHttpClient, appConfig = mockAppConfig)
+
     MockAppConfig.ifsBaseUrl returns baseUrl
     MockAppConfig.ifsToken returns "ifs-token"
     MockAppConfig.ifsEnvironment returns "ifs-environment"
@@ -51,7 +54,7 @@ class AmendOtherDeductionsConnectorSpec extends ConnectorSpec {
   }
 
   "connector" must {
-    val request = AmendOtherDeductionsRequest(Nino(nino), taxYear, body)
+    val request = CreateAndAmendOtherDeductionsRequest(Nino(nino), taxYear, body)
 
     "put a body and return 204 no body" in new Test {
       val outcome = Right(ResponseWrapper(correlationId, ()))
@@ -69,7 +72,7 @@ class AmendOtherDeductionsConnectorSpec extends ConnectorSpec {
         )
         .returns(Future.successful(outcome))
 
-      await(connector.amend(request)) shouldBe outcome
+      await(connector.createAndAmend(request)) shouldBe outcome
     }
   }
 

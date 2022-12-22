@@ -18,19 +18,19 @@ package v1.mocks.validators
 
 import org.scalamock.handlers.CallHandler1
 import org.scalamock.scalatest.MockFactory
-import v1.controllers.requestParsers.validators.AmendOtherDeductionsValidator
+import v1.controllers.requestParsers.validators.CreateAndAmendOtherDeductionsValidator
 import v1.models.errors.MtdError
-import v1.models.request.amendOtherDeductions.AmendOtherDeductionsRawData
+import v1.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRawData
 
-class MockAmendOtherDeductionsValidator extends MockFactory {
+class MockCreateAndAmendOtherDeductionsValidator extends MockFactory {
 
-  val mockValidator: AmendOtherDeductionsValidator = mock[AmendOtherDeductionsValidator]
+  val mockValidator: CreateAndAmendOtherDeductionsValidator = mock[CreateAndAmendOtherDeductionsValidator]
 
-  object MockAmendOtherDeductionsValidator {
+  object MockCreateAndAmendOtherDeductionsValidator {
 
-    def validate(data: AmendOtherDeductionsRawData): CallHandler1[AmendOtherDeductionsRawData, List[MtdError]] = {
+    def validate(data: CreateAndAmendOtherDeductionsRawData): CallHandler1[CreateAndAmendOtherDeductionsRawData, List[MtdError]] = {
       (mockValidator
-        .validate(_: AmendOtherDeductionsRawData))
+        .validate(_: CreateAndAmendOtherDeductionsRawData))
         .expects(data)
     }
 
