@@ -16,9 +16,10 @@
 
 package v1.controllers.requestParsers
 
+import api.models.domain.TaxYear
 import support.UnitSpec
-import v1.models.domain.Nino
 import v1.mocks.validators.MockDeleteOtherDeductionsValidator
+import v1.models.domain.Nino
 import v1.models.errors._
 import v1.models.request.deleteOtherDeductions.{DeleteOtherDeductionsRawData, DeleteOtherDeductionsRequest}
 
@@ -41,7 +42,7 @@ class DeleteOtherDeductionsRequestParserSpec extends UnitSpec {
         MockDeleteOtherDeductionsValidator.validate(inputData).returns(Nil)
 
         parser.parseRequest(inputData) shouldBe
-          Right(DeleteOtherDeductionsRequest(Nino(nino), "2017-18"))
+          Right(DeleteOtherDeductionsRequest(Nino(nino), TaxYear.fromMtd(taxYear)))
       }
     }
 

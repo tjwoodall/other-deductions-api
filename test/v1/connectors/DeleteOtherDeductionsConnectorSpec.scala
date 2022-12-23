@@ -16,45 +16,61 @@
 
 package v1.connectors
 
-import mocks.MockAppConfig
+import api.models.domain.TaxYear
 import v1.models.domain.Nino
-import v1.mocks.MockHttpClient
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequest
 
 import scala.concurrent.Future
 
 class DeleteOtherDeductionsConnectorSpec extends ConnectorSpec {
-  val taxYear = "2017-18"
-  val nino    = "AA123456A"
 
-  class Test extends MockHttpClient with MockAppConfig {
-    val connector: DeleteOtherDeductionsConnector = new DeleteOtherDeductionsConnector(http = mockHttpClient, appConfig = mockAppConfig)
-    MockAppConfig.ifsBaseUrl returns baseUrl
-    MockAppConfig.ifsToken returns "ifs-token"
-    MockAppConfig.ifsEnvironment returns "ifs-environment"
-    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
-  }
+  "delete" should {
+    "return the expected response for a non-TYS request" when {
+      "a valid request is made" in new IfsTest with Test {
+        def taxYear: TaxYear = TaxYear.fromMtd("2019-20")
+        val outcome          = Right(ResponseWrapper(correlationId, ()))
 
-  "delete" must {
-    val request = DeleteOtherDeductionsRequest(Nino(nino), taxYear)
-
-    "return the result" when {
-      "downstream call is successful" in new Test {
-        val outcome = Right(ResponseWrapper(correlationId, ()))
-
-        MockedHttpClient
-          .delete(
-            url = s"$baseUrl/income-tax/deductions/$nino/$taxYear",
-            config = dummyHeaderCarrierConfig,
-            requiredHeaders = requiredIfsHeaders,
-            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-          )
-          .returns(Future.successful(outcome))
+        willDelete(
+          url = s"$baseUrl/income-tax/deductions/$nino/2019-20"
+        ).returns(Future.successful(outcome))
 
         await(connector.delete(request)) shouldBe outcome
       }
     }
+
+    "return the expected response for a TYS request" when {
+      "a valid request is made" in new TysIfsTest with Test {
+        def taxYear: TaxYear = TaxYear.fromMtd("2023-24")
+        val outcome          = Right(ResponseWrapper(correlationId, ()))
+
+        willDelete(
+          url = s"$baseUrl/income-tax/deductions/23-24/$nino"
+        ).returns(Future.successful(outcome))
+
+        await(connector.delete(request)) shouldBe outcome
+      }
+    }
+  }
+
+  trait Test {
+    _: ConnectorTest =>
+
+    def taxYear: TaxYear
+
+    protected val nino: String = "AA123456A"
+
+    protected val request: DeleteOtherDeductionsRequest =
+      DeleteOtherDeductionsRequest(
+        nino = Nino(nino),
+        taxYear = taxYear
+      )
+
+    val connector: DeleteOtherDeductionsConnector = new DeleteOtherDeductionsConnector(
+      http = mockHttpClient,
+      appConfig = mockAppConfig
+    )
+
   }
 
 }

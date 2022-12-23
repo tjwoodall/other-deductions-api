@@ -24,7 +24,7 @@ import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
 import v1.models.errors._
-import v1.stubs.{AuditStub, AuthStub, IfsStub, MtdIdLookupStub}
+import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
@@ -88,7 +88,7 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.1.0+json"),
           (AUTHORIZATION, "Bearer 123") // some bearer token
-      )
+        )
     }
 
     def errorBody(code: String): String =
@@ -111,7 +111,7 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          IfsStub.onSuccess(IfsStub.GET, ifsUri, Status.OK, ifsResponseBody)
+          DownstreamStub.onSuccess(DownstreamStub.GET, ifsUri, Status.OK, ifsResponseBody)
         }
 
         val response: WSResponse = await(request().get())
@@ -159,7 +159,7 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
               AuditStub.audit()
               AuthStub.authorised()
               MtdIdLookupStub.ninoFound(nino)
-              IfsStub.onError(IfsStub.GET, ifsUri, ifsStatus, errorBody(ifsCode))
+              DownstreamStub.onError(DownstreamStub.GET, ifsUri, ifsStatus, errorBody(ifsCode))
             }
 
             val response: WSResponse = await(request().get())
@@ -179,4 +179,5 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
       }
     }
   }
+
 }

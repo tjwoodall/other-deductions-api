@@ -16,6 +16,7 @@
 
 package v1.models.request.deleteOtherDeductions
 
+import api.models.domain.TaxYear
 import v1.models.domain.Nino
 
-case class DeleteOtherDeductionsRequest(nino: Nino, taxYear: String)
+case class DeleteOtherDeductionsRequest(nino: Nino, taxYear: TaxYear)

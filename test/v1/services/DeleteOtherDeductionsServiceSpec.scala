@@ -16,11 +16,12 @@
 
 package v1.services
 
+import api.models.domain.TaxYear
 import api.models.errors.{DownstreamErrorCode, DownstreamErrors}
-import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockDeleteOtherDeductionsConnector
+import v1.models.domain.Nino
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequest
@@ -29,56 +30,62 @@ import scala.concurrent.Future
 
 class DeleteOtherDeductionsServiceSpec extends ServiceSpec {
 
-  private val nino    = "AA123456A"
-  private val taxYear = "2017-18"
+  "DeleteOtherDeductionsService" when {
+    "delete" must {
+      "return correct result for a success" in new Test {
+        val outcome = Right(ResponseWrapper(correlationId, ()))
 
-  private val request = DeleteOtherDeductionsRequest(Nino(nino), taxYear)
-
-  trait Test extends MockDeleteOtherDeductionsConnector {
-    implicit val hc: HeaderCarrier              = HeaderCarrier()
-    implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
-
-    val service = new DeleteOtherDeductionsService(
-      DeleteOtherDeductionsConnector = mockDeleteOtherDeductionsConnector
-    )
-
-  }
-
-  "service" when {
-    "service call successsful" must {
-      "return mapped result" in new Test {
         MockDeleteOtherDeductionsConnector
           .delete(request)
-          .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
+          .returns(Future.successful(outcome))
 
-        await(service.delete(request)) shouldBe Right(ResponseWrapper(correlationId, ()))
+        await(service.delete(request)) shouldBe outcome
       }
-    }
 
-    "unsuccessful" must {
       "map errors according to spec" when {
 
-        def serviceError(ifsErrorCode: String, error: MtdError): Unit =
-          s"a $ifsErrorCode error is returned from the service" in new Test {
+        def serviceError(downstreamErrorCode: String, error: MtdError): Unit =
+          s"a $downstreamErrorCode error is returned from the service" in new Test {
 
             MockDeleteOtherDeductionsConnector
               .delete(request)
-              .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(ifsErrorCode))))))
+              .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(downstreamErrorCode))))))
 
             await(service.delete(request)) shouldBe Left(ErrorWrapper(correlationId, error))
           }
 
-        val input = Seq(
+        val errors = Seq(
           ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
           ("INVALID_TAX_YEAR", TaxYearFormatError),
+          ("INVALID_CORRELATIONID", DownstreamError),
           ("NO_DATA_FOUND", NotFoundError),
           ("SERVER_ERROR", DownstreamError),
           ("SERVICE_UNAVAILABLE", DownstreamError)
         )
 
-        input.foreach(args => (serviceError _).tupled(args))
+        val extraTysErrors = Seq(
+          ("INVALID_CORRELATION_ID", DownstreamError),
+          ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError)
+        )
+
+        (errors ++ extraTysErrors).foreach(args => (serviceError _).tupled(args))
       }
     }
+  }
+
+  trait Test extends MockDeleteOtherDeductionsConnector {
+    implicit val hc: HeaderCarrier              = HeaderCarrier()
+    implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
+
+    private val nino    = "AA123456A"
+    private val taxYear = "2017-18"
+
+    val request = DeleteOtherDeductionsRequest(Nino(nino), TaxYear.fromMtd(taxYear))
+
+    val service = new DeleteOtherDeductionsService(
+      DeleteOtherDeductionsConnector = mockDeleteOtherDeductionsConnector
+    )
+
   }
 
 }
