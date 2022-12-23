@@ -18,7 +18,7 @@ package v1.connectors
 
 import api.connectors.DownstreamUri
 import api.connectors.DownstreamUri.{IfsUri, TaxYearSpecificIfsUri}
-import config.AppConfig
+import config.{AppConfig, FeatureSwitches}
 import play.api.Logger
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.libs.json.Writes
@@ -30,15 +30,16 @@ trait BaseDownstreamConnector {
   val http: HttpClient
   val appConfig: AppConfig
 
-  val logger: Logger = Logger(this.getClass)
+  val logger: Logger                = Logger(this.getClass)
   private val jsonContentTypeHeader = HeaderNames.CONTENT_TYPE -> MimeTypes.JSON
 
+  implicit protected lazy val featureSwitches: FeatureSwitches = FeatureSwitches(appConfig.featureSwitches)
 
   def get[Resp](uri: DownstreamUri[Resp], queryParams: Seq[(String, String)] = Seq.empty)(implicit
-                                                                                          ec: ExecutionContext,
-                                                                                          hc: HeaderCarrier,
-                                                                                          httpReads: HttpReads[DownstreamOutcome[Resp]],
-                                                                                          correlationId: String): Future[DownstreamOutcome[Resp]] = {
+      ec: ExecutionContext,
+      hc: HeaderCarrier,
+      httpReads: HttpReads[DownstreamOutcome[Resp]],
+      correlationId: String): Future[DownstreamOutcome[Resp]] = {
 
     def doGet(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] =
       http.GET(getBackendUri(uri), queryParams = queryParams)
@@ -47,10 +48,10 @@ trait BaseDownstreamConnector {
   }
 
   def delete[Resp](uri: DownstreamUri[Resp])(implicit
-                                             ec: ExecutionContext,
-                                             hc: HeaderCarrier,
-                                             httpReads: HttpReads[DownstreamOutcome[Resp]],
-                                             correlationId: String): Future[DownstreamOutcome[Resp]] = {
+      ec: ExecutionContext,
+      hc: HeaderCarrier,
+      httpReads: HttpReads[DownstreamOutcome[Resp]],
+      correlationId: String): Future[DownstreamOutcome[Resp]] = {
 
     def doDelete(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] = {
       http.DELETE(getBackendUri(uri))
@@ -60,10 +61,10 @@ trait BaseDownstreamConnector {
   }
 
   def put[Body: Writes, Resp](body: Body, uri: DownstreamUri[Resp])(implicit
-                                                                    ec: ExecutionContext,
-                                                                    hc: HeaderCarrier,
-                                                                    httpReads: HttpReads[DownstreamOutcome[Resp]],
-                                                                    correlationId: String): Future[DownstreamOutcome[Resp]] = {
+      ec: ExecutionContext,
+      hc: HeaderCarrier,
+      httpReads: HttpReads[DownstreamOutcome[Resp]],
+      correlationId: String): Future[DownstreamOutcome[Resp]] = {
 
     def doPut(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] = {
       http.PUT(getBackendUri(uri), body)

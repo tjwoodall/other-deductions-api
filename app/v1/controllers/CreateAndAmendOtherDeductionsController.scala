@@ -64,9 +64,8 @@ class CreateAndAmendOtherDeductionsController @Inject() (val authService: Enrolm
         for {
           parsedRequest   <- EitherT.fromEither[Future](parser.parseRequest(rawData))
           serviceResponse <- EitherT(service.createAndAmend(parsedRequest))
-          vendorResponse <- EitherT.fromEither[Future](
-            hateoasFactory.wrap(serviceResponse.responseData, CreateAndAmendOtherDeductionsHateoasData(nino, taxYear)).asRight[ErrorWrapper])
         } yield {
+          val vendorResponse = hateoasFactory.wrap(serviceResponse.responseData, CreateAndAmendOtherDeductionsHateoasData(nino, taxYear))
           logger.info(
             s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
               s"Success response received with CorrelationId: ${serviceResponse.correlationId}")
@@ -109,10 +108,25 @@ class CreateAndAmendOtherDeductionsController @Inject() (val authService: Enrolm
   private def errorResult(errorWrapper: ErrorWrapper) = {
 
     errorWrapper.error match {
-      case NinoFormatError | TaxYearFormatError | BadRequestError | RuleTaxYearRangeInvalidError | RuleIncorrectOrEmptyBodyError |
-          RuleTaxYearNotSupportedError | MtdErrorWithCustomMessage(ValueFormatError.code) | MtdErrorWithCustomMessage(NameOfShipFormatError.code) |
-          MtdErrorWithCustomMessage(CustomerReferenceFormatError.code) | MtdErrorWithCustomMessage(DateFormatError.code) | MtdErrorWithCustomMessage(
-            RangeToDateBeforeFromDateError.code) =>
+//      case | TaxYearFormatError | BadRequestError | RuleTaxYearRangeInvalidError | RuleIncorrectOrEmptyBodyError |
+//          RuleTaxYearNotSupportedError | MtdErrorWithCustomMessage(ValueFormatError.code) | MtdErrorWithCustomMessage(NameOfShipFormatError.code) |
+//          MtdErrorWithCustomMessage(CustomerReferenceFormatError.code) | MtdErrorWithCustomMessage(DateFormatError.code) | MtdErrorWithCustomMessage(
+//            RangeToDateBeforeFromDateError.code) =>
+
+      case _
+          if errorWrapper.containsAnyOf(
+            BadRequestError,
+            NinoFormatError,
+            TaxYearFormatError,
+            RuleTaxYearRangeInvalidError,
+            ValueFormatError,
+            NameOfShipFormatError,
+            CustomerReferenceFormatError,
+            DateFormatError,
+            RuleIncorrectOrEmptyBodyError,
+            RangeToDateBeforeFromDateError,
+            RuleTaxYearNotSupportedError
+          ) =>
         BadRequest(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
       case _               => unhandledError(errorWrapper)

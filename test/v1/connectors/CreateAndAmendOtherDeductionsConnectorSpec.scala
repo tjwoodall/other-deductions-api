@@ -16,10 +16,8 @@
 
 package v1.connectors
 
-import mocks.MockAppConfig
-import uk.gov.hmrc.http.HeaderCarrier
+import api.models.domain.TaxYear
 import v1.models.domain.Nino
-import v1.mocks.MockHttpClient
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsBody, CreateAndAmendOtherDeductionsRequest, Seafarers}
 
@@ -27,53 +25,63 @@ import scala.concurrent.Future
 
 class CreateAndAmendOtherDeductionsConnectorSpec extends ConnectorSpec {
 
-  val taxYear = "2018-04-06"
-  val nino    = "AA123456A"
+  "CreateAndAmendOtherDeductionsConnector" should {
+    "return the expected response for a non-TYS request" when {
+      "a valid request is made" in new IfsTest with Test {
+        def taxYear: String = "2021-22"
 
-  val body = CreateAndAmendOtherDeductionsBody(
-    Some(
-      Seq(
-        Seafarers(
-          Some("myRef"),
-          2000.99,
-          "Blue Bell",
-          "2018-04-06",
-          "2019-04-06"
-        )))
-  )
+        val outcome = Right(ResponseWrapper(correlationId, ()))
 
-  class Test extends MockHttpClient with MockAppConfig {
-
-    val connector: CreateAndAmendOtherDeductionsConnector =
-      new CreateAndAmendOtherDeductionsConnector(http = mockHttpClient, appConfig = mockAppConfig)
-
-    MockAppConfig.ifsBaseUrl returns baseUrl
-    MockAppConfig.ifsToken returns "ifs-token"
-    MockAppConfig.ifsEnvironment returns "ifs-environment"
-    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
-  }
-
-  "connector" must {
-    val request = CreateAndAmendOtherDeductionsRequest(Nino(nino), taxYear, body)
-
-    "put a body and return 204 no body" in new Test {
-      val outcome = Right(ResponseWrapper(correlationId, ()))
-
-      implicit val hc: HeaderCarrier                   = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
-      val requiredIfsHeadersPut: Seq[(String, String)] = requiredIfsHeaders ++ Seq("Content-Type" -> "application/json")
-
-      MockedHttpClient
-        .put(
-          url = s"$baseUrl/income-tax/deductions/$nino/$taxYear",
-          config = dummyHeaderCarrierConfig,
-          body = body,
-          requiredHeaders = requiredIfsHeadersPut,
-          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+        willPut(
+          url = s"$baseUrl/income-tax/deductions/$nino/2021-22",
+          body = body
         )
-        .returns(Future.successful(outcome))
+          .returns(Future.successful(outcome))
 
-      await(connector.createAndAmend(request)) shouldBe outcome
+        await(connector.createAndAmend(request)) shouldBe outcome
+      }
     }
+    "return the expected response for a TYS request" when {
+      "a valid request is made" in new TysIfsTest with Test {
+        def taxYear: String = "2023-24"
+
+        val outcome = Right(ResponseWrapper(correlationId, ()))
+
+        willPut(
+          url = s"$baseUrl/income-tax/deductions/23-24/$nino",
+          body = body
+        )
+          .returns(Future.successful(outcome))
+
+        await(connector.createAndAmend(request)) shouldBe outcome
+      }
+    }
+
+    trait Test {
+      _: ConnectorTest =>
+
+      val nino: String = "AA123456A"
+
+      def taxYear: String
+
+      val connector: CreateAndAmendOtherDeductionsConnector =
+        new CreateAndAmendOtherDeductionsConnector(http = mockHttpClient, appConfig = mockAppConfig)
+
+      val body = CreateAndAmendOtherDeductionsBody(
+        Some(
+          Seq(
+            Seafarers(
+              Some("myRef"),
+              2000.99,
+              "Blue Bell",
+              "2021-04-06",
+              "2022-04-06"
+            )))
+      )
+
+      lazy val request = CreateAndAmendOtherDeductionsRequest(Nino("AA123456A"), TaxYear.fromMtd(taxYear), body)
+    }
+
   }
 
 }

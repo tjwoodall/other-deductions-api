@@ -16,12 +16,11 @@
 
 package v1.connectors
 
-import api.connectors.DownstreamUri.IfsUri
+import api.connectors.DownstreamUri.{IfsUri, TaxYearSpecificIfsUri}
 import config.AppConfig
 
 import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import v1.connectors.httpparsers.StandardDownstreamHttpParser._
 import v1.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRequest
 
@@ -35,10 +34,16 @@ class CreateAndAmendOtherDeductionsConnector @Inject() (val http: HttpClient, va
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
-    put(
-      body = request.body,
-      uri = IfsUri[Unit](s"income-tax/deductions/${request.nino}/${request.taxYear}")
-    )
+    import request._
+
+    val downstreamUri = if (taxYear.useTaxYearSpecificApi) {
+      TaxYearSpecificIfsUri[Unit](s"income-tax/deductions/${taxYear.asTysDownstream}/$nino")
+    } else {
+      IfsUri[Unit](s"income-tax/deductions/${request.nino}/${request.taxYear.asMtd}")
+    }
+
+    put(body, downstreamUri)
+
   }
 
 }

@@ -16,6 +16,8 @@
 
 package v1.controllers.requestParsers
 
+import api.models.domain.TaxYear
+
 import javax.inject.Inject
 import v1.models.domain.Nino
 import v1.controllers.requestParsers.validators.CreateAndAmendOtherDeductionsValidator
@@ -29,6 +31,6 @@ class CreateAndAmendOtherDeductionsRequestParser @Inject() (val validator: Creat
     extends RequestParser[CreateAndAmendOtherDeductionsRawData, CreateAndAmendOtherDeductionsRequest] {
 
   override protected def requestFor(data: CreateAndAmendOtherDeductionsRawData): CreateAndAmendOtherDeductionsRequest =
-    CreateAndAmendOtherDeductionsRequest(Nino(data.nino), data.taxYear, data.body.as[CreateAndAmendOtherDeductionsBody])
+    CreateAndAmendOtherDeductionsRequest(Nino(data.nino), TaxYear.fromMtd(data.taxYear), data.body.as[CreateAndAmendOtherDeductionsBody])
 
 }

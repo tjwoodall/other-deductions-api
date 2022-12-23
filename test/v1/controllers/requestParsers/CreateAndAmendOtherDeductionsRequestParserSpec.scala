@@ -16,6 +16,7 @@
 
 package v1.controllers.requestParsers
 
+import api.models.domain.TaxYear
 import play.api.libs.json.Json
 import support.UnitSpec
 import v1.models.domain.Nino
@@ -31,7 +32,7 @@ import v1.models.request.createAndAmendOtherDeductions.{
 class CreateAndAmendOtherDeductionsRequestParserSpec extends UnitSpec {
 
   private val nino                   = "AA123456A"
-  private val taxYear                = "2019-20"
+  private val taxYear                = "2021-22"
   implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   private val requestBodyJson = Json.parse("""
@@ -41,8 +42,8 @@ class CreateAndAmendOtherDeductionsRequestParserSpec extends UnitSpec {
       |      "customerReference": "SEAFARERS1234",
       |      "amountDeducted": 2342.22,
       |      "nameOfShip": "Blue Wave",
-      |      "fromDate": "2018-08-17",
-      |      "toDate":"2018-10-02"
+      |      "fromDate": "2020-08-17",
+      |      "toDate":"2020-10-02"
       |      }
       |    ]
       |}
@@ -68,7 +69,7 @@ class CreateAndAmendOtherDeductionsRequestParserSpec extends UnitSpec {
           Right(
             CreateAndAmendOtherDeductionsRequest(
               Nino(nino),
-              taxYear,
+              TaxYear.fromMtd(taxYear),
               CreateAndAmendOtherDeductionsBody(
                 Some(
                   Seq(
@@ -76,10 +77,11 @@ class CreateAndAmendOtherDeductionsRequestParserSpec extends UnitSpec {
                       Some("SEAFARERS1234"),
                       2342.22,
                       "Blue Wave",
-                      "2018-08-17",
-                      "2018-10-02"
+                      "2020-08-17",
+                      "2020-10-02"
                     )))
-              )))
+              )
+            ))
       }
     }
     "return an ErrorWrapper" when {

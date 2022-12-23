@@ -40,19 +40,29 @@ class CreateAndAmendOtherDeductionsService @Inject() (connector: CreateAndAmendO
       logContext: EndpointLogContext,
       correlationId: String): Future[CreateAndAmendOtherDeductionsServiceOutcome] = {
 
-    val result = for {
-      downstreamResponseWrapper <- EitherT(connector.createAndAmend(request)).leftMap(mapDownstreamErrors(ifsErrorMap))
-    } yield downstreamResponseWrapper
+    val result = EitherT(connector.createAndAmend(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
 
     result.value
   }
 
-  private def ifsErrorMap =
-    Map(
-      "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-      "INVALID_TAX_YEAR"          -> TaxYearFormatError,
-      "SERVER_ERROR"              -> DownstreamError,
-      "SERVICE_UNAVAILABLE"       -> DownstreamError
+  private def downstreamErrorMap = {
+    val errors = Map(
+      "INVALID_TAXABLE_ENTITY_ID"        -> NinoFormatError,
+      "INVALID_TAX_YEAR"                 -> TaxYearFormatError,
+      "INCOME_SOURCE_NOT_FOUND"          -> NotFoundError,
+      "INVALID_PAYLOAD"                  -> DownstreamError,
+      "INVALID_CORRELATIONID"            -> DownstreamError,
+      "BUSINESS_VALIDATION_RULE_FAILURE" -> DownstreamError,
+      "SERVER_ERROR"                     -> DownstreamError,
+      "SERVICE_UNAVAILABLE"              -> DownstreamError
     )
+
+    val extraTysErrors = Map(
+      "INVALID_CORRELATION_ID" -> DownstreamError,
+      "TAX_YEAR_NOT_SUPPORTED" -> RuleTaxYearNotSupportedError
+    )
+
+    errors ++ extraTysErrors
+  }
 
 }
