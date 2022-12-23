@@ -23,7 +23,7 @@ import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
 import v1.models.errors._
-import v1.stubs.{AuditStub, AuthStub, IfsStub, MtdIdLookupStub}
+import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
@@ -32,7 +32,7 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
       "any valid request is made" in new NonTysTest {
 
         override def setupStubs(): Unit = {
-          IfsStub.onSuccess(IfsStub.PUT, downstreamUri, NO_CONTENT, JsObject.empty)
+          DownstreamStub.onSuccess(DownstreamStub.PUT, downstreamUri, NO_CONTENT, JsObject.empty)
         }
 
         val response: WSResponse = await(request().put(requestBodyJson))
@@ -43,7 +43,7 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
       "any valid request with a Tax Year Specific (TYS) tax year is made" in new TysIfsTest {
 
         override def setupStubs(): Unit = {
-          IfsStub.onSuccess(IfsStub.PUT, downstreamUri, NO_CONTENT, JsObject.empty)
+          DownstreamStub.onSuccess(DownstreamStub.PUT, downstreamUri, NO_CONTENT, JsObject.empty)
         }
 
         val response: WSResponse = await(request().put(requestBodyJson))
@@ -329,7 +329,11 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             s"ifs returns an $downstreamCode error and status $downstreamStatus" in new NonTysTest {
 
               override def setupStubs(): Unit = {
-                IfsStub.onError(IfsStub.PUT, downstreamUri, downstreamStatus, errorBody(downstreamCode))
+                AuditStub.audit()
+                AuthStub.authorised()
+                MtdIdLookupStub.ninoFound(nino)
+                DownstreamStub.onError(DownstreamStub.PUT, downstreamUri, downstreamStatus, errorBody(downstreamCode))
+
               }
 
               val response: WSResponse = await(request().put(requestBodyJson))
@@ -396,13 +400,14 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
     def taxYear: String
     def downstreamUri: String
 
-    def setupStubs(): Unit
+    def setupStubs(): Unit = {}
 
     def request(): WSRequest = {
       AuditStub.audit()
       AuthStub.authorised()
       MtdIdLookupStub.ninoFound(nino)
       setupStubs()
+
       buildRequest(uri)
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.1.0+json"),

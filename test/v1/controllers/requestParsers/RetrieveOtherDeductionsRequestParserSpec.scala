@@ -16,6 +16,7 @@
 
 package v1.controllers.requestParsers
 
+import api.models.domain.TaxYear
 import support.UnitSpec
 import v1.models.domain.Nino
 import v1.mocks.validators.MockRetrieveOtherDeductionsValidator
@@ -40,7 +41,7 @@ class RetrieveOtherDeductionsRequestParserSpec extends UnitSpec {
         MockRetrieveOtherDeductionsValidator.validate(inputData).returns(Nil)
 
         parser.parseRequest(inputData) shouldBe
-          Right(RetrieveOtherDeductionsRequest(Nino(nino), taxYear))
+          Right(RetrieveOtherDeductionsRequest(Nino(nino), TaxYear.fromMtd(taxYear)))
       }
     }
 

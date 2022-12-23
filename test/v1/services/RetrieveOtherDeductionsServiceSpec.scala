@@ -16,15 +16,16 @@
 
 package v1.services
 
+import api.models.domain.TaxYear
 import api.models.errors.{DownstreamErrorCode, DownstreamErrors}
-import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.controllers.EndpointLogContext
+import v1.fixtures.RetrieveOtherDeductionsFixtures.responseBodyModel
 import v1.mocks.connectors.MockRetrieveOtherDeductionsConnector
-import v1.models.errors.{DownstreamError, ErrorWrapper, MtdError, NinoFormatError, NotFoundError, TaxYearFormatError}
+import v1.models.domain.Nino
+import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequest
-import v1.models.response.retrieveOtherDeductions.{RetrieveOtherDeductionsResponse, Seafarers}
 
 import scala.concurrent.Future
 
@@ -33,11 +34,7 @@ class RetrieveOtherDeductionsServiceSpec extends ServiceSpec {
   private val nino    = "AA123456A"
   private val taxYear = "2017-18"
 
-  private val responseModel = RetrieveOtherDeductionsResponse(
-    "2019-04-04T01:01:01Z",
-    Some(Seq(Seafarers(Some("SEAFARERS1234"), 2543.32, "Blue Bell", "2019-04-06", "2020-04-05"))))
-
-  private val requestData = RetrieveOtherDeductionsRequest(Nino(nino), taxYear)
+  private val requestData = RetrieveOtherDeductionsRequest(Nino(nino), TaxYear.fromMtd(taxYear))
 
   trait Test extends MockRetrieveOtherDeductionsConnector {
     implicit val hc: HeaderCarrier              = HeaderCarrier()
@@ -54,31 +51,38 @@ class RetrieveOtherDeductionsServiceSpec extends ServiceSpec {
       "a successful response is passed through" in new Test {
         MockRetrieveOtherDeductionsConnector
           .retrieve(requestData)
-          .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
+          .returns(Future.successful(Right(ResponseWrapper(correlationId, responseBodyModel))))
 
-        await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, responseModel))
+        await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, responseBodyModel))
       }
     }
+
     "map errors according to spec" when {
-      def serviceError(ifsErrorCode: String, error: MtdError): Unit =
-        s"a $ifsErrorCode error is returned from the service" in new Test {
+      def serviceError(downstreamErrorCode: String, error: MtdError): Unit =
+        s"a $downstreamErrorCode error is returned from the service" in new Test {
 
           MockRetrieveOtherDeductionsConnector
             .retrieve(requestData)
-            .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(ifsErrorCode))))))
+            .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(downstreamErrorCode))))))
 
           await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
         }
 
-      val input = Seq(
+      val errors = List(
         ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
         ("INVALID_TAX_YEAR", TaxYearFormatError),
+        ("INVALID_CORRELATIONID", DownstreamError),
         ("NO_DATA_FOUND", NotFoundError),
         ("SERVER_ERROR", DownstreamError),
         ("SERVICE_UNAVAILABLE", DownstreamError)
       )
 
-      input.foreach(args => (serviceError _).tupled(args))
+      val extraTysErrors = List(
+        ("INVALID_CORRELATION_ID", DownstreamError),
+        ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError)
+      )
+
+      (errors ++ extraTysErrors).foreach(args => (serviceError _).tupled(args))
     }
   }
 

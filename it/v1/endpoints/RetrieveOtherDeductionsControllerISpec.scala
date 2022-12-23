@@ -16,167 +16,148 @@
 
 package v1.endpoints
 
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status
+import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
+import v1.fixtures.RetrieveOtherDeductionsFixtures.{responseBodyJson, responseWithHateoasLinks}
 import v1.models.errors._
-import v1.stubs.{AuditStub, AuthStub, IfsStub, MtdIdLookupStub}
+import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
+  "calling the retrieve endpoint" should {
+
+    "return a 200 status code" when {
+
+      "any valid request is made" in new NonTysTest {
+
+        override def setupStubs(): Unit = {
+          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, OK, responseBodyJson)
+        }
+
+        val response: WSResponse = await(request().get())
+        response.status shouldBe OK
+        response.json shouldBe responseWithHateoasLinks(mtdTaxYear)
+        response.header("X-CorrelationId").nonEmpty shouldBe true
+        response.header("Content-Type") shouldBe Some("application/json")
+      }
+
+      "any valid request is made for a Tax Year Specific (TYS) tax year" in new TysIfsTest {
+
+        override def setupStubs(): Unit = {
+          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, OK, responseBodyJson)
+        }
+
+        val response: WSResponse = await(request().get())
+        response.status shouldBe OK
+        response.json shouldBe responseWithHateoasLinks(mtdTaxYear)
+        response.header("X-CorrelationId").nonEmpty shouldBe true
+        response.header("Content-Type") shouldBe Some("application/json")
+      }
+    }
+
+    "return error according to spec" when {
+
+      "validation error" when {
+        def validationErrorTest(requestNino: String, requestTaxYear: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+          s"validation fails with ${expectedBody.code} error" in new NonTysTest {
+
+            override val nino: String       = requestNino
+            override val mtdTaxYear: String = requestTaxYear
+
+            val response: WSResponse = await(request().get())
+            response.status shouldBe expectedStatus
+            response.json shouldBe Json.toJson(expectedBody)
+          }
+        }
+
+        val input = Seq(
+          ("Walrus", "2019-20", BAD_REQUEST, NinoFormatError),
+          ("AA123456A", "203100", BAD_REQUEST, TaxYearFormatError),
+          ("AA123456A", "2017-18", BAD_REQUEST, RuleTaxYearNotSupportedError),
+          ("AA123456A", "2018-20", BAD_REQUEST, RuleTaxYearRangeInvalidError)
+        )
+        input.foreach(args => (validationErrorTest _).tupled(args))
+      }
+
+      "downstream service error" when {
+        def serviceErrorTest(downstreamStatus: Int, downstreamCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+          s"downstream returns an $downstreamCode error and status $downstreamStatus" in new NonTysTest {
+
+            override def setupStubs(): Unit = {
+              DownstreamStub.onError(DownstreamStub.GET, downstreamUri, downstreamStatus, errorBody(downstreamCode))
+            }
+
+            val response: WSResponse = await(request().get())
+            response.status shouldBe expectedStatus
+            response.json shouldBe Json.toJson(expectedBody)
+          }
+        }
+
+        val errors = List(
+          (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
+          (BAD_REQUEST, "INVALID_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
+          (BAD_REQUEST, "INVALID_CORRELATIONID", INTERNAL_SERVER_ERROR, DownstreamError),
+          (NOT_FOUND, "NO_DATA_FOUND", NOT_FOUND, NotFoundError),
+          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError),
+          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError)
+        )
+
+        val extraTysErrors = List(
+          (BAD_REQUEST, "INVALID_CORRELATION_ID", INTERNAL_SERVER_ERROR, DownstreamError),
+          (UNPROCESSABLE_ENTITY, "TAX_YEAR_NOT_SUPPORTED", BAD_REQUEST, RuleTaxYearNotSupportedError)
+        )
+
+        (errors ++ extraTysErrors).foreach(args => (serviceErrorTest _).tupled(args))
+      }
+    }
+  }
+
   private trait Test {
 
-    val nino    = "AA123456A"
-    val taxYear = "2021-22"
+    val nino = "AA123456A"
 
-    val responseBody = Json.parse(s"""
-         |{
-         |   "submittedOn": "2019-04-04T01:01:01Z",
-         |   "seafarers": [{
-         |      "customerReference": "SEAFARERS1234",
-         |      "amountDeducted": 2543.32,
-         |      "nameOfShip": "Blue Bell",
-         |      "fromDate": "2019-04-06",
-         |      "toDate": "2020-04-05"
-         |   }],
-         |   "links":[
-         |      {
-         |         "href":"/individuals/deductions/other/$nino/$taxYear",
-         |         "method":"PUT",
-         |         "rel":"create-and-amend-deductions-other"
-         |      },
-         |      {
-         |         "href":"/individuals/deductions/other/$nino/$taxYear",
-         |         "method":"GET",
-         |         "rel":"self"
-         |      },
-         |      {
-         |         "href":"/individuals/deductions/other/$nino/$taxYear",
-         |         "method":"DELETE",
-         |         "rel":"delete-deductions-other"
-         |      }
-         |   ]
-         |}
-         |""".stripMargin)
+    def mtdTaxYear: String
+    def downstreamUri: String
 
-    val ifsResponseBody = Json.parse(s"""
-         |{
-         |  "submittedOn": "2019-04-04T01:01:01Z",
-         |   "seafarers": [{
-         |      "customerReference": "SEAFARERS1234",
-         |      "amountDeducted": 2543.32,
-         |      "nameOfShip": "Blue Bell",
-         |      "fromDate": "2019-04-06",
-         |      "toDate": "2020-04-05"
-         |   }]
-         |}
-         |""".stripMargin)
-
-    def uri: String = s"/$nino/$taxYear"
-
-    def ifsUri: String = s"/income-tax/deductions/$nino/$taxYear"
-
-    def setupStubs(): StubMapping
+    def setupStubs(): Unit = {}
 
     def request(): WSRequest = {
+      AuditStub.audit()
+      AuthStub.authorised()
+      MtdIdLookupStub.ninoFound(nino)
       setupStubs()
-      buildRequest(uri)
+
+      buildRequest(s"/$nino/$mtdTaxYear")
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.1.0+json"),
           (AUTHORIZATION, "Bearer 123") // some bearer token
-      )
+        )
     }
 
     def errorBody(code: String): String =
       s"""
          |      {
          |        "code": "$code",
-         |        "reason": "ifs message"
+         |        "reason": "downstream message"
          |      }
     """.stripMargin
 
   }
 
-  "calling the retrieve endpoint" should {
+  private trait NonTysTest extends Test {
+    def mtdTaxYear: String = "2021-22"
 
-    "return a 200 status code" when {
-
-      "any valid request is made" in new Test {
-
-        override def setupStubs(): StubMapping = {
-          AuditStub.audit()
-          AuthStub.authorised()
-          MtdIdLookupStub.ninoFound(nino)
-          IfsStub.onSuccess(IfsStub.GET, ifsUri, Status.OK, ifsResponseBody)
-        }
-
-        val response: WSResponse = await(request().get())
-        response.status shouldBe Status.OK
-        response.json shouldBe responseBody
-        response.header("X-CorrelationId").nonEmpty shouldBe true
-        response.header("Content-Type") shouldBe Some("application/json")
-      }
-    }
-    "return error according to spec" when {
-
-      "validation error" when {
-        def validationErrorTest(requestNino: String, requestTaxYear: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"validation fails with ${expectedBody.code} error" in new Test {
-
-            override val nino: String    = requestNino
-            override val taxYear: String = requestTaxYear
-
-            override def setupStubs(): StubMapping = {
-              AuditStub.audit()
-              AuthStub.authorised()
-              MtdIdLookupStub.ninoFound(requestNino)
-            }
-
-            val response: WSResponse = await(request().get())
-            response.status shouldBe expectedStatus
-            response.json shouldBe Json.toJson(expectedBody)
-          }
-        }
-
-        val input = Seq(
-          ("Walrus", "2019-20", Status.BAD_REQUEST, NinoFormatError),
-          ("AA123456A", "203100", Status.BAD_REQUEST, TaxYearFormatError),
-          ("AA123456A", "2017-18", Status.BAD_REQUEST, RuleTaxYearNotSupportedError),
-          ("AA123456A", "2018-20", Status.BAD_REQUEST, RuleTaxYearRangeInvalidError)
-        )
-        input.foreach(args => (validationErrorTest _).tupled(args))
-      }
-
-      "ifs service error" when {
-        def serviceErrorTest(ifsStatus: Int, ifsCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"ifs returns an $ifsCode error and status $ifsStatus" in new Test {
-
-            override def setupStubs(): StubMapping = {
-              AuditStub.audit()
-              AuthStub.authorised()
-              MtdIdLookupStub.ninoFound(nino)
-              IfsStub.onError(IfsStub.GET, ifsUri, ifsStatus, errorBody(ifsCode))
-            }
-
-            val response: WSResponse = await(request().get())
-            response.status shouldBe expectedStatus
-            response.json shouldBe Json.toJson(expectedBody)
-          }
-        }
-
-        val input = Seq(
-          (Status.BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", Status.BAD_REQUEST, NinoFormatError),
-          (Status.BAD_REQUEST, "INVALID_TAX_YEAR", Status.BAD_REQUEST, TaxYearFormatError),
-          (Status.NOT_FOUND, "NO_DATA_FOUND", Status.NOT_FOUND, NotFoundError),
-          (Status.INTERNAL_SERVER_ERROR, "SERVER_ERROR", Status.INTERNAL_SERVER_ERROR, DownstreamError),
-          (Status.SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", Status.INTERNAL_SERVER_ERROR, DownstreamError)
-        )
-        input.foreach(args => (serviceErrorTest _).tupled(args))
-      }
-    }
+    def downstreamUri: String = s"/income-tax/deductions/$nino/2021-22"
   }
+
+  private trait TysIfsTest extends Test {
+    def mtdTaxYear: String = "2023-24"
+
+    def downstreamUri: String = s"/income-tax/deductions/23-24/$nino"
+  }
+
 }
