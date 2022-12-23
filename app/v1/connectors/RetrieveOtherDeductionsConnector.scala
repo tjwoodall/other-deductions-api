@@ -16,16 +16,14 @@
 
 package v1.connectors
 
-import api.connectors.DownstreamUri.IfsUri
+import api.connectors.DownstreamUri.{IfsUri, TaxYearSpecificIfsUri}
 import config.AppConfig
-
-import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import v1.connectors.httpparsers.StandardDownstreamHttpParser._
 import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequest
 import v1.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsResponse
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -36,9 +34,15 @@ class RetrieveOtherDeductionsConnector @Inject() (val http: HttpClient, val appC
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[RetrieveOtherDeductionsResponse]] = {
 
-    get(
-      IfsUri[RetrieveOtherDeductionsResponse](s"income-tax/deductions/${request.nino}/${request.taxYear}")
-    )
+    import request._
+
+    val url = if (taxYear.useTaxYearSpecificApi) {
+      TaxYearSpecificIfsUri[RetrieveOtherDeductionsResponse](s"income-tax/deductions/${taxYear.asTysDownstream}/$nino")
+    } else {
+      IfsUri[RetrieveOtherDeductionsResponse](s"income-tax/deductions/$nino/${taxYear.asMtd}")
+    }
+
+    get(url)
   }
 
 }

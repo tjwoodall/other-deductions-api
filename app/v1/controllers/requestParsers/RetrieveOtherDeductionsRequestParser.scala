@@ -16,6 +16,8 @@
 
 package v1.controllers.requestParsers
 
+import api.models.domain.TaxYear
+
 import javax.inject.Inject
 import v1.models.domain.Nino
 import v1.controllers.requestParsers.validators.RetrieveOtherDeductionsValidator
@@ -25,6 +27,6 @@ class RetrieveOtherDeductionsRequestParser @Inject() (val validator: RetrieveOth
     extends RequestParser[RetrieveOtherDeductionsRawData, RetrieveOtherDeductionsRequest] {
 
   override protected def requestFor(data: RetrieveOtherDeductionsRawData): RetrieveOtherDeductionsRequest =
-    RetrieveOtherDeductionsRequest(Nino(data.nino), data.taxYear)
+    RetrieveOtherDeductionsRequest(Nino(data.nino), TaxYear.fromMtd(data.taxYear))
 
 }
