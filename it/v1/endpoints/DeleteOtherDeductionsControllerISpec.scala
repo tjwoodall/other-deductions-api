@@ -24,7 +24,7 @@ import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
 import v1.models.errors.{DownstreamError, MtdError, NinoFormatError, NotFoundError, RuleTaxYearNotSupportedError, RuleTaxYearRangeInvalidError, TaxYearFormatError}
-import v1.stubs.{AuditStub, AuthStub, IfsStub, MtdIdLookupStub}
+import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class DeleteOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
@@ -67,7 +67,7 @@ class DeleteOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          IfsStub.onSuccess(IfsStub.DELETE, ifsUri, Status.NO_CONTENT, JsObject.empty)
+          DownstreamStub.onSuccess(DownstreamStub.DELETE, ifsUri, Status.NO_CONTENT, JsObject.empty)
         }
 
         val response: WSResponse = await(request().delete())
@@ -115,7 +115,7 @@ class DeleteOtherDeductionsControllerISpec extends IntegrationBaseSpec {
               AuditStub.audit()
               AuthStub.authorised()
               MtdIdLookupStub.ninoFound(nino)
-              IfsStub.onError(IfsStub.DELETE, ifsUri, ifsStatus, errorBody(ifsCode))
+              DownstreamStub.onError(DownstreamStub.DELETE, ifsUri, ifsStatus, errorBody(ifsCode))
             }
 
             val response: WSResponse = await(request().delete())

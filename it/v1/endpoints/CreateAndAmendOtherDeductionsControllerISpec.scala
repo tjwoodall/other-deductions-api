@@ -24,7 +24,7 @@ import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
 import v1.models.errors._
-import v1.stubs.{AuditStub, AuthStub, IfsStub, MtdIdLookupStub}
+import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
@@ -105,7 +105,7 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          IfsStub.onSuccess(IfsStub.PUT, ifsUri, NO_CONTENT, JsObject.empty)
+          DownstreamStub.onSuccess(DownstreamStub.PUT, ifsUri, NO_CONTENT, JsObject.empty)
         }
 
         val response: WSResponse = await(request().put(requestBodyJson))
@@ -402,7 +402,7 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
                 AuditStub.audit()
                 AuthStub.authorised()
                 MtdIdLookupStub.ninoFound(nino)
-                IfsStub.onError(IfsStub.PUT, ifsUri, ifsStatus, errorBody(ifsCode))
+                DownstreamStub.onError(DownstreamStub.PUT, ifsUri, ifsStatus, errorBody(ifsCode))
               }
 
               val response: WSResponse = await(request().put(requestBodyJson))

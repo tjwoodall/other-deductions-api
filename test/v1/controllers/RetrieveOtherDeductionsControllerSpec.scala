@@ -16,20 +16,22 @@
 
 package v1.controllers
 
+import api.models.domain.TaxYear
 import play.api.libs.json.Json
-import v1.models.domain.Nino
 import play.api.mvc.Result
 import uk.gov.hmrc.http.HeaderCarrier
+import v1.fixtures.RetrieveOtherDeductionsFixtures.responseBodyModel
 import v1.mocks.MockIdGenerator
 import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockRetrieveOtherDeductionsRequestParser
 import v1.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService, MockRetrieveOtherDeductionsService}
+import v1.models.domain.Nino
 import v1.models.errors._
-import v1.models.hateoas.{HateoasWrapper, Link}
 import v1.models.hateoas.Method.GET
+import v1.models.hateoas.{HateoasWrapper, Link}
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrieveOtherDeductions.{RetrieveOtherDeductionsRawData, RetrieveOtherDeductionsRequest}
-import v1.models.response.retrieveOtherDeductions.{RetrieveOtherDeductionsHateoasData, RetrieveOtherDeductionsResponse, Seafarers}
+import v1.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsHateoasData
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -67,22 +69,9 @@ class RetrieveOtherDeductionsControllerSpec
   private val correlationId = "X-123"
 
   private val rawData     = RetrieveOtherDeductionsRawData(nino, taxYear)
-  private val requestData = RetrieveOtherDeductionsRequest(Nino(nino), taxYear)
+  private val requestData = RetrieveOtherDeductionsRequest(Nino(nino), TaxYear.fromMtd(taxYear))
 
   private val testHateoasLink = Link(href = s"/individuals/deductions/other/{nino}/{taxYear}", method = GET, rel = "self")
-
-  private val responseBody = RetrieveOtherDeductionsResponse(
-    "2019-04-04T01:01:01Z",
-    Some(
-      Seq(
-        Seafarers(
-          Some("myRef"),
-          2000.99,
-          "Blue Bell",
-          "2018-04-06",
-          "2019-04-06"
-        )))
-  )
 
   "handleRequest" should {
     "return Ok" when {
@@ -94,17 +83,18 @@ class RetrieveOtherDeductionsControllerSpec
 
         MockRetrieveOtherDeductionsService
           .retrieve(requestData)
-          .returns(Future.successful(Right(ResponseWrapper(correlationId, responseBody))))
+          .returns(Future.successful(Right(ResponseWrapper(correlationId, responseBodyModel))))
 
         MockHateoasFactory
-          .wrap(responseBody, RetrieveOtherDeductionsHateoasData(nino, taxYear))
-          .returns(HateoasWrapper(responseBody, Seq(testHateoasLink)))
+          .wrap(responseBodyModel, RetrieveOtherDeductionsHateoasData(nino, taxYear))
+          .returns(HateoasWrapper(responseBodyModel, Seq(testHateoasLink)))
 
         val result: Future[Result] = controller.handleRequest(nino, taxYear)(fakeRequest)
         status(result) shouldBe OK
         header("X-CorrelationId", result) shouldBe Some(correlationId)
       }
     }
+
     "return the error as per spec" when {
       "parser errors occur" should {
         def errorsFromParserTester(error: MtdError, expectedStatus: Int): Unit = {
@@ -151,14 +141,18 @@ class RetrieveOtherDeductionsControllerSpec
           }
         }
 
-        val input = Seq(
+        val errors = List(
           (NinoFormatError, BAD_REQUEST),
           (TaxYearFormatError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
           (DownstreamError, INTERNAL_SERVER_ERROR)
         )
 
-        input.foreach(args => (serviceErrors _).tupled(args))
+        val extraTysErrors = List(
+          (RuleTaxYearNotSupportedError, BAD_REQUEST)
+        )
+
+        (errors ++ extraTysErrors).foreach(args => (serviceErrors _).tupled(args))
       }
     }
   }

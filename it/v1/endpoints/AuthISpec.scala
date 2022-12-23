@@ -23,7 +23,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v1.stubs.{AuditStub, AuthStub, IfsStub, MtdIdLookupStub}
+import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class AuthISpec extends IntegrationBaseSpec {
 
@@ -56,11 +56,13 @@ class AuthISpec extends IntegrationBaseSpec {
     def request(): WSRequest = {
       setupStubs()
       buildRequest(uri)
-        .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json")).withHttpHeaders(
-        (ACCEPT, "application/vnd.hmrc.1.0+json"),
-        (AUTHORIZATION, "Bearer 123") // some bearer token
-      )
+        .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+        )
     }
+
   }
 
   "Calling the deductions endpoint" when {
@@ -88,7 +90,7 @@ class AuthISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          IfsStub.onSuccess(IfsStub.GET, ifsUri, Status.OK, ifsResponseBody)
+          DownstreamStub.onSuccess(DownstreamStub.GET, ifsUri, Status.OK, ifsResponseBody)
         }
 
         val response: WSResponse = await(request().get())
@@ -128,4 +130,5 @@ class AuthISpec extends IntegrationBaseSpec {
       }
     }
   }
+
 }
