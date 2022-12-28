@@ -16,7 +16,6 @@
 
 package v1.endpoints
 
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
@@ -28,84 +27,23 @@ import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
-  private trait Test {
-
-    val nino: String          = "AA123456A"
-    val taxYear: String       = "2021-22"
-    val correlationId: String = "X-123"
-
-    val requestBodyJson: JsValue = Json.parse(s"""
-         |{
-         |  "seafarers":[
-         |    {
-         |      "customerReference": "myRef",
-         |      "amountDeducted": 2342.22,
-         |      "nameOfShip": "Blue Bell",
-         |      "fromDate": "2018-08-17",
-         |      "toDate":"2018-10-02"
-         |    }
-         |  ]
-         |}
-    """.stripMargin)
-
-    val responseBody: JsValue = Json.parse(s"""
-         |{
-         |   "links":[
-         |      {
-         |         "href":"/individuals/deductions/other/$nino/$taxYear",
-         |         "method":"PUT",
-         |         "rel":"create-and-amend-deductions-other"
-         |      },
-         |      {
-         |         "href":"/individuals/deductions/other/$nino/$taxYear",
-         |         "method":"GET",
-         |         "rel":"self"
-         |      },
-         |      {
-         |         "href":"/individuals/deductions/other/$nino/$taxYear",
-         |         "method":"DELETE",
-         |         "rel":"delete-deductions-other"
-         |      }
-         |   ]
-         |}
-         |""".stripMargin)
-
-    def setupStubs(): StubMapping
-
-    def uri: String = s"/$nino/$taxYear"
-
-    def ifsUri: String = s"/income-tax/deductions/$nino/$taxYear"
-
-    def request(): WSRequest = {
-      setupStubs()
-      buildRequest(uri)
-        .withHttpHeaders(
-          (ACCEPT, "application/vnd.hmrc.1.0+json"),
-          (AUTHORIZATION, "Bearer 123") // some bearer token
-        )
-    }
-
-    def errorBody(code: String): String =
-      s"""
-         |      {
-         |        "code": "$code",
-         |        "reason": "ifs message"
-         |      }
-    """.stripMargin
-
-  }
-
   "Calling the create and amend other deductions endpoint" should {
-
     "return a 200 status code" when {
+      "any valid request is made" in new NonTysTest {
 
-      "any valid request is made" in new Test {
+        override def setupStubs(): Unit = {
+          DownstreamStub.onSuccess(DownstreamStub.PUT, downstreamUri, NO_CONTENT, JsObject.empty)
+        }
 
-        override def setupStubs(): StubMapping = {
-          AuditStub.audit()
-          AuthStub.authorised()
-          MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.PUT, ifsUri, NO_CONTENT, JsObject.empty)
+        val response: WSResponse = await(request().put(requestBodyJson))
+        response.status shouldBe OK
+        response.json shouldBe responseBody
+        response.header("X-CorrelationId").nonEmpty shouldBe true
+      }
+      "any valid request with a Tax Year Specific (TYS) tax year is made" in new TysIfsTest {
+
+        override def setupStubs(): Unit = {
+          DownstreamStub.onSuccess(DownstreamStub.PUT, downstreamUri, NO_CONTENT, JsObject.empty)
         }
 
         val response: WSResponse = await(request().put(requestBodyJson))
@@ -115,7 +53,7 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
       }
     }
     "return a 400 with multiple errors" when {
-      "all field value validations fail on the request body" in new Test {
+      "all field value validations fail on the request body" in new NonTysTest {
 
         val allInvalidValueRequestBodyJson: JsValue = Json.parse("""
             |{
@@ -169,11 +107,7 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           errors = Some(allInvalidValueRequestError)
         )
 
-        override def setupStubs(): StubMapping = {
-          AuditStub.audit()
-          AuthStub.authorised()
-          MtdIdLookupStub.ninoFound(nino)
-        }
+        override def setupStubs(): Unit = {}
 
         val response: WSResponse = await(request().put(allInvalidValueRequestBodyJson))
         response.status shouldBe BAD_REQUEST
@@ -188,16 +122,16 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             |    {
             |      "customerReference": "myRef",
             |      "amountDeducted": 2342.22,
-            |      "nameOfShip": "Blue Bell",
-            |      "fromDate": "2018-08-17",
-            |      "toDate":"2018-10-02"
+            |      "nameOfShip": "2018-08-17",
+            |      "fromDate": "2020-08-17",
+            |      "toDate":"2020-10-02"
             |    },
             |    {
             |      "customerReference": "myOtherRef",
             |      "amountDeducted": 2872.16,
             |      "nameOfShip": "Blue Bell 2",
-            |      "fromDate": "2019-06-17",
-            |      "toDate":"2020-05-02"
+            |      "fromDate": "2021-06-17",
+            |      "toDate":"2022-05-02"
             |    }
             |  ]
             |}
@@ -363,17 +297,13 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
                                   requestBody: JsValue,
                                   expectedStatus: Int,
                                   expectedBody: MtdError): Unit = {
-            s"validation fails with ${expectedBody.code} error" in new Test {
+            s"validation fails with ${expectedBody.code} error" in new NonTysTest {
 
               override val nino: String             = requestNino
               override val taxYear: String          = requestTaxYear
               override val requestBodyJson: JsValue = requestBody
 
-              override def setupStubs(): StubMapping = {
-                AuditStub.audit()
-                AuthStub.authorised()
-                MtdIdLookupStub.ninoFound(nino)
-              }
+              override def setupStubs(): Unit = {}
 
               val response: WSResponse = await(request().put(requestBodyJson))
               response.status shouldBe expectedStatus
@@ -394,15 +324,16 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           input.foreach(args => (validationErrorTest _).tupled(args))
         }
 
-        "ifs service error" when {
-          def serviceErrorTest(ifsStatus: Int, ifsCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-            s"ifs returns an $ifsCode error and status $ifsStatus" in new Test {
+        "downstream service error" when {
+          def serviceErrorTest(downstreamStatus: Int, downstreamCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+            s"ifs returns an $downstreamCode error and status $downstreamStatus" in new NonTysTest {
 
-              override def setupStubs(): StubMapping = {
+              override def setupStubs(): Unit = {
                 AuditStub.audit()
                 AuthStub.authorised()
                 MtdIdLookupStub.ninoFound(nino)
-                DownstreamStub.onError(DownstreamStub.PUT, ifsUri, ifsStatus, errorBody(ifsCode))
+                DownstreamStub.onError(DownstreamStub.PUT, downstreamUri, downstreamStatus, errorBody(downstreamCode))
+
               }
 
               val response: WSResponse = await(request().put(requestBodyJson))
@@ -421,6 +352,87 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
         }
       }
     }
+  }
+
+  private trait Test {
+
+    val nino: String          = "AA123456A"
+    val correlationId: String = "X-123"
+
+    val requestBodyJson: JsValue = Json.parse(s"""
+                                                 |{
+                                                 |  "seafarers":[
+                                                 |    {
+                                                 |      "customerReference": "myRef",
+                                                 |      "amountDeducted": 2342.22,
+                                                 |      "nameOfShip": "Blue Bell",
+                                                 |      "fromDate": "2020-08-17",
+                                                 |      "toDate":"2020-10-02"
+                                                 |    }
+                                                 |  ]
+                                                 |}
+    """.stripMargin)
+
+    val responseBody: JsValue = Json.parse(s"""
+                                              |{
+                                              |   "links":[
+                                              |      {
+                                              |         "href":"/individuals/deductions/other/$nino/$taxYear",
+                                              |         "method":"PUT",
+                                              |         "rel":"create-and-amend-deductions-other"
+                                              |      },
+                                              |      {
+                                              |         "href":"/individuals/deductions/other/$nino/$taxYear",
+                                              |         "method":"GET",
+                                              |         "rel":"self"
+                                              |      },
+                                              |      {
+                                              |         "href":"/individuals/deductions/other/$nino/$taxYear",
+                                              |         "method":"DELETE",
+                                              |         "rel":"delete-deductions-other"
+                                              |      }
+                                              |   ]
+                                              |}
+                                              |""".stripMargin)
+
+    def uri: String = s"/$nino/$taxYear"
+
+    def taxYear: String
+    def downstreamUri: String
+
+    def setupStubs(): Unit = {}
+
+    def request(): WSRequest = {
+      AuditStub.audit()
+      AuthStub.authorised()
+      MtdIdLookupStub.ninoFound(nino)
+      setupStubs()
+
+      buildRequest(uri)
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+        )
+    }
+
+    def errorBody(code: String): String =
+      s"""
+         |      {
+         |        "code": "$code",
+         |        "reason": "downstream message"
+         |      }
+    """.stripMargin
+
+  }
+
+  private trait NonTysTest extends Test {
+    def taxYear: String       = "2021-22"
+    def downstreamUri: String = s"/income-tax/deductions/$nino/2021-22"
+  }
+
+  private trait TysIfsTest extends Test {
+    def taxYear: String       = "2023-24"
+    def downstreamUri: String = s"/income-tax/deductions/23-24/$nino"
   }
 
 }

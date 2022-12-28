@@ -16,6 +16,7 @@
 
 package v1.controllers
 
+import api.models.domain.TaxYear
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import v1.models.domain.Nino
@@ -23,18 +24,13 @@ import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.MockIdGenerator
 import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockCreateAndAmendOtherDeductionsRequestParser
-import v1.mocks.services.{MockAuditService, MockCreateAndAmendOtherDeductionsService, MockEnrolmentsAuthService, MockMtdIdLookupService}
+import v1.mocks.services._
 import v1.models.audit.{AuditError, AuditEvent, AuditResponse, DeductionsAuditDetail}
 import v1.models.errors._
 import v1.models.hateoas.{HateoasWrapper, Link}
 import v1.models.hateoas.Method.{DELETE, GET, PUT}
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.createAndAmendOtherDeductions.{
-  CreateAndAmendOtherDeductionsBody,
-  CreateAndAmendOtherDeductionsRawData,
-  CreateAndAmendOtherDeductionsRequest,
-  Seafarers
-}
+import v1.models.request.createAndAmendOtherDeductions._
 import v1.models.response.CreateAndAmendOtherDeductionsHateoasData
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -70,7 +66,7 @@ class CreateAndAmendOtherDeductionsControllerSpec
   }
 
   private val nino          = "AA123456A"
-  private val taxYear       = "2019-20"
+  private val taxYear       = "2021-22"
   private val correlationId = "X-123"
 
   private val testHateoasLinks = Seq(
@@ -87,8 +83,8 @@ class CreateAndAmendOtherDeductionsControllerSpec
        |      "customerReference": "myRef",
        |      "amountDeducted": 2342.22,
        |      "nameOfShip": "Blue Bell",
-       |      "fromDate": "2018-08-17",
-       |      "toDate":"2018-10-02"
+       |      "fromDate": "2020-08-17",
+       |      "toDate":"2020-10-02"
        |    }
        |  ]
        |}
@@ -102,8 +98,8 @@ class CreateAndAmendOtherDeductionsControllerSpec
           Some("myRef"),
           2342.22,
           "Blue Bell",
-          "2018-08-17",
-          "2018-10-02"
+          "2020-08-17",
+          "2020-10-02"
         )))
   )
 
@@ -144,7 +140,7 @@ class CreateAndAmendOtherDeductionsControllerSpec
     )
 
   private val rawData     = CreateAndAmendOtherDeductionsRawData(nino, taxYear, requestBodyJson)
-  private val requestData = CreateAndAmendOtherDeductionsRequest(Nino(nino), taxYear, requestBody)
+  private val requestData = CreateAndAmendOtherDeductionsRequest(Nino(nino), TaxYear.fromMtd(taxYear), requestBody)
 
   "handleRequest" should {
     "return Ok" when {
@@ -205,7 +201,8 @@ class CreateAndAmendOtherDeductionsControllerSpec
           (
             RangeToDateBeforeFromDateError.copy(paths =
               Some(Seq("seafarers/0/fromDate", "seafarers/0/toDate", "seafarers/1/fromDate", "seafarers/1/toDate"))),
-            BAD_REQUEST)
+            BAD_REQUEST),
+          (RuleTaxYearNotSupportedError, BAD_REQUEST)
         )
 
         input.foreach(args => (errorsFromParserTester _).tupled(args))
@@ -236,8 +233,9 @@ class CreateAndAmendOtherDeductionsControllerSpec
 
         val input = Seq(
           (NinoFormatError, BAD_REQUEST),
+          (TaxYearFormatError, BAD_REQUEST),
           (DownstreamError, INTERNAL_SERVER_ERROR),
-          (TaxYearFormatError, BAD_REQUEST)
+          (RuleTaxYearNotSupportedError, BAD_REQUEST)
         )
 
         input.foreach(args => (serviceErrors _).tupled(args))

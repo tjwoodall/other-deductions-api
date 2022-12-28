@@ -16,6 +16,7 @@
 
 package v1.services
 
+import api.models.domain.TaxYear
 import api.models.errors.{DownstreamErrorCode, DownstreamErrors}
 import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -29,7 +30,7 @@ import scala.concurrent.Future
 
 class CreateAndAmendOtherDeductionsServiceSpec extends ServiceSpec {
 
-  val taxYear = "2018-04-06"
+  val taxYear = "2021-22"
   val nino    = "AA123456A"
 
   val body = CreateAndAmendOtherDeductionsBody(
@@ -39,12 +40,12 @@ class CreateAndAmendOtherDeductionsServiceSpec extends ServiceSpec {
           Some("myRef"),
           2000.99,
           "Blue Bell",
-          "2018-04-06",
-          "2019-04-06"
+          "2021-04-06",
+          "2022-04-06"
         )))
   )
 
-  private val requestData = CreateAndAmendOtherDeductionsRequest(Nino(nino), taxYear, body)
+  private val requestData = CreateAndAmendOtherDeductionsRequest(Nino(nino), TaxYear.fromMtd(taxYear), body)
 
   trait Test extends MockCreateAndAmendOtherDeductionsConnector {
     implicit val hc: HeaderCarrier              = HeaderCarrier()
@@ -56,9 +57,9 @@ class CreateAndAmendOtherDeductionsServiceSpec extends ServiceSpec {
 
   }
 
-  "service" should {
-    "service call successful" when {
-      "return mapped result" in new Test {
+  "CreateAndAmendOtherDeductionsService" should {
+    "CreateAndAmendOtherDeductions" must {
+      "return correct result for a success" in new Test {
         MockCreateAndAmendOtherDeductionsConnector
           .createAndAmend(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
@@ -71,24 +72,33 @@ class CreateAndAmendOtherDeductionsServiceSpec extends ServiceSpec {
   "unsuccessful" should {
     "map errors according to spec" when {
 
-      def serviceError(ifsErrorCode: String, error: MtdError): Unit =
-        s"a $ifsErrorCode error is returned from the service" in new Test {
+      def serviceError(downstreamErrorCode: String, error: MtdError): Unit =
+        s"a $downstreamErrorCode error is returned from the service" in new Test {
 
           MockCreateAndAmendOtherDeductionsConnector
             .createAndAmend(requestData)
-            .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(ifsErrorCode))))))
+            .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(downstreamErrorCode))))))
 
           await(service.createAndAmend(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
         }
 
-      val input = Seq(
-        "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-        "INVALID_TAX_YEAR"          -> TaxYearFormatError,
-        "SERVER_ERROR"              -> DownstreamError,
-        "SERVICE_UNAVAILABLE"       -> DownstreamError
+      val errors = List(
+        ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
+        ("INVALID_TAX_YEAR", TaxYearFormatError),
+        ("INCOME_SOURCE_NOT_FOUND", NotFoundError),
+        ("INVALID_PAYLOAD", DownstreamError),
+        ("INVALID_CORRELATIONID", DownstreamError),
+        ("BUSINESS_VALIDATION_RULE_FAILURE", DownstreamError),
+        ("SERVER_ERROR", DownstreamError),
+        ("SERVICE_UNAVAILABLE", DownstreamError)
       )
 
-      input.foreach(args => (serviceError _).tupled(args))
+      val extraTysErrors = List(
+        ("INVALID_CORRELATION_ID", DownstreamError),
+        ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError)
+      )
+
+      (errors ++ extraTysErrors).foreach(args => (serviceError _).tupled(args))
     }
   }
 
