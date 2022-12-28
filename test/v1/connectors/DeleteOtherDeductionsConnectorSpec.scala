@@ -25,7 +25,7 @@ import scala.concurrent.Future
 
 class DeleteOtherDeductionsConnectorSpec extends ConnectorSpec {
 
-  "delete" should {
+  "deleteOtherDeductionsConnector" should {
     "return the expected response for a non-TYS request" when {
       "a valid request is made" in new IfsTest with Test {
         def taxYear: TaxYear = TaxYear.fromMtd("2019-20")

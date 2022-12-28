@@ -78,7 +78,7 @@ class DeleteOtherDeductionsServiceSpec extends ServiceSpec {
     implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
 
     private val nino    = "AA123456A"
-    private val taxYear = "2017-18"
+    private val taxYear = "2019-20"
 
     val request = DeleteOtherDeductionsRequest(Nino(nino), TaxYear.fromMtd(taxYear))
 
