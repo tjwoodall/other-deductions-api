@@ -18,15 +18,15 @@ package v1.services
 
 import cats.data.EitherT
 import cats.implicits._
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 import v1.connectors.DeleteOtherDeductionsConnector
 import v1.controllers.EndpointLogContext
-import v1.models.errors.{DownstreamError, NinoFormatError, NotFoundError, TaxYearFormatError}
+import v1.models.errors._
 import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequest
 import v1.support.DownstreamResponseMappingSupport
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -40,20 +40,27 @@ class DeleteOtherDeductionsService @Inject() (DeleteOtherDeductionsConnector: De
       logContext: EndpointLogContext,
       correlationId: String): Future[DeleteOtherDeductionsServiceOutcome] = {
 
-    val result = for {
-      downstreamResponseWrapper <- EitherT(DeleteOtherDeductionsConnector.delete(request)).leftMap(mapDownstreamErrors(ifsErrorMap))
-    } yield downstreamResponseWrapper
+    val result = EitherT(DeleteOtherDeductionsConnector.delete(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
 
     result.value
   }
 
-  private def ifsErrorMap =
-    Map(
+  private def downstreamErrorMap = {
+    val errors = Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
       "INVALID_TAX_YEAR"          -> TaxYearFormatError,
       "NO_DATA_FOUND"             -> NotFoundError,
+      "INVALID_CORRELATIONID"     -> DownstreamError,
       "SERVER_ERROR"              -> DownstreamError,
       "SERVICE_UNAVAILABLE"       -> DownstreamError
     )
+
+    val extraTysErrors = Map(
+      "INVALID_CORRELATION_ID" -> DownstreamError,
+      "TAX_YEAR_NOT_SUPPORTED" -> RuleTaxYearNotSupportedError
+    )
+
+    errors ++ extraTysErrors
+  }
 
 }

@@ -16,15 +16,16 @@
 
 package v1.controllers.requestParsers
 
+import api.models.domain.TaxYear
 import support.UnitSpec
-import v1.models.domain.Nino
 import v1.mocks.validators.MockDeleteOtherDeductionsValidator
+import v1.models.domain.Nino
 import v1.models.errors._
 import v1.models.request.deleteOtherDeductions.{DeleteOtherDeductionsRawData, DeleteOtherDeductionsRequest}
 
 class DeleteOtherDeductionsRequestParserSpec extends UnitSpec {
   val nino                           = "AA123456B"
-  val taxYear                        = "2017-18"
+  val taxYear                        = "2019-20"
   implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val inputData: DeleteOtherDeductionsRawData =
@@ -41,7 +42,7 @@ class DeleteOtherDeductionsRequestParserSpec extends UnitSpec {
         MockDeleteOtherDeductionsValidator.validate(inputData).returns(Nil)
 
         parser.parseRequest(inputData) shouldBe
-          Right(DeleteOtherDeductionsRequest(Nino(nino), "2017-18"))
+          Right(DeleteOtherDeductionsRequest(Nino(nino), TaxYear.fromMtd(taxYear)))
       }
     }
 

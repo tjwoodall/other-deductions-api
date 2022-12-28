@@ -16,15 +16,17 @@
 
 package v1.controllers.requestParsers
 
-import javax.inject.Inject
-import v1.models.domain.Nino
+import api.models.domain.TaxYear
 import v1.controllers.requestParsers.validators.DeleteOtherDeductionsValidator
+import v1.models.domain.Nino
 import v1.models.request.deleteOtherDeductions.{DeleteOtherDeductionsRawData, DeleteOtherDeductionsRequest}
+
+import javax.inject.Inject
 
 class DeleteOtherDeductionsRequestParser @Inject() (val validator: DeleteOtherDeductionsValidator)
     extends RequestParser[DeleteOtherDeductionsRawData, DeleteOtherDeductionsRequest] {
 
   override protected def requestFor(data: DeleteOtherDeductionsRawData): DeleteOtherDeductionsRequest =
-    DeleteOtherDeductionsRequest(Nino(data.nino), data.taxYear)
+    DeleteOtherDeductionsRequest(Nino(data.nino), TaxYear.fromMtd(data.taxYear))
 
 }
