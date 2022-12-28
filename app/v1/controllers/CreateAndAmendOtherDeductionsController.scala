@@ -106,12 +106,7 @@ class CreateAndAmendOtherDeductionsController @Inject() (val authService: Enrolm
     }
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
-
     errorWrapper.error match {
-//      case | TaxYearFormatError | BadRequestError | RuleTaxYearRangeInvalidError | RuleIncorrectOrEmptyBodyError |
-//          RuleTaxYearNotSupportedError | MtdErrorWithCustomMessage(ValueFormatError.code) | MtdErrorWithCustomMessage(NameOfShipFormatError.code) |
-//          MtdErrorWithCustomMessage(CustomerReferenceFormatError.code) | MtdErrorWithCustomMessage(DateFormatError.code) | MtdErrorWithCustomMessage(
-//            RangeToDateBeforeFromDateError.code) =>
 
       case _
           if errorWrapper.containsAnyOf(
