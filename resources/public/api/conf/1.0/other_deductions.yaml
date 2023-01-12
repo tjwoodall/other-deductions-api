@@ -1,0 +1,6 @@
+put:
+  $ref: "./create_and_amend_deductions.yaml"
+get:
+  $ref: "./retrieve_deductions.yaml"
+delete:
+  $ref: "./delete_deductions.yaml"
