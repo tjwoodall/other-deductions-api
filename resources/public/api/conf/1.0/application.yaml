@@ -1,4 +1,3 @@
-
 openapi: "3.0.3"
 
 info:
@@ -21,7 +20,6 @@ info:
 
     # Changelog
     You can find the changelog in the [income-tax-mtd-changelog](https://github.com/hmrc/income-tax-mtd-changelog/#readme) GitHub wiki.
-    
     
     # Support
     
@@ -56,5 +54,3 @@ tags:
 paths:
   /individuals/deductions/other/{nino}/{taxYear}:
     $ref: "./other_deductions.yaml"
-#  /individuals/deductions/other/{nino}/{taxYear}:
-#    $ref: "./delete_deductions.yaml"
