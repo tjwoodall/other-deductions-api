@@ -3,7 +3,7 @@ openapi: "3.0.3"
 
 info:
   version: "1.0"
-  title: Other Deduction (MTD)
+  title: Other Deductions (MTD)
   description: |
     Create, retrieve, amend and delete deductions.
     # Send fraud prevention data
