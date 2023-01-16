@@ -1,4 +1,3 @@
-summary: Retrieve Deductions
 description: |
   This endpoint allows a developer to retrieve deductions that have been previously populated. A National Insurance number and tax year must be provided.
   
@@ -30,10 +29,6 @@ parameters:
   - $ref: './common/headers.yaml#/components/parameters/acceptJson'
   - $ref: './common/headers.yaml#/components/parameters/authorizationReadScopeHeader'
   - $ref: './common/headers.yaml#/components/parameters/testScenarioHeader'
-
-security:
-  - User-Restricted:
-      - read:self-assessment
 
 responses:
   "200":
