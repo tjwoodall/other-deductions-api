@@ -1,6 +1,6 @@
-summary: Delete Deductions
+summary: Retrieve deductions
 description: |
-  This endpoint allows the developer to delete deductions.
+  This endpoint allows a developer to retrieve deductions that have been previously populated. A National Insurance number and tax year must be provided.
   
   ### Test data
   <p>Scenario simulations using <code>Gov-Test-Scenario</code> headers is only available in the sandbox environment.</p>
@@ -28,12 +28,12 @@ parameters:
   - $ref: './common/pathParameters.yaml#/components/parameters/nino'
   - $ref: './common/pathParameters.yaml#/components/parameters/taxYear'
   - $ref: './common/headers.yaml#/components/parameters/acceptJson'
-  - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
+  - $ref: './common/headers.yaml#/components/parameters/authorizationReadScopeHeader'
   - $ref: './common/headers.yaml#/components/parameters/testScenarioHeader'
 
 security:
   - User-Restricted:
-      - write:self-assessment
+      - read:self-assessment
 
 responses:
   "200":
@@ -41,6 +41,15 @@ responses:
     headers:
       X-CorrelationId:
         $ref: './common/headers.yaml#/components/parameters/correlationId'
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/retrieve_other_deductions_response.json'
+        examples:
+          example-response:
+            description: Example Response
+            value:
+              $ref: './examples/retrieve_other_deductions_response.json'
 
   "400":
     description: Bad request
@@ -55,6 +64,8 @@ responses:
             $ref: './common/errors.yaml#/components/examples/formatTaxYear'
           RULE_TAX_YEAR_RANGE_INVALID:
             $ref: './common/errors.yaml#/components/examples/ruleTaxYearRangeInvalid'
+          FORMAT_VALUE:
+            $ref: './common/errors.yaml#/components/examples/formatValue'
           RULE_TAX_YEAR_NOT_SUPPORTED:
             $ref: './common/errors.yaml#/components/examples/ruleTaxYearNotSupported'
 
