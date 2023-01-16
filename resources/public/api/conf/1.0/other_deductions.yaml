@@ -1,6 +1,26 @@
 put:
   $ref: "./create_and_amend_deductions.yaml"
+
+  summary: Create and Amend deductions
+
+  security:
+  - User-Restricted:
+      - write:self-assessment
+
 get:
   $ref: "./retrieve_deductions.yaml"
+
+  summary: Retrieve deductions
+
+  security:
+  - User-Restricted:
+      - read:self-assessment
+
 delete:
   $ref: "./delete_deductions.yaml"
+
+  summary: Delete deductions
+
+  security:
+  - User-Restricted:
+      - write:self-assessment
