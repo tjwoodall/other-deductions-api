@@ -1,4 +1,4 @@
-summary: Create and Amend deductions
+summary: Create and Amend Deductions
 description: |
   This endpoint enables you to create and amend deductions. A National Insurance number and tax year must be provided.
   
