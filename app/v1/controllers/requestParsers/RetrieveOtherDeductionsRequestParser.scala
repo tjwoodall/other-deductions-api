@@ -16,10 +16,10 @@
 
 package v1.controllers.requestParsers
 
-import api.models.domain.TaxYear
+import api.controllers.requestParsers.RequestParser
+import api.models.domain.{Nino, TaxYear}
 
 import javax.inject.Inject
-import v1.models.domain.Nino
 import v1.controllers.requestParsers.validators.RetrieveOtherDeductionsValidator
 import v1.models.request.retrieveOtherDeductions.{RetrieveOtherDeductionsRawData, RetrieveOtherDeductionsRequest}
 

@@ -16,11 +16,12 @@
 
 package v1.models.response.retrieveOtherDeductions
 
+import api.models.hateoas
+import api.models.hateoas.Method
 import mocks.MockAppConfig
 import play.api.libs.json.Json
 import support.UnitSpec
 import v1.fixtures.RetrieveOtherDeductionsFixtures._
-import v1.models.hateoas.{Link, Method}
 
 class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
 
@@ -95,9 +96,9 @@ class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
         MockAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
 
         RetrieveOtherDeductionsResponse.RetrieveOtherLinksFactory.links(mockAppConfig, data) shouldBe Seq(
-          Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.PUT, rel = "create-and-amend-deductions-other"),
-          Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.GET, rel = "self"),
-          Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.DELETE, rel = "delete-deductions-other")
+          hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.PUT, rel = "create-and-amend-deductions-other"),
+          hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.GET, rel = "self"),
+          hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.DELETE, rel = "delete-deductions-other")
         )
       }
     }

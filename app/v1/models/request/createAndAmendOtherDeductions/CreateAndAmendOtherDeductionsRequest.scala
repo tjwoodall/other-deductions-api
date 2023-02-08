@@ -16,7 +16,6 @@
 
 package v1.models.request.createAndAmendOtherDeductions
 
-import api.models.domain.TaxYear
-import v1.models.domain.Nino
+import api.models.domain.{Nino, TaxYear}
 
 case class CreateAndAmendOtherDeductionsRequest(nino: Nino, taxYear: TaxYear, body: CreateAndAmendOtherDeductionsBody)

@@ -16,11 +16,13 @@
 
 package v1.controllers.requestParsers.validators
 
+import api.controllers.requestParsers.validators.Validator
+import api.controllers.requestParsers.validators.validations._
+import api.models.errors.{MtdError, RuleIncorrectOrEmptyBodyError}
 import config.AppConfig
-import javax.inject.Inject
-import v1.controllers.requestParsers.validators.validations._
-import v1.models.errors.{MtdError, RuleIncorrectOrEmptyBodyError}
 import v1.models.request.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsBody, CreateAndAmendOtherDeductionsRawData, Seafarers}
+
+import javax.inject.Inject
 
 class CreateAndAmendOtherDeductionsValidator @Inject() (implicit appConfig: AppConfig) extends Validator[CreateAndAmendOtherDeductionsRawData] {
 
@@ -52,7 +54,7 @@ class CreateAndAmendOtherDeductionsValidator @Inject() (implicit appConfig: AppC
     val body = data.body.as[CreateAndAmendOtherDeductionsBody]
 
     List(
-      flattenErrors(
+      Validator.flattenErrors(
         List(
           body.seafarers.map(_.zipWithIndex.flatMap { case (item, i) =>
             validateSeafarers(item, i)
@@ -90,7 +92,7 @@ class CreateAndAmendOtherDeductionsValidator @Inject() (implicit appConfig: AppC
     val body = data.body.as[CreateAndAmendOtherDeductionsBody]
 
     List(
-      flattenErrors(
+      Validator.flattenErrors(
         List(
           body.seafarers.map(_.zipWithIndex.flatMap { case (item, i) =>
             validateToDateBeforeFromDate(item, i)

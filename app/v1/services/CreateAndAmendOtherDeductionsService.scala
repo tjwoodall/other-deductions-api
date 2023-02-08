@@ -16,33 +16,25 @@
 
 package v1.services
 
+import api.controllers.RequestContext
+import api.models.errors._
+import api.services.BaseService
 import cats.implicits._
-import cats.data.EitherT
-import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.http.HeaderCarrier
-import utils.Logging
 import v1.connectors.CreateAndAmendOtherDeductionsConnector
-import v1.controllers.EndpointLogContext
-import v1.models.errors._
 import v1.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRequest
-import v1.support.DownstreamResponseMappingSupport
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CreateAndAmendOtherDeductionsService @Inject() (connector: CreateAndAmendOtherDeductionsConnector)
-    extends DownstreamResponseMappingSupport
-    with Logging {
+class CreateAndAmendOtherDeductionsService @Inject() (connector: CreateAndAmendOtherDeductionsConnector) extends BaseService {
 
   def createAndAmend(request: CreateAndAmendOtherDeductionsRequest)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      logContext: EndpointLogContext,
-      correlationId: String): Future[CreateAndAmendOtherDeductionsServiceOutcome] = {
+      ctx: RequestContext,
+      ec: ExecutionContext): Future[CreateAndAmendOtherDeductionsServiceOutcome] = {
 
-    val result = EitherT(connector.createAndAmend(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
+    connector.createAndAmend(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
 
-    result.value
   }
 
   private def downstreamErrorMap = {
@@ -50,15 +42,15 @@ class CreateAndAmendOtherDeductionsService @Inject() (connector: CreateAndAmendO
       "INVALID_TAXABLE_ENTITY_ID"        -> NinoFormatError,
       "INVALID_TAX_YEAR"                 -> TaxYearFormatError,
       "INCOME_SOURCE_NOT_FOUND"          -> NotFoundError,
-      "INVALID_PAYLOAD"                  -> DownstreamError,
-      "INVALID_CORRELATIONID"            -> DownstreamError,
-      "BUSINESS_VALIDATION_RULE_FAILURE" -> DownstreamError,
-      "SERVER_ERROR"                     -> DownstreamError,
-      "SERVICE_UNAVAILABLE"              -> DownstreamError
+      "INVALID_PAYLOAD"                  -> InternalError,
+      "INVALID_CORRELATIONID"            -> InternalError,
+      "BUSINESS_VALIDATION_RULE_FAILURE" -> InternalError,
+      "SERVER_ERROR"                     -> InternalError,
+      "SERVICE_UNAVAILABLE"              -> InternalError
     )
 
     val extraTysErrors = Map(
-      "INVALID_CORRELATION_ID" -> DownstreamError,
+      "INVALID_CORRELATION_ID" -> InternalError,
       "TAX_YEAR_NOT_SUPPORTED" -> RuleTaxYearNotSupportedError
     )
 

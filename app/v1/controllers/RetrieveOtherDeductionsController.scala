@@ -16,21 +16,18 @@
 
 package v1.controllers
 
-import cats.data.EitherT
-import cats.implicits._
-
-import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Json
+import api.controllers.{AuthorisedController, EndpointLogContext, RequestContext, RequestHandler}
+import api.hateoas.HateoasFactory
+import api.services.{EnrolmentsAuthService, MtdIdLookupService}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import utils.{IdGenerator, Logging}
 import v1.controllers.requestParsers.RetrieveOtherDeductionsRequestParser
-import v1.hateoas.HateoasFactory
-import v1.models.errors._
 import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRawData
 import v1.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsHateoasData
-import v1.services.{EnrolmentsAuthService, MtdIdLookupService, RetrieveOtherDeductionsService}
+import v1.services.RetrieveOtherDeductionsService
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class RetrieveOtherDeductionsController @Inject() (val authService: EnrolmentsAuthService,
@@ -41,7 +38,6 @@ class RetrieveOtherDeductionsController @Inject() (val authService: EnrolmentsAu
                                                    cc: ControllerComponents,
                                                    idGenerator: IdGenerator)(implicit ec: ExecutionContext)
     extends AuthorisedController(cc)
-    with BaseController
     with Logging {
 
   implicit val endpointLogContext: EndpointLogContext =
@@ -49,52 +45,16 @@ class RetrieveOtherDeductionsController @Inject() (val authService: EnrolmentsAu
 
   def handleRequest(nino: String, taxYear: String): Action[AnyContent] =
     authorisedAction(nino).async { implicit request =>
-      implicit val correlationId: String = idGenerator.generateCorrelationId
-      logger.info(
-        s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] " +
-          s"with CorrelationId: $correlationId")
+      implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
       val rawData = RetrieveOtherDeductionsRawData(nino, taxYear)
-      val result =
-        for {
-          parsedRequest   <- EitherT.fromEither[Future](parser.parseRequest(rawData))
-          serviceResponse <- EitherT(service.retrieve(parsedRequest))
-        } yield {
-          val vendorResponse = hateoasFactory.wrap(serviceResponse.responseData, RetrieveOtherDeductionsHateoasData(nino, taxYear))
 
-          logger.info(
-            s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
-              s"Success response received with CorrelationId: ${serviceResponse.correlationId}")
+      val requestHandler = RequestHandler
+        .withParser(parser)
+        .withService(service.retrieve)
+        .withHateoasResult(hateoasFactory)(RetrieveOtherDeductionsHateoasData(nino, taxYear))
 
-          Ok(Json.toJson(vendorResponse))
-            .withApiHeaders(serviceResponse.correlationId)
-
-        }
-      result.leftMap { errorWrapper =>
-        val resCorrelationId = errorWrapper.correlationId
-        val result           = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
-        logger.warn(
-          s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
-            s"Error response received with CorrelationId: $resCorrelationId")
-
-        result
-      }.merge
+      requestHandler.handleRequest(rawData)
     }
-
-  private def errorResult(errorWrapper: ErrorWrapper) = {
-    errorWrapper.error match {
-      case _
-          if errorWrapper.containsAnyOf(
-            NinoFormatError,
-            BadRequestError,
-            TaxYearFormatError,
-            RuleTaxYearNotSupportedError,
-            RuleTaxYearRangeInvalidError) =>
-        BadRequest(Json.toJson(errorWrapper))
-      case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
-      case NotFoundError   => NotFound(Json.toJson(errorWrapper))
-      case _               => unhandledError(errorWrapper)
-    }
-  }
 
 }

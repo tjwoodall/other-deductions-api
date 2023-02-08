@@ -16,6 +16,6 @@
 
 package v1.models.request.retrieveOtherDeductions
 
-import v1.models.request.RawData
+import api.models.request.RawData
 
 case class RetrieveOtherDeductionsRawData(nino: String, taxYear: String) extends RawData

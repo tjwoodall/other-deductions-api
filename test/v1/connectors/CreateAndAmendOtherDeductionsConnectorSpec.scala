@@ -16,10 +16,10 @@
 
 package v1.connectors
 
-import api.models.domain.TaxYear
-import v1.models.domain.Nino
-import v1.models.outcomes.ResponseWrapper
-import v1.models.request.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsBody, CreateAndAmendOtherDeductionsRequest, Seafarers}
+import api.connectors.ConnectorSpec
+import api.models.domain.{Nino, TaxYear}
+import api.models.outcomes.ResponseWrapper
+import v1.models.request.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsBody, CreateAndAmendOtherDeductionsRequest}
 
 import scala.concurrent.Future
 
@@ -67,17 +67,7 @@ class CreateAndAmendOtherDeductionsConnectorSpec extends ConnectorSpec {
       val connector: CreateAndAmendOtherDeductionsConnector =
         new CreateAndAmendOtherDeductionsConnector(http = mockHttpClient, appConfig = mockAppConfig)
 
-      val body = CreateAndAmendOtherDeductionsBody(
-        Some(
-          Seq(
-            Seafarers(
-              Some("myRef"),
-              2000.99,
-              "Blue Bell",
-              "2021-04-06",
-              "2022-04-06"
-            )))
-      )
+      val body = CreateAndAmendOtherDeductionsBody(None)
 
       lazy val request = CreateAndAmendOtherDeductionsRequest(Nino("AA123456A"), TaxYear.fromMtd(taxYear), body)
     }

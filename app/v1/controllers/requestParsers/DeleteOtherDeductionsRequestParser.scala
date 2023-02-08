@@ -16,9 +16,9 @@
 
 package v1.controllers.requestParsers
 
-import api.models.domain.TaxYear
+import api.controllers.requestParsers.RequestParser
+import api.models.domain.{Nino, TaxYear}
 import v1.controllers.requestParsers.validators.DeleteOtherDeductionsValidator
-import v1.models.domain.Nino
 import v1.models.request.deleteOtherDeductions.{DeleteOtherDeductionsRawData, DeleteOtherDeductionsRequest}
 
 import javax.inject.Inject

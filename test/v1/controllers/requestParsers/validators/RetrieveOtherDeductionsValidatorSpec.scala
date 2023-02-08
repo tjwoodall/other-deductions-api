@@ -16,12 +16,12 @@
 
 package v1.controllers.requestParsers.validators
 
+import api.mocks.MockCurrentTaxYear
+import api.models.errors.{NinoFormatError, RuleTaxYearRangeInvalidError, TaxYearFormatError}
 import config.AppConfig
 import mocks.MockAppConfig
 import support.UnitSpec
 import utils.CurrentTaxYear
-import v1.mocks.MockCurrentTaxYear
-import v1.models.errors._
 import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRawData
 
 class RetrieveOtherDeductionsValidatorSpec extends UnitSpec {

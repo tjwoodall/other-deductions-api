@@ -16,10 +16,10 @@
 
 package v1.connectors
 
-import api.models.domain.TaxYear
+import api.connectors.ConnectorSpec
+import api.models.domain.{Nino, TaxYear}
+import api.models.outcomes.ResponseWrapper
 import v1.fixtures.RetrieveOtherDeductionsFixtures.responseBodyModel
-import v1.models.domain.Nino
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequest
 
 import scala.concurrent.Future
