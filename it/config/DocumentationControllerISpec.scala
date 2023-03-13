@@ -16,11 +16,11 @@
 
 package config
 
+import io.swagger.v3.parser.OpenAPIV3Parser
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
 import support.IntegrationBaseSpec
-import io.swagger.v3.parser.OpenAPIV3Parser
 
 import scala.util.Try
 
@@ -28,37 +28,37 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
 
   val apiDefinitionJson: JsValue = Json.parse(
     """
-    |{
-    |   "scopes":[
-    |      {
-    |         "key":"read:self-assessment",
-    |         "name":"View your Self Assessment information",
-    |         "description":"Allow read access to self assessment data",
-    |         "confidenceLevel": 200
-    |      },
-    |      {
-    |         "key":"write:self-assessment",
-    |         "name":"Change your Self Assessment information",
-    |         "description":"Allow write access to self assessment data",
-    |         "confidenceLevel": 200
-    |      }
-    |   ],
-    |   "api":{
-    |      "name": "Other Deductions (MTD)",
-    |      "description": "An API for retrieving, amending and deleting other deductions",
-    |      "context":"individuals/deductions/other",
-    |      "categories":[
-    |         "INCOME_TAX_MTD"
-    |      ],
-    |      "versions":[
-    |         {
-    |            "version":"1.0",
-    |            "status":"ALPHA",
-    |            "endpointsEnabled":false
-    |         }
-    |      ]
-    |   }
-    |}
+      |{
+      |   "scopes":[
+      |      {
+      |         "key":"read:self-assessment",
+      |         "name":"View your Self Assessment information",
+      |         "description":"Allow read access to self assessment data",
+      |         "confidenceLevel": 200
+      |      },
+      |      {
+      |         "key":"write:self-assessment",
+      |         "name":"Change your Self Assessment information",
+      |         "description":"Allow write access to self assessment data",
+      |         "confidenceLevel": 200
+      |      }
+      |   ],
+      |   "api":{
+      |      "name": "Other Deductions (MTD)",
+      |      "description": "An API for retrieving, amending and deleting other deductions",
+      |      "context":"individuals/deductions/other",
+      |      "categories":[
+      |         "INCOME_TAX_MTD"
+      |      ],
+      |      "versions":[
+      |         {
+      |            "version":"1.0",
+      |            "status":"ALPHA",
+      |            "endpointsEnabled":false
+      |         }
+      |      ]
+      |   }
+      |}
     """.stripMargin
   )
 
@@ -67,14 +67,6 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
       val response: WSResponse = await(buildRequest("/api/definition").get())
       response.status shouldBe Status.OK
       Json.parse(response.body) shouldBe apiDefinitionJson
-    }
-  }
-
-  "a RAML documentation request" must {
-    "return the documentation" in {
-      val response: WSResponse = await(buildRequest("/api/conf/1.0/application.raml").get())
-      response.status shouldBe Status.OK
-      response.body[String] should startWith("#%RAML 1.0")
     }
   }
 
