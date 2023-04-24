@@ -18,10 +18,11 @@ package v1.services
 
 import api.controllers.RequestContext
 import api.models.errors._
-import api.services.BaseService
+import api.services.{BaseService, ServiceOutcome}
 import cats.implicits._
 import v1.connectors.RetrieveOtherDeductionsConnector
 import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequest
+import v1.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsResponse
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,8 +30,9 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class RetrieveOtherDeductionsService @Inject() (connector: RetrieveOtherDeductionsConnector) extends BaseService {
 
-  def retrieve(
-      request: RetrieveOtherDeductionsRequest)(implicit ctx: RequestContext, ec: ExecutionContext): Future[RetrieveOtherDeductionsServiceOutcome] = {
+  def retrieve(request: RetrieveOtherDeductionsRequest)(implicit
+      ctx: RequestContext,
+      ec: ExecutionContext): Future[ServiceOutcome[RetrieveOtherDeductionsResponse]] = {
 
     connector.retrieve(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
   }
