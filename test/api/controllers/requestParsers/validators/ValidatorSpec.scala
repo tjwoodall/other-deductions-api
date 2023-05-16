@@ -116,6 +116,29 @@ class ValidatorSpec extends UnitSpec with MockFactory {
         levelTwoValidationTwo.called shouldBe 1
       }
     }
+
+    "order errors alphabetically by code" in new Test {
+      val errors: List[List[MtdError]] = List(
+        List(
+          MtdError("CODE_A", "a", BAD_REQUEST),
+          MtdError("CODE_C", "c", BAD_REQUEST, Some(Seq("a")))
+        ),
+        List(
+          MtdError("CODE_D", "d", BAD_REQUEST),
+          MtdError("CODE_C", "c", BAD_REQUEST, Some(Seq("b"))),
+          MtdError("CODE_B", "b", BAD_REQUEST)
+        )
+      )
+
+      val flatErrors: List[MtdError] = List(
+        MtdError("CODE_A", "a", BAD_REQUEST),
+        MtdError("CODE_B", "b", BAD_REQUEST),
+        MtdError("CODE_C", "c", BAD_REQUEST, Some(Seq("a", "b"))),
+        MtdError("CODE_D", "d", BAD_REQUEST)
+      )
+
+      validator.Validator.flattenErrors(errors) shouldBe flatErrors
+    }
   }
 
 }
