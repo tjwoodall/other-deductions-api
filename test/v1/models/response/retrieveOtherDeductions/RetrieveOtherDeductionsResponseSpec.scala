@@ -16,6 +16,7 @@
 
 package v1.models.response.retrieveOtherDeductions
 
+import api.models.domain.Timestamp
 import api.models.hateoas
 import api.models.hateoas.Method
 import mocks.MockAppConfig
@@ -26,24 +27,24 @@ import v1.fixtures.RetrieveOtherDeductionsFixtures._
 class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
 
   val multipleSeafarersRetrieveOtherDeductionsResponse: RetrieveOtherDeductionsResponse = RetrieveOtherDeductionsResponse(
-    submittedOn = "2019-04-04T01:01:01Z",
+    submittedOn = Timestamp("2019-04-04T01:01:01Z"),
     seafarers = Some(Seq(seafarersModel, seafarersModel))
   )
 
   val noRefRetrieveOtherDeductionsResponse: RetrieveOtherDeductionsResponse = RetrieveOtherDeductionsResponse(
-    "2019-04-04T01:01:01Z",
+    Timestamp("2019-04-04T01:01:01Z"),
     Some(Seq(seafarersModel.copy(customerReference = None)))
   )
 
   val jsonMultipleSeafarers = Json.parse(
     s"""{
-      | "submittedOn": "2019-04-04T01:01:01Z",
+      | "submittedOn": "2019-04-04T01:01:01.000Z",
       | "seafarers": [$seafarersJson, $seafarersJson]
       |}""".stripMargin
   )
 
   val jsonNoRef = Json.parse("""{
-      | "submittedOn": "2019-04-04T01:01:01Z",
+      | "submittedOn": "2019-04-04T01:01:01.000Z",
       | "seafarers": [{
       |   "amountDeducted": 2000.99,
       |   "nameOfShip": "Blue Bell",
