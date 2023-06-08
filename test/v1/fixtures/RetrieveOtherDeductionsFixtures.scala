@@ -43,7 +43,7 @@ object RetrieveOtherDeductionsFixtures {
   )
 
   val responseBodyModel: RetrieveOtherDeductionsResponse = RetrieveOtherDeductionsResponse(
-    submittedOn = Timestamp("2019-04-04T01:01:01Z"),
+    submittedOn = Timestamp("2019-04-04T01:01:01.000Z"),
     seafarers = Some(Seq(seafarersModel))
   )
 

@@ -36,7 +36,7 @@ class AuthISpec extends IntegrationBaseSpec {
     val ifsResponseBody: JsValue = Json.parse(
       """
         |{
-        |   "submittedOn": "2019-04-04T01:01:01Z",
+        |   "submittedOn": "2019-04-04T01:01:01.000Z",
         |   "seafarers": [{
         |      "customerReference": "SEAFARERS1234",
         |      "amountDeducted": 2543.32,
