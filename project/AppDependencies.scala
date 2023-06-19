@@ -20,14 +20,14 @@ import sbt._
 
 object AppDependencies {
 
-  val bootstrapPlayVersion = "5.24.0"
+  val bootstrapPlayVersion = "7.11.0"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc"                  %% "bootstrap-backend-play-28" % "5.24.0",
+    "uk.gov.hmrc"                  %% "bootstrap-backend-play-28" % bootstrapPlayVersion,
     "org.typelevel"                %% "cats-core"                 % "2.7.0",
     "com.chuusai"                  %% "shapeless"                 % "2.4.0-M1",
-    "com.fasterxml.jackson.module" %% "jackson-module-scala"      % "2.13.2"
+    "com.fasterxml.jackson.module" %% "jackson-module-scala"      % "2.14.2"
   )
 
   def test(scope: String = "test, it"): Seq[sbt.ModuleID] = Seq(

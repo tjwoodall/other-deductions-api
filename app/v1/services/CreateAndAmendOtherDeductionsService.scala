@@ -18,7 +18,7 @@ package v1.services
 
 import api.controllers.RequestContext
 import api.models.errors._
-import api.services.BaseService
+import api.services.{BaseService, ServiceOutcome}
 import cats.implicits._
 import v1.connectors.CreateAndAmendOtherDeductionsConnector
 import v1.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRequest
@@ -29,9 +29,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CreateAndAmendOtherDeductionsService @Inject() (connector: CreateAndAmendOtherDeductionsConnector) extends BaseService {
 
-  def createAndAmend(request: CreateAndAmendOtherDeductionsRequest)(implicit
-      ctx: RequestContext,
-      ec: ExecutionContext): Future[CreateAndAmendOtherDeductionsServiceOutcome] = {
+  def createAndAmend(
+      request: CreateAndAmendOtherDeductionsRequest)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ServiceOutcome[Unit]] = {
 
     connector.createAndAmend(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
 

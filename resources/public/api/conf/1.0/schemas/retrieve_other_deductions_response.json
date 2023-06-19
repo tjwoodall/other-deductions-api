@@ -5,9 +5,9 @@
   "type": "object",
   "properties": {
     "submittedOn": {
-      "description": "The date the deductions were added. It must be provided in the format YYYY-MM-DDThh:mm:ssZ",
+      "description": "The date the deductions were added. It must be provided in the format YYYY-MM-DDThh:mm:ss.sssZ",
       "type": "string",
-      "example": "2019-04-04T01:01:01Z"
+      "example": "2019-04-04T01:01:01.000Z"
     },
     "seafarers": {
       "description": "Financial details about deductions and time spent working on a ship.",

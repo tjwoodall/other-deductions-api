@@ -56,6 +56,7 @@ trait Validator[A <: RawData] {
           })
         }
         .toList
+        .sortBy(_.code)
     }
 
     /** Utility to validate a optional request body field or parameter value.

@@ -78,11 +78,12 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
                 "/seafarers/0/customerReference"
               ))
           ),
-          ValueFormatError.copy(
-            message = "The field should be between 0 and 99999999999.99",
+          DateFormatError.copy(
+            message = "The field should be in the format YYYY-MM-DD",
             paths = Some(
               List(
-                "/seafarers/0/amountDeducted"
+                "/seafarers/0/fromDate",
+                "/seafarers/0/toDate"
               ))
           ),
           NameOfShipFormatError.copy(
@@ -92,12 +93,11 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
                 "/seafarers/0/nameOfShip"
               ))
           ),
-          DateFormatError.copy(
-            message = "The field should be in the format YYYY-MM-DD",
+          ValueFormatError.copy(
+            message = "The field should be between 0 and 99999999999.99",
             paths = Some(
               List(
-                "/seafarers/0/fromDate",
-                "/seafarers/0/toDate"
+                "/seafarers/0/amountDeducted"
               ))
           )
         )

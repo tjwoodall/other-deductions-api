@@ -5,16 +5,16 @@ populated.
 
 ## Requirements
 
-- Scala 2.12.x
-- Java 8
-- sbt 1.6.x
+- Scala 2.13.x
+- Java 11
+- sbt 1.7.x
 - [Service Manager](https://github.com/hmrc/service-manager)
 
 ## Development Setup
 
 Run from the console using: `sbt run` (starts on port 7797 by default)
 
-Start the service manager profile: `sm --start MTDFB_ALL`
+Start the service manager profile: `sm --start MTDFB_OTHER_DEDUCTIONS`
 
 ## Running tests
 
@@ -41,7 +41,7 @@ You can create a GitHub issue [here](https://github.com/hmrc/income-tax-mtd-chan
 ## API Reference / Documentation
 
 Available on
-the [Other Deductions Documentation](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/other-deductions-api/1.0)
+the [Other Deductions Documentation](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/other-deductions-api)
 
 ## License
 

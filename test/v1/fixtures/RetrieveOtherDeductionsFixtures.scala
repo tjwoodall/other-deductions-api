@@ -16,6 +16,7 @@
 
 package v1.fixtures
 
+import api.models.domain.Timestamp
 import play.api.libs.json.{JsObject, JsValue, Json}
 import v1.models.response.retrieveOtherDeductions.{RetrieveOtherDeductionsResponse, Seafarers}
 
@@ -42,13 +43,13 @@ object RetrieveOtherDeductionsFixtures {
   )
 
   val responseBodyModel: RetrieveOtherDeductionsResponse = RetrieveOtherDeductionsResponse(
-    submittedOn = "2019-04-04T01:01:01Z",
+    submittedOn = Timestamp("2019-04-04T01:01:01.000Z"),
     seafarers = Some(Seq(seafarersModel))
   )
 
   val responseBodyJson: JsValue = Json.parse(
     s"""{
-       |  "submittedOn": "2019-04-04T01:01:01Z",
+       |  "submittedOn": "2019-04-04T01:01:01.000Z",
        |  "seafarers": [$seafarersJson]
        |}""".stripMargin
   )

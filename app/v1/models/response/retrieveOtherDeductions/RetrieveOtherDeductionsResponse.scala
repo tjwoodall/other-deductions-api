@@ -17,11 +17,12 @@
 package v1.models.response.retrieveOtherDeductions
 
 import api.hateoas.{HateoasLinks, HateoasLinksFactory}
+import api.models.domain.Timestamp
 import api.models.hateoas.{HateoasData, Link}
 import config.AppConfig
 import play.api.libs.json.{Json, OFormat}
 
-case class RetrieveOtherDeductionsResponse(submittedOn: String, seafarers: Option[Seq[Seafarers]])
+case class RetrieveOtherDeductionsResponse(submittedOn: Timestamp, seafarers: Option[Seq[Seafarers]])
 
 object RetrieveOtherDeductionsResponse extends HateoasLinks {
   implicit val format: OFormat[RetrieveOtherDeductionsResponse] = Json.format[RetrieveOtherDeductionsResponse]
