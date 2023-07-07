@@ -27,42 +27,42 @@ import scala.util.Try
 
 class DocumentationControllerISpec extends IntegrationBaseSpec {
 
-  val config: AppConfig = app.injector.instanceOf[AppConfig]
+  val config: AppConfig                = app.injector.instanceOf[AppConfig]
   val confidenceLevel: ConfidenceLevel = config.confidenceLevelConfig.confidenceLevel
 
   val apiDefinitionJson: JsValue = Json.parse(
     s"""
-      |{
-      |   "scopes":[
-      |      {
-      |         "key":"read:self-assessment",
-      |         "name":"View your Self Assessment information",
-      |         "description":"Allow read access to self assessment data",
-      |         "confidenceLevel": $confidenceLevel
-      |      },
-      |      {
-      |         "key":"write:self-assessment",
-      |         "name":"Change your Self Assessment information",
-      |         "description":"Allow write access to self assessment data",
-      |         "confidenceLevel": $confidenceLevel
-      |      }
-      |   ],
-      |   "api":{
-      |      "name": "Other Deductions (MTD)",
-      |      "description": "An API for retrieving, amending and deleting other deductions",
-      |      "context":"individuals/deductions/other",
-      |      "categories":[
-      |         "INCOME_TAX_MTD"
-      |      ],
-      |      "versions":[
-      |         {
-      |            "version":"1.0",
-      |            "status":"ALPHA",
-      |            "endpointsEnabled":false
-      |         }
-      |      ]
-      |   }
-      |}
+       |{
+       |   "scopes":[
+       |      {
+       |         "key":"read:self-assessment",
+       |         "name":"View your Self Assessment information",
+       |         "description":"Allow read access to self assessment data",
+       |         "confidenceLevel": $confidenceLevel
+       |      },
+       |      {
+       |         "key":"write:self-assessment",
+       |         "name":"Change your Self Assessment information",
+       |         "description":"Allow write access to self assessment data",
+       |         "confidenceLevel": $confidenceLevel
+       |      }
+       |   ],
+       |   "api":{
+       |      "name": "Other Deductions (MTD)",
+       |      "description": "An API for retrieving, amending and deleting other deductions",
+       |      "context":"individuals/deductions/other",
+       |      "categories":[
+       |         "INCOME_TAX_MTD"
+       |      ],
+       |      "versions":[
+       |         {
+       |            "version":"1.0",
+       |            "status":"BETA",
+       |            "endpointsEnabled":true
+       |         }
+       |      ]
+       |   }
+       |}
     """.stripMargin
   )
 

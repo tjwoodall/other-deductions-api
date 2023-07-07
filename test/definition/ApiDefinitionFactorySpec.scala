@@ -19,8 +19,8 @@ package definition
 import api.mocks.MockHttpClient
 import config.ConfidenceLevelConfig
 import definition.APIStatus.{ALPHA, BETA}
-import definition.Versions.VERSION_1
 import mocks.MockAppConfig
+import routing.Version1
 import support.UnitSpec
 import uk.gov.hmrc.auth.core.ConfidenceLevel
 
@@ -45,8 +45,8 @@ class ApiDefinitionFactorySpec extends UnitSpec {
       }
 
       def testDefinitionWithConfidence(confidenceLevelConfig: ConfidenceLevelConfig): Unit = new Test {
-        MockAppConfig.apiStatus returns "1.0"
-        MockAppConfig.endpointsEnabled returns true
+        MockAppConfig.apiStatus(Version1) returns "BETA"
+        MockAppConfig.endpointsEnabled(Version1) returns true
         MockAppConfig.confidenceLevelCheckEnabled.returns(confidenceLevelConfig).anyNumberOfTimes()
 
         val readScope: String                = "read:self-assessment"
@@ -76,8 +76,8 @@ class ApiDefinitionFactorySpec extends UnitSpec {
               categories = Seq("INCOME_TAX_MTD"),
               versions = Seq(
                 APIVersion(
-                  version = VERSION_1,
-                  status = ALPHA,
+                  version = Version1,
+                  status = BETA,
                   endpointsEnabled = true
                 )
               ),
@@ -109,15 +109,15 @@ class ApiDefinitionFactorySpec extends UnitSpec {
   "buildAPIStatus" when {
     "the 'apiStatus' parameter is present and valid" should {
       "return the correct status" in new Test {
-        MockAppConfig.apiStatus returns "BETA"
-        apiDefinitionFactory.buildAPIStatus(version = "1.0") shouldBe BETA
+        MockAppConfig.apiStatus(Version1) returns "BETA"
+        apiDefinitionFactory.buildAPIStatus(Version1) shouldBe BETA
       }
     }
 
     "the 'apiStatus' parameter is present and invalid" should {
       "default to alpha" in new Test {
-        MockAppConfig.apiStatus returns "ALPHO"
-        apiDefinitionFactory.buildAPIStatus(version = "1.0") shouldBe ALPHA
+        MockAppConfig.apiStatus(Version1) returns "ALPHO"
+        apiDefinitionFactory.buildAPIStatus(Version1) shouldBe ALPHA
       }
     }
   }
