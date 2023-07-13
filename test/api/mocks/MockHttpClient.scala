@@ -54,6 +54,14 @@ trait MockHttpClient extends MockFactory {
         })
     }
 
+    private def assertHeaders[T, I](actualHeaders: Seq[(String, String)],
+                                    requiredHeaders: Seq[(String, String)],
+                                    excludedHeaders: Seq[(String, String)]) = {
+
+      actualHeaders should contain allElementsOf requiredHeaders
+      actualHeaders should contain noElementsOf excludedHeaders
+    }
+
     def put[I, T](url: String,
                   config: HeaderCarrier.Config,
                   body: I,
@@ -86,14 +94,6 @@ trait MockHttpClient extends MockFactory {
             assertHeaders(headersForUrl, requiredHeaders, excludedHeaders)
           }
         })
-    }
-
-    private def assertHeaders[T, I](actualHeaders: Seq[(String, String)],
-                                    requiredHeaders: Seq[(String, String)],
-                                    excludedHeaders: Seq[(String, String)]) = {
-
-      actualHeaders should contain allElementsOf requiredHeaders
-      actualHeaders should contain noElementsOf excludedHeaders
     }
 
   }

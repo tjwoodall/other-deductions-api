@@ -17,10 +17,8 @@
 import sbt.Keys.{baseDirectory, parallelExecution, unmanagedClasspath}
 import sbt._
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings}
-import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 import uk.gov.hmrc.SbtAutoBuildPlugin
-
-val appName = "other-deductions-api"
+import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 lazy val ItTest = config("it") extend Test
 
@@ -55,5 +53,7 @@ lazy val microservice = Project(appName, file("."))
     resolvers += Resolver.jcenterRepo
   )
   .settings(PlayKeys.playDefaultPort := 7797)
+
+val appName = "other-deductions-api"
 
 dependencyUpdatesFilter -= moduleFilter(name = "bootstrap-backend-play-28")

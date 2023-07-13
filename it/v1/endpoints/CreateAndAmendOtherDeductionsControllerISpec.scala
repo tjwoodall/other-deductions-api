@@ -396,12 +396,9 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
                                               |}
                                               |""".stripMargin)
 
-    def uri: String = s"/$nino/$taxYear"
-
     def taxYear: String
-    def downstreamUri: String
 
-    def setupStubs(): Unit = {}
+    def downstreamUri: String
 
     def request(): WSRequest = {
       AuditStub.audit()
@@ -415,6 +412,10 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           (AUTHORIZATION, "Bearer 123") // some bearer token
         )
     }
+
+    def uri: String = s"/$nino/$taxYear"
+
+    def setupStubs(): Unit = {}
 
     def errorBody(code: String): String =
       s"""

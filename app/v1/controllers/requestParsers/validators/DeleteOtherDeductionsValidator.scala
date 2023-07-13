@@ -28,6 +28,10 @@ class DeleteOtherDeductionsValidator @Inject() (implicit appConfig: AppConfig) e
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
 
+  override def validate(data: DeleteOtherDeductionsRawData): List[MtdError] = {
+    run(validationSet, data).distinct
+  }
+
   private def parameterFormatValidation: DeleteOtherDeductionsRawData => List[List[MtdError]] = (data: DeleteOtherDeductionsRawData) => {
     List(
       NinoValidation.validate(data.nino),
@@ -39,10 +43,6 @@ class DeleteOtherDeductionsValidator @Inject() (implicit appConfig: AppConfig) e
     List(
       MtdTaxYearValidation.validate(data.taxYear)
     )
-  }
-
-  override def validate(data: DeleteOtherDeductionsRawData): List[MtdError] = {
-    run(validationSet, data).distinct
   }
 
 }

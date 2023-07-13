@@ -29,6 +29,10 @@ class CreateAndAmendOtherDeductionsValidator @Inject() (implicit appConfig: AppC
   private val validationSet =
     List(parameterFormatValidation, parameterRuleValidation, bodyFormatValidation, bodyFieldFormatValidation, dateRangeValidation)
 
+  override def validate(data: CreateAndAmendOtherDeductionsRawData): List[MtdError] = {
+    run(validationSet, data).distinct
+  }
+
   private def parameterFormatValidation: CreateAndAmendOtherDeductionsRawData => List[List[MtdError]] =
     (data: CreateAndAmendOtherDeductionsRawData) => {
       List(
@@ -110,10 +114,6 @@ class CreateAndAmendOtherDeductionsValidator @Inject() (implicit appConfig: AppC
         toPath = s"/seafarers/$arrayIndex/toDate"
       )
     ).flatten
-  }
-
-  override def validate(data: CreateAndAmendOtherDeductionsRawData): List[MtdError] = {
-    run(validationSet, data).distinct
   }
 
 }

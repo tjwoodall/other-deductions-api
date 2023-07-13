@@ -17,35 +17,41 @@
 package config
 
 import com.typesafe.config.Config
-
-import javax.inject.{Inject, Singleton}
 import play.api.{ConfigLoader, Configuration}
 import routing.Version
 import uk.gov.hmrc.auth.core.ConfidenceLevel
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import javax.inject.{Inject, Singleton}
+
 trait AppConfig {
+
+  lazy val ifsDownstreamConfig: DownstreamConfig =
+    DownstreamConfig(baseUrl = ifsBaseUrl, env = ifsEnv, token = ifsToken, environmentHeaders = ifsEnvironmentHeaders)
+
+  lazy val taxYearSpecificIfsDownstreamConfig: DownstreamConfig =
+    DownstreamConfig(baseUrl = tysIfsBaseUrl, env = tysIfsEnv, token = tysIfsToken, environmentHeaders = tysIfsEnvironmentHeaders)
 
   // MTD ID Lookup Config
   def mtdIdBaseUrl: String
 
   // IFS Config
   def ifsBaseUrl: String
-  def ifsEnv: String
-  def ifsToken: String
-  def ifsEnvironmentHeaders: Option[Seq[String]]
 
-  lazy val ifsDownstreamConfig: DownstreamConfig =
-    DownstreamConfig(baseUrl = ifsBaseUrl, env = ifsEnv, token = ifsToken, environmentHeaders = ifsEnvironmentHeaders)
+  def ifsEnv: String
+
+  def ifsToken: String
+
+  def ifsEnvironmentHeaders: Option[Seq[String]]
 
   // Tax Year Specific (TYS) IFS Config
   def tysIfsBaseUrl: String
-  def tysIfsEnv: String
-  def tysIfsToken: String
-  def tysIfsEnvironmentHeaders: Option[Seq[String]]
 
-  lazy val taxYearSpecificIfsDownstreamConfig: DownstreamConfig =
-    DownstreamConfig(baseUrl = tysIfsBaseUrl, env = tysIfsEnv, token = tysIfsToken, environmentHeaders = tysIfsEnvironmentHeaders)
+  def tysIfsEnv: String
+
+  def tysIfsToken: String
+
+  def tysIfsEnvironmentHeaders: Option[Seq[String]]
 
   // Business Rule Config
   def minimumPermittedTaxYear: Int

@@ -31,7 +31,15 @@ import scala.concurrent.Future
 
 class AuthorisedControllerSpec extends ControllerBaseSpec {
 
+  val nino  = "AA123456A"
+  val mtdId = "X123567890"
+
+  val predicate: Predicate = Enrolment("HMRC-MTD-IT")
+    .withIdentifier("MTDITID", mtdId)
+    .withDelegatedAuthRule("mtd-it-auth")
+
   trait Test extends MockEnrolmentsAuthService with MockMtdIdLookupService {
+    lazy val target       = new TestController()
     val hc: HeaderCarrier = HeaderCarrier()
 
     class TestController extends AuthorisedController(cc) {
@@ -44,15 +52,7 @@ class AuthorisedControllerSpec extends ControllerBaseSpec {
 
     }
 
-    lazy val target = new TestController()
   }
-
-  val nino  = "AA123456A"
-  val mtdId = "X123567890"
-
-  val predicate: Predicate = Enrolment("HMRC-MTD-IT")
-    .withIdentifier("MTDITID", mtdId)
-    .withDelegatedAuthRule("mtd-it-auth")
 
   "calling an action" when {
 

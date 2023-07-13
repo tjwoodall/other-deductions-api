@@ -54,6 +54,8 @@ object RetrieveOtherDeductionsFixtures {
        |}""".stripMargin
   )
 
+  def responseWithHateoasLinks(taxYear: String): JsValue = responseBodyJson.as[JsObject] ++ hateoasLinks(taxYear).as[JsObject]
+
   private def hateoasLinks(taxYear: String): JsValue = Json.parse(
     s"""
        |{
@@ -77,7 +79,5 @@ object RetrieveOtherDeductionsFixtures {
        |}
        |""".stripMargin
   )
-
-  def responseWithHateoasLinks(taxYear: String): JsValue = responseBodyJson.as[JsObject] ++ hateoasLinks(taxYear).as[JsObject]
 
 }
