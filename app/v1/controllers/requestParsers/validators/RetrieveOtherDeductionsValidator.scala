@@ -28,6 +28,10 @@ class RetrieveOtherDeductionsValidator @Inject() (implicit appConfig: AppConfig)
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
 
+  override def validate(data: RetrieveOtherDeductionsRawData): List[MtdError] = {
+    run(validationSet, data).distinct
+  }
+
   private def parameterFormatValidation: RetrieveOtherDeductionsRawData => List[List[MtdError]] = (data: RetrieveOtherDeductionsRawData) => {
     List(
       NinoValidation.validate(data.nino),
@@ -39,10 +43,6 @@ class RetrieveOtherDeductionsValidator @Inject() (implicit appConfig: AppConfig)
     List(
       MtdTaxYearValidation.validate(data.taxYear)
     )
-  }
-
-  override def validate(data: RetrieveOtherDeductionsRawData): List[MtdError] = {
-    run(validationSet, data).distinct
   }
 
 }

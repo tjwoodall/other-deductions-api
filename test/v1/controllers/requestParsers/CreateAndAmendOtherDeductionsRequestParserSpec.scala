@@ -36,17 +36,17 @@ class CreateAndAmendOtherDeductionsRequestParserSpec extends UnitSpec {
   implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   private val requestBodyJson = Json.parse("""
-      |{
-      |    "seafarers":[
-      |      {
-      |      "customerReference": "SEAFARERS1234",
-      |      "amountDeducted": 2342.22,
-      |      "nameOfShip": "Blue Wave",
-      |      "fromDate": "2020-08-17",
-      |      "toDate":"2020-10-02"
-      |      }
-      |    ]
-      |}
+                                             |{
+                                             |    "seafarers":[
+                                             |      {
+                                             |      "customerReference": "SEAFARERS1234",
+                                             |      "amountDeducted": 2342.22,
+                                             |      "nameOfShip": "Blue Wave",
+                                             |      "fromDate": "2020-08-17",
+                                             |      "toDate":"2020-10-02"
+                                             |      }
+                                             |    ]
+                                             |}
         """.stripMargin)
 
   val inputData =

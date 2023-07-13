@@ -137,8 +137,6 @@ class DeleteOtherDeductionsControllerISpec extends IntegrationBaseSpec {
     def taxYear: String
     def downstreamUri: String
 
-    def uri: String = s"/$nino/$taxYear"
-
     def setupStubs(): StubMapping
 
     def request(): WSRequest = {
@@ -149,6 +147,8 @@ class DeleteOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           (AUTHORIZATION, "Bearer 123") // some bearer token
         )
     }
+
+    def uri: String = s"/$nino/$taxYear"
 
     def errorBody(code: String): String =
       s"""

@@ -18,14 +18,10 @@ package v1.controllers.requestParsers
 
 import api.controllers.requestParsers.RequestParser
 import api.models.domain.{Nino, TaxYear}
+import v1.controllers.requestParsers.validators.CreateAndAmendOtherDeductionsValidator
+import v1.models.request.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsBody, CreateAndAmendOtherDeductionsRawData, CreateAndAmendOtherDeductionsRequest}
 
 import javax.inject.Inject
-import v1.controllers.requestParsers.validators.CreateAndAmendOtherDeductionsValidator
-import v1.models.request.createAndAmendOtherDeductions.{
-  CreateAndAmendOtherDeductionsBody,
-  CreateAndAmendOtherDeductionsRawData,
-  CreateAndAmendOtherDeductionsRequest
-}
 
 class CreateAndAmendOtherDeductionsRequestParser @Inject() (val validator: CreateAndAmendOtherDeductionsValidator)
     extends RequestParser[CreateAndAmendOtherDeductionsRawData, CreateAndAmendOtherDeductionsRequest] {

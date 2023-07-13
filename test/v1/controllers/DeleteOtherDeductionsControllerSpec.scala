@@ -96,8 +96,6 @@ class DeleteOtherDeductionsControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    protected def callController(): Future[Result] = controller.handleRequest(nino, taxYear)(fakeRequest)
-
     def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
       AuditEvent(
         auditType = "DeleteOtherDeductions",
@@ -112,6 +110,8 @@ class DeleteOtherDeductionsControllerSpec
           auditResponse = auditResponse
         )
       )
+
+    protected def callController(): Future[Result] = controller.handleRequest(nino, taxYear)(fakeRequest)
 
   }
 

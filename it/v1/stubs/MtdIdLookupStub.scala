@@ -23,8 +23,6 @@ import support.WireMockMethods
 
 object MtdIdLookupStub extends WireMockMethods {
 
-  private def lookupUrl(nino: String): String = s"/mtd-identifier-lookup/nino/$nino"
-
   def ninoFound(nino: String): StubMapping = {
     when(method = GET, uri = lookupUrl(nino))
       .thenReturn(status = OK, body = Json.obj("mtdbsa" -> "12345678"))
@@ -34,6 +32,8 @@ object MtdIdLookupStub extends WireMockMethods {
     when(method = GET, uri = lookupUrl(nino))
       .thenReturn(status = FORBIDDEN, body = Json.obj())
   }
+
+  private def lookupUrl(nino: String): String = s"/mtd-identifier-lookup/nino/$nino"
 
   def badRequest(nino: String): StubMapping = {
     when(method = GET, uri = lookupUrl(nino))

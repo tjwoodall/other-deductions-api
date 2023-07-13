@@ -56,7 +56,10 @@ class DeleteOtherDeductionsConnectorSpec extends ConnectorSpec {
   trait Test {
     _: ConnectorTest =>
 
-    def taxYear: TaxYear
+    val connector: DeleteOtherDeductionsConnector = new DeleteOtherDeductionsConnector(
+      http = mockHttpClient,
+      appConfig = mockAppConfig
+    )
 
     protected val nino: String = "AA123456A"
 
@@ -66,10 +69,7 @@ class DeleteOtherDeductionsConnectorSpec extends ConnectorSpec {
         taxYear = taxYear
       )
 
-    val connector: DeleteOtherDeductionsConnector = new DeleteOtherDeductionsConnector(
-      http = mockHttpClient,
-      appConfig = mockAppConfig
-    )
+    def taxYear: TaxYear
 
   }
 

@@ -38,7 +38,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class CreateAndAmendOtherDeductionsControllerSpec
-    extends ControllerBaseSpec
+  extends ControllerBaseSpec
     with ControllerTestRunner
     with MockCreateAndAmendOtherDeductionsService
     with MockCreateAndAmendOtherDeductionsRequestParser
@@ -83,26 +83,26 @@ class CreateAndAmendOtherDeductionsControllerSpec
   )
 
   val responseBody: JsValue = Json.parse(s"""
-       |{
-       |   "links":[
-       |      {
-       |         "href":"/individuals/deductions/other/$nino/$taxYear",
-       |         "method":"PUT",
-       |         "rel":"amend-deductions-other"
-       |      },
-       |      {
-       |         "href":"/individuals/deductions/other/$nino/$taxYear",
-       |         "method":"GET",
-       |         "rel":"self"
-       |      },
-       |      {
-       |         "href":"/individuals/deductions/other/$nino/$taxYear",
-       |         "method":"DELETE",
-       |         "rel":"delete-deductions-other"
-       |      }
-       |   ]
-       |}
-       |""".stripMargin)
+                                            |{
+                                            |   "links":[
+                                            |      {
+                                            |         "href":"/individuals/deductions/other/$nino/$taxYear",
+                                            |         "method":"PUT",
+                                            |         "rel":"amend-deductions-other"
+                                            |      },
+                                            |      {
+                                            |         "href":"/individuals/deductions/other/$nino/$taxYear",
+                                            |         "method":"GET",
+                                            |         "rel":"self"
+                                            |      },
+                                            |      {
+                                            |         "href":"/individuals/deductions/other/$nino/$taxYear",
+                                            |         "method":"DELETE",
+                                            |         "rel":"delete-deductions-other"
+                                            |      }
+                                            |   ]
+                                            |}
+                                            |""".stripMargin)
 
   private val rawData     = CreateAndAmendOtherDeductionsRawData(nino, taxYear, requestBodyJson)
   private val requestData = CreateAndAmendOtherDeductionsRequest(Nino(nino), TaxYear.fromMtd(taxYear), requestBody)

@@ -1,19 +1,19 @@
 {
-  "links":[
+  "links": [
     {
-      "href":"/individuals/deductions/other/{nino}/{taxYear}",
-      "method":"GET",
-      "rel":"self"
+      "href": "/individuals/deductions/other/{nino}/{taxYear}",
+      "method": "GET",
+      "rel": "self"
     },
     {
-      "href":"/individuals/deductions/other/{nino}/{taxYear}",
-      "method":"PUT",
-      "rel":"create-and-amend-deductions-other"
+      "href": "/individuals/deductions/other/{nino}/{taxYear}",
+      "method": "PUT",
+      "rel": "create-and-amend-deductions-other"
     },
     {
-      "href":"/individuals/deductions/other/{nino}/{taxYear}",
-      "method":"DELETE",
-      "rel":"delete-deductions-other"
+      "href": "/individuals/deductions/other/{nino}/{taxYear}",
+      "method": "DELETE",
+      "rel": "delete-deductions-other"
     }
   ]
 }

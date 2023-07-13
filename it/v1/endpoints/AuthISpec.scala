@@ -48,7 +48,6 @@ class AuthISpec extends IntegrationBaseSpec {
         |""".stripMargin
     )
 
-    def uri: String    = s"/$nino/$taxYear"
     def ifsUri: String = s"/income-tax/deductions/$nino/$taxYear"
 
     def setupStubs(): StubMapping
@@ -62,6 +61,8 @@ class AuthISpec extends IntegrationBaseSpec {
           (AUTHORIZATION, "Bearer 123") // some bearer token
         )
     }
+
+    def uri: String = s"/$nino/$taxYear"
 
   }
 

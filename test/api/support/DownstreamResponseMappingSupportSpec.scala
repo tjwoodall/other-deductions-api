@@ -31,6 +31,12 @@ class DownstreamResponseMappingSupportSpec extends UnitSpec {
 
   val correlationId = "someCorrelationId"
 
+  val errorCodeMap: PartialFunction[String, MtdError] = {
+    case "ERR1" => Error1
+    case "ERR2" => Error2
+    case "DS"   => InternalError
+  }
+
   object Error1 extends MtdError("msg", "code1", BAD_REQUEST)
 
   object Error2 extends MtdError("msg", "code2", BAD_REQUEST)
@@ -38,12 +44,6 @@ class DownstreamResponseMappingSupportSpec extends UnitSpec {
   object ErrorBvrMain extends MtdError("msg", "bvrMain", BAD_REQUEST)
 
   object ErrorBvr extends MtdError("msg", "bvr", BAD_REQUEST)
-
-  val errorCodeMap: PartialFunction[String, MtdError] = {
-    case "ERR1" => Error1
-    case "ERR2" => Error2
-    case "DS"   => InternalError
-  }
 
   "mapping Downstream errors" when {
     "single error" when {
@@ -78,7 +78,6 @@ class DownstreamResponseMappingSupportSpec extends UnitSpec {
             ErrorWrapper(correlationId, RuleIncorrectGovTestScenarioError)
         }
       }
-
 
       "the error code is not in the map provided" must {
         "default main error to DownstreamError ignore other errors" in {
