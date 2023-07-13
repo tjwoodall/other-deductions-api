@@ -29,15 +29,16 @@ import scala.concurrent.{ExecutionContext, Future}
 class AuditServiceSpec extends ServiceSpec {
 
   private trait Test {
-    lazy val target = new AuditService(mockAuditConnector, mockConfig)
     val mockedAppName                      = "sample-application"
     val mockAuditConnector: AuditConnector = mock[AuditConnector]
+    val mockConfig: Configuration          = mock[Configuration]
 
     (mockConfig
       .get(_: String)(_: play.api.ConfigLoader[String]))
       .expects(*, *)
       .returns(mockedAppName)
-    val mockConfig: Configuration          = mock[Configuration]
+
+    lazy val target = new AuditService(mockAuditConnector, mockConfig)
   }
 
   "AuditService" when {
