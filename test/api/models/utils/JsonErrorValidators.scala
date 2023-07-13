@@ -77,6 +77,15 @@ trait JsonErrorValidators {
 
   }
 
+  private def filterErrorByPath(jsPath: JsPath, jsError: JsError): JsonValidationError = {
+    jsError match {
+      case (path, err :: Nil) if jsError.path == path => err
+      case (path, _ :: Nil)                           => fail(s"single error returned but path $path does not match $jsPath")
+      case (path, errs @ _ :: _)                      => fail(s"multiple errors returned for $path but only 1 required : $errs")
+      case (_, _)                                     => fail(s"no errors returned")
+    }
+  }
+
   def testPropertyType[T](json: JsValue)(path: String, replacement: JsValue, expectedError: String)(implicit rds: Reads[T]): Unit = {
 
     val jsPath = path.split("/").filterNot(_ == "").foldLeft(JsPath())(_ \ _)
@@ -106,15 +115,6 @@ trait JsonErrorValidators {
       "throw an invalid type error" in {
         filterErrorByPath(jsPath, jsError).message shouldBe expectedError
       }
-    }
-  }
-
-  private def filterErrorByPath(jsPath: JsPath, jsError: JsError): JsonValidationError = {
-    jsError match {
-      case (path, err :: Nil) if jsError.path == path => err
-      case (path, _ :: Nil)                           => fail(s"single error returned but path $path does not match $jsPath")
-      case (path, errs @ _ :: _)                      => fail(s"multiple errors returned for $path but only 1 required : $errs")
-      case (_, _)                                     => fail(s"no errors returned")
     }
   }
 

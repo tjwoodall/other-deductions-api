@@ -123,6 +123,8 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
     def mtdTaxYear: String
     def downstreamUri: String
 
+    def setupStubs(): Unit = {}
+
     def request(): WSRequest = {
       AuditStub.audit()
       AuthStub.authorised()

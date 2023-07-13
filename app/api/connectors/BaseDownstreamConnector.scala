@@ -62,12 +62,6 @@ trait BaseDownstreamConnector {
   private def getBackendUri[Resp](uri: DownstreamUri[Resp]): String =
     s"${configFor(uri).baseUrl}/${uri.value}"
 
-  private def configFor[Resp](uri: DownstreamUri[Resp]) =
-    uri match {
-      case IfsUri(_)                => appConfig.ifsDownstreamConfig
-      case TaxYearSpecificIfsUri(_) => appConfig.taxYearSpecificIfsDownstreamConfig
-    }
-
   private def getBackendHeaders[Resp](uri: DownstreamUri[Resp],
                                       hc: HeaderCarrier,
                                       correlationId: String,
@@ -90,6 +84,12 @@ trait BaseDownstreamConnector {
         passThroughHeaders
     )
   }
+
+  private def configFor[Resp](uri: DownstreamUri[Resp]) =
+    uri match {
+      case IfsUri(_)                => appConfig.ifsDownstreamConfig
+      case TaxYearSpecificIfsUri(_) => appConfig.taxYearSpecificIfsDownstreamConfig
+    }
 
   def put[Body: Writes, Resp](body: Body, uri: DownstreamUri[Resp])(implicit
       ec: ExecutionContext,

@@ -18,17 +18,7 @@ package v1.services
 
 import api.controllers.EndpointLogContext
 import api.models.domain.{Nino, TaxYear}
-import api.models.errors.{
-  DownstreamErrorCode,
-  DownstreamErrors,
-  ErrorWrapper,
-  InternalError,
-  MtdError,
-  NinoFormatError,
-  NotFoundError,
-  RuleTaxYearNotSupportedError,
-  TaxYearFormatError
-}
+import api.models.errors.{DownstreamErrorCode, DownstreamErrors, ErrorWrapper, InternalError, MtdError, NinoFormatError, NotFoundError, RuleTaxYearNotSupportedError, TaxYearFormatError}
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
 import uk.gov.hmrc.http.HeaderCarrier
@@ -85,15 +75,12 @@ class DeleteOtherDeductionsServiceSpec extends ServiceSpec {
   trait Test extends MockDeleteOtherDeductionsConnector {
     implicit val hc: HeaderCarrier              = HeaderCarrier()
     implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
-
-    private val nino    = "AA123456A"
-    private val taxYear = "2019-20"
-
     val request = DeleteOtherDeductionsRequest(Nino(nino), TaxYear.fromMtd(taxYear))
-
     val service = new DeleteOtherDeductionsService(
       DeleteOtherDeductionsConnector = mockDeleteOtherDeductionsConnector
     )
+    private val nino    = "AA123456A"
+    private val taxYear = "2019-20"
 
   }
 

@@ -33,12 +33,12 @@ object MtdIdLookupStub extends WireMockMethods {
       .thenReturn(status = FORBIDDEN, body = Json.obj())
   }
 
+  private def lookupUrl(nino: String): String = s"/mtd-identifier-lookup/nino/$nino"
+
   def badRequest(nino: String): StubMapping = {
     when(method = GET, uri = lookupUrl(nino))
       .thenReturn(status = BAD_REQUEST, body = Json.obj())
   }
-
-  private def lookupUrl(nino: String): String = s"/mtd-identifier-lookup/nino/$nino"
 
   def internalServerError(nino: String): StubMapping = {
     when(method = GET, uri = lookupUrl(nino))

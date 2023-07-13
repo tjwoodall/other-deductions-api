@@ -77,9 +77,6 @@ object RequestHandler {
     def withPlainJsonResult(successStatus: Int = Status.OK)(implicit ws: Writes[Output]): RequestHandlerBuilder[InputRaw, Input, Output] =
       withResultCreator(ResultCreator.plainJson(successStatus))
 
-    def withResultCreator(resultCreator: ResultCreator[InputRaw, Input, Output]): RequestHandlerBuilder[InputRaw, Input, Output] =
-      copy(resultCreator = resultCreator)
-
     /** Shorthand for
       * {{{
       * withResultCreator(ResultCreator.noContent)
@@ -98,6 +95,9 @@ object RequestHandler {
         linksFactory: HateoasLinksFactory[Output, HData],
         writes: Writes[HateoasWrapper[Output]]): RequestHandlerBuilder[InputRaw, Input, Output] =
       withResultCreator(ResultCreator.hateoasWrapping(hateoasFactory, successStatus)(data))
+
+    def withResultCreator(resultCreator: ResultCreator[InputRaw, Input, Output]): RequestHandlerBuilder[InputRaw, Input, Output] =
+      copy(resultCreator = resultCreator)
 
     /** Shorthand for
       * {{{
@@ -169,6 +169,14 @@ object RequestHandler {
 
       }
 
+      def auditIfRequired(httpStatus: Int, response: Either[ErrorWrapper, Option[JsValue]])(implicit
+          ctx: RequestContext,
+          request: UserRequest[_],
+          ec: ExecutionContext): Unit =
+        auditHandler.foreach { creator =>
+          creator.performAudit(request.userDetails, httpStatus, response)
+        }
+
       private def handleFailure(errorWrapper: ErrorWrapper)(implicit ctx: RequestContext, request: UserRequest[_], ec: ExecutionContext) = {
         logger.warn(
           s"[${ctx.endpointLogContext.controllerName}][${ctx.endpointLogContext.endpointName}] - " +
@@ -189,14 +197,6 @@ object RequestHandler {
             s"Unhandled error: $errorWrapper")
         InternalServerError(InternalError.asJson)
       }
-
-      def auditIfRequired(httpStatus: Int, response: Either[ErrorWrapper, Option[JsValue]])(implicit
-          ctx: RequestContext,
-          request: UserRequest[_],
-          ec: ExecutionContext): Unit =
-        auditHandler.foreach { creator =>
-          creator.performAudit(request.userDetails, httpStatus, response)
-        }
 
     }
 
