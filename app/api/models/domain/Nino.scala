@@ -16,11 +16,9 @@
 
 package api.models.domain
 
-case class Nino(value: String) {
-  require(Nino.isValid(value), s"$value is not a valid nino.")
-
+case class Nino(nino: String) {
   private val LengthWithoutSuffix: Int = 8
-  val name                             = "nino"
+  def value: String                    = nino
   def formatted: String                = value.grouped(2).mkString(" ")
   def withoutSuffix: String            = value.take(LengthWithoutSuffix)
 

@@ -16,9 +16,9 @@
 
 package v1.models.response.retrieveOtherDeductions
 
+import api.hateoas
+import api.hateoas.{Link, Method}
 import api.models.domain.Timestamp
-import api.models.hateoas
-import api.models.hateoas.Method
 import mocks.MockAppConfig
 import play.api.libs.json.Json
 import support.UnitSpec
@@ -97,7 +97,7 @@ class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
         MockAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
 
         RetrieveOtherDeductionsResponse.RetrieveOtherLinksFactory.links(mockAppConfig, data) shouldBe Seq(
-          hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.PUT, rel = "create-and-amend-deductions-other"),
+          Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.PUT, rel = "create-and-amend-deductions-other"),
           hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.GET, rel = "self"),
           hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.DELETE, rel = "delete-deductions-other")
         )

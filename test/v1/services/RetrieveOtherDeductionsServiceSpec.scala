@@ -24,7 +24,7 @@ import api.services.ServiceSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.fixtures.RetrieveOtherDeductionsFixtures.responseBodyModel
 import v1.mocks.connectors.MockRetrieveOtherDeductionsConnector
-import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequest
+import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequestData
 
 import scala.concurrent.Future
 
@@ -33,7 +33,7 @@ class RetrieveOtherDeductionsServiceSpec extends ServiceSpec {
   private val nino    = "AA123456A"
   private val taxYear = "2017-18"
 
-  private val requestData = RetrieveOtherDeductionsRequest(Nino(nino), TaxYear.fromMtd(taxYear))
+  private val requestData = RetrieveOtherDeductionsRequestData(Nino(nino), TaxYear.fromMtd(taxYear))
 
   trait Test extends MockRetrieveOtherDeductionsConnector {
     implicit val hc: HeaderCarrier              = HeaderCarrier()

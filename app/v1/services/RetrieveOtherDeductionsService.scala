@@ -21,7 +21,7 @@ import api.models.errors._
 import api.services.{BaseService, ServiceOutcome}
 import cats.implicits._
 import v1.connectors.RetrieveOtherDeductionsConnector
-import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequest
+import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequestData
 import v1.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsResponse
 
 import javax.inject.{Inject, Singleton}
@@ -30,15 +30,14 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class RetrieveOtherDeductionsService @Inject() (connector: RetrieveOtherDeductionsConnector) extends BaseService {
 
-  def retrieve(request: RetrieveOtherDeductionsRequest)(implicit
+  def retrieve(request: RetrieveOtherDeductionsRequestData)(implicit
       ctx: RequestContext,
       ec: ExecutionContext): Future[ServiceOutcome[RetrieveOtherDeductionsResponse]] = {
 
     connector.retrieve(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
   }
 
-  private def downstreamErrorMap = {
-
+  private val downstreamErrorMap: Map[String, MtdError] = {
     val errors = Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
       "INVALID_TAX_YEAR"          -> TaxYearFormatError,

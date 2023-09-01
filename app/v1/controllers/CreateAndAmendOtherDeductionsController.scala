@@ -22,9 +22,9 @@ import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import config.AppConfig
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, ControllerComponents}
-import utils.{IdGenerator, Logging}
-import v1.controllers.requestParsers.CreateAndAmendOtherDeductionsRequestParser
-import v1.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRawData
+import routing.{Version, Version1}
+import utils.IdGenerator
+import v1.controllers.validators.CreateAndAmendOtherDeductionsValidatorFactory
 import v1.models.response.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsHateoasData
 import v1.models.response.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsResponse.CreateAndAmendOtherLinksFactory
 import v1.services.CreateAndAmendOtherDeductionsService
@@ -35,15 +35,13 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class CreateAndAmendOtherDeductionsController @Inject() (val authService: EnrolmentsAuthService,
                                                          val lookupService: MtdIdLookupService,
-                                                         parser: CreateAndAmendOtherDeductionsRequestParser,
+                                                         validatorFactory: CreateAndAmendOtherDeductionsValidatorFactory,
                                                          service: CreateAndAmendOtherDeductionsService,
                                                          auditService: AuditService,
                                                          hateoasFactory: HateoasFactory,
-                                                         appConfig: AppConfig,
                                                          cc: ControllerComponents,
-                                                         idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-    extends AuthorisedController(cc)
-    with Logging {
+                                                         idGenerator: IdGenerator)(implicit ec: ExecutionContext, appConfig: AppConfig)
+    extends AuthorisedController(cc) {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "CreateAndAmendOtherDeductionsController", endpointName = "createAndAmendOtherDeductions")
@@ -52,22 +50,23 @@ class CreateAndAmendOtherDeductionsController @Inject() (val authService: Enrolm
     authorisedAction(nino).async(parse.json) { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val rawData = CreateAndAmendOtherDeductionsRawData(nino, taxYear, request.body)
+      val validator = validatorFactory.validator(nino, taxYear, request.body)
 
       val requestHandler = RequestHandler
-        .withParser(parser)
+        .withValidator(validator)
         .withService(service.createAndAmend)
         .withAuditing(AuditHandler(
           auditService = auditService,
           auditType = "CreateAmendOtherDeductions",
           transactionName = "create-amend-other-deductions",
-          pathParams = Map("nino" -> nino, "taxYear" -> taxYear),
+          apiVersion = Version.from(request, orElse = Version1),
+          params = Map("nino" -> nino, "taxYear" -> taxYear),
           requestBody = Some(request.body),
           includeResponse = true
         ))
         .withHateoasResult(hateoasFactory)(CreateAndAmendOtherDeductionsHateoasData(nino, taxYear))
 
-      requestHandler.handleRequest(rawData)
+      requestHandler.handleRequest()
     }
 
 }

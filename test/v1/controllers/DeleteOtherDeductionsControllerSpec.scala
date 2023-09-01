@@ -17,17 +17,18 @@
 package v1.controllers
 
 import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
-import api.mocks.services.MockAuditService
 import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
 import api.models.domain.{Nino, TaxYear}
 import api.models.errors
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
+import api.services.MockAuditService
+import mocks.MockAppConfig
 import play.api.libs.json.JsValue
 import play.api.mvc.Result
-import v1.mocks.requestParsers.MockDeleteOtherDeductionsRequestParser
+import v1.controllers.validators.MockDeleteOtherDeductionsValidatorFactory
 import v1.mocks.services.MockDeleteOtherDeductionsService
-import v1.models.request.deleteOtherDeductions.{DeleteOtherDeductionsRawData, DeleteOtherDeductionsRequest}
+import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequestData
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -36,20 +37,17 @@ class DeleteOtherDeductionsControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
     with MockDeleteOtherDeductionsService
-    with MockDeleteOtherDeductionsRequestParser
-    with MockAuditService {
+    with MockDeleteOtherDeductionsValidatorFactory
+    with MockAuditService
+    with MockAppConfig {
 
   private val taxYear     = "2019-20"
-  private val rawData     = DeleteOtherDeductionsRawData(nino, taxYear)
-  private val requestData = DeleteOtherDeductionsRequest(Nino(nino), TaxYear.fromMtd(taxYear))
+  private val requestData = DeleteOtherDeductionsRequestData(Nino(nino), TaxYear.fromMtd(taxYear))
 
   "handleRequest" should {
     "return a successful response with status 204 (No Content)" when {
       "a valid request is supplied" in new Test {
-
-        MockDeleteOtherDeductionsRequestParser
-          .parse(rawData)
-          .returns(Right(requestData))
+        willUseValidator(returningSuccess(requestData))
 
         MockDeleteOtherDeductionsService
           .delete(requestData)
@@ -61,19 +59,13 @@ class DeleteOtherDeductionsControllerSpec
 
     "return the error as per spec" when {
       "the parser validation fails" in new Test {
-
-        MockDeleteOtherDeductionsRequestParser
-          .parse(rawData)
-          .returns(Left(ErrorWrapper(correlationId, NinoFormatError)))
+        willUseValidator(returning(NinoFormatError))
 
         runErrorTestWithAudit(NinoFormatError)
       }
 
       "service returns an error" in new Test {
-
-        MockDeleteOtherDeductionsRequestParser
-          .parse(rawData)
-          .returns(Right(requestData))
+        willUseValidator(returningSuccess(requestData))
 
         MockDeleteOtherDeductionsService
           .delete(requestData)
@@ -89,7 +81,7 @@ class DeleteOtherDeductionsControllerSpec
     val controller = new DeleteOtherDeductionsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
-      parser = mockDeleteOtherDeductionsRequestParser,
+      validatorFactory = mockDeleteOtherDeductionsValidatorFactory,
       service = mockDeleteOtherDeductionsService,
       auditService = mockAuditService,
       cc = cc,
@@ -103,8 +95,8 @@ class DeleteOtherDeductionsControllerSpec
         detail = GenericAuditDetail(
           userType = "Individual",
           agentReferenceNumber = None,
-          pathParams = Map("nino" -> nino, "taxYear" -> taxYear),
-          queryParams = None,
+          versionNumber = "1.0",
+          params = Map("nino" -> nino, "taxYear" -> taxYear),
           requestBody = None,
           `X-CorrelationId` = correlationId,
           auditResponse = auditResponse

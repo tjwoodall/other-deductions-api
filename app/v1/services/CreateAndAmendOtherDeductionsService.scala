@@ -21,7 +21,7 @@ import api.models.errors._
 import api.services.{BaseService, ServiceOutcome}
 import cats.implicits._
 import v1.connectors.CreateAndAmendOtherDeductionsConnector
-import v1.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRequest
+import v1.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRequestData
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,13 +30,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class CreateAndAmendOtherDeductionsService @Inject() (connector: CreateAndAmendOtherDeductionsConnector) extends BaseService {
 
   def createAndAmend(
-      request: CreateAndAmendOtherDeductionsRequest)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ServiceOutcome[Unit]] = {
+      request: CreateAndAmendOtherDeductionsRequestData)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ServiceOutcome[Unit]] = {
 
     connector.createAndAmend(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
 
   }
 
-  private def downstreamErrorMap = {
+  private val downstreamErrorMap: Map[String, MtdError] = {
     val errors = Map(
       "INVALID_TAXABLE_ENTITY_ID"        -> NinoFormatError,
       "INVALID_TAX_YEAR"                 -> TaxYearFormatError,

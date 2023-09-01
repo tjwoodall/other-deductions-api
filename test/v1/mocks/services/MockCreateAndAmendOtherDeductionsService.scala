@@ -21,7 +21,7 @@ import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import v1.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRequest
+import v1.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRequestData
 import v1.services.CreateAndAmendOtherDeductionsService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,9 +32,9 @@ trait MockCreateAndAmendOtherDeductionsService extends MockFactory {
 
   object MockCreateAndAmendOtherDeductionsService {
 
-    def createAndAmend(requestData: CreateAndAmendOtherDeductionsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[Unit]]]] = {
+    def createAndAmend(requestData: CreateAndAmendOtherDeductionsRequestData): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[Unit]]]] = {
       (mockService
-        .createAndAmend(_: CreateAndAmendOtherDeductionsRequest)(_: RequestContext, _: ExecutionContext))
+        .createAndAmend(_: CreateAndAmendOtherDeductionsRequestData)(_: RequestContext, _: ExecutionContext))
         .expects(requestData, *, *)
     }
 

@@ -20,7 +20,7 @@ import api.connectors.ConnectorSpec
 import api.models.domain.{Nino, TaxYear}
 import api.models.outcomes.ResponseWrapper
 import v1.fixtures.RetrieveOtherDeductionsFixtures.responseBodyModel
-import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequest
+import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequestData
 
 import scala.concurrent.Future
 
@@ -56,7 +56,7 @@ class RetrieveOtherDeductionsConnectorSpec extends ConnectorSpec {
 
       val connector: RetrieveOtherDeductionsConnector = new RetrieveOtherDeductionsConnector(http = mockHttpClient, appConfig = mockAppConfig)
 
-      lazy val request = RetrieveOtherDeductionsRequest(Nino("AA123456A"), TaxYear.fromMtd(taxYear))
+      lazy val request = RetrieveOtherDeductionsRequestData(Nino("AA123456A"), TaxYear.fromMtd(taxYear))
     }
   }
 

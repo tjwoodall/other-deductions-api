@@ -21,7 +21,7 @@ import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequest
+import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequestData
 import v1.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsResponse
 import v1.services.RetrieveOtherDeductionsService
 
@@ -33,10 +33,10 @@ trait MockRetrieveOtherDeductionsService extends MockFactory {
 
   object MockRetrieveOtherDeductionsService {
 
-    def retrieve(
-        requestData: RetrieveOtherDeductionsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[RetrieveOtherDeductionsResponse]]]] = {
+    def retrieve(requestData: RetrieveOtherDeductionsRequestData)
+        : CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[RetrieveOtherDeductionsResponse]]]] = {
       (mockRetrieveOtherDeductionsService
-        .retrieve(_: RetrieveOtherDeductionsRequest)(_: RequestContext, _: ExecutionContext))
+        .retrieve(_: RetrieveOtherDeductionsRequestData)(_: RequestContext, _: ExecutionContext))
         .expects(requestData, *, *)
     }
 

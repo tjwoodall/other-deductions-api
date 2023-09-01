@@ -24,7 +24,7 @@ import routing.Version
 
 trait MockAppConfig extends MockFactory {
 
-  val mockAppConfig: AppConfig = mock[AppConfig]
+  implicit val mockAppConfig: AppConfig = mock[AppConfig]
 
   object MockAppConfig {
 
@@ -42,9 +42,6 @@ trait MockAppConfig extends MockFactory {
     def tysIfsToken: CallHandler[String]                           = (() => mockAppConfig.tysIfsToken).expects()
     def tysIfsEnvironment: CallHandler[String]                     = (() => mockAppConfig.tysIfsEnv).expects()
     def tysIfsEnvironmentHeaders: CallHandler[Option[Seq[String]]] = (() => mockAppConfig.tysIfsEnvironmentHeaders).expects()
-
-    // Business Rule Config
-    def minimumPermittedTaxYear: CallHandler[Int] = (() => mockAppConfig.minimumPermittedTaxYear).expects()
 
     // API Config
     def featureSwitches: CallHandler[Configuration]              = (() => mockAppConfig.featureSwitches).expects()

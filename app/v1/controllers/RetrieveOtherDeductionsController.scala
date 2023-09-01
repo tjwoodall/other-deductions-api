@@ -19,10 +19,10 @@ package v1.controllers
 import api.controllers.{AuthorisedController, EndpointLogContext, RequestContext, RequestHandler}
 import api.hateoas.HateoasFactory
 import api.services.{EnrolmentsAuthService, MtdIdLookupService}
+import config.AppConfig
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import utils.{IdGenerator, Logging}
-import v1.controllers.requestParsers.RetrieveOtherDeductionsRequestParser
-import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRawData
+import utils.IdGenerator
+import v1.controllers.validators.RetrieveOtherDeductionsValidatorFactory
 import v1.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsHateoasData
 import v1.services.RetrieveOtherDeductionsService
 
@@ -32,13 +32,12 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class RetrieveOtherDeductionsController @Inject() (val authService: EnrolmentsAuthService,
                                                    val lookupService: MtdIdLookupService,
-                                                   parser: RetrieveOtherDeductionsRequestParser,
+                                                   validatorFactory: RetrieveOtherDeductionsValidatorFactory,
                                                    service: RetrieveOtherDeductionsService,
                                                    hateoasFactory: HateoasFactory,
                                                    cc: ControllerComponents,
-                                                   idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-    extends AuthorisedController(cc)
-    with Logging {
+                                                   idGenerator: IdGenerator)(implicit ec: ExecutionContext, appConfig: AppConfig)
+    extends AuthorisedController(cc) {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "RetrieveOtherDeductionsController", endpointName = "retrieveOtherDeductions")
@@ -47,14 +46,14 @@ class RetrieveOtherDeductionsController @Inject() (val authService: EnrolmentsAu
     authorisedAction(nino).async { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val rawData = RetrieveOtherDeductionsRawData(nino, taxYear)
+      val validator = validatorFactory.validator(nino, taxYear)
 
       val requestHandler = RequestHandler
-        .withParser(parser)
+        .withValidator(validator)
         .withService(service.retrieve)
         .withHateoasResult(hateoasFactory)(RetrieveOtherDeductionsHateoasData(nino, taxYear))
 
-      requestHandler.handleRequest(rawData)
+      requestHandler.handleRequest()
     }
 
 }

@@ -21,7 +21,7 @@ import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.connectors.RetrieveOtherDeductionsConnector
-import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequest
+import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequestData
 import v1.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsResponse
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,9 +32,9 @@ trait MockRetrieveOtherDeductionsConnector extends MockFactory {
 
   object MockRetrieveOtherDeductionsConnector {
 
-    def retrieve(requestData: RetrieveOtherDeductionsRequest): CallHandler[Future[DownstreamOutcome[RetrieveOtherDeductionsResponse]]] = {
+    def retrieve(requestData: RetrieveOtherDeductionsRequestData): CallHandler[Future[DownstreamOutcome[RetrieveOtherDeductionsResponse]]] = {
       (mockRetrieveOtherDeductionsConnector
-        .retrieve(_: RetrieveOtherDeductionsRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
+        .retrieve(_: RetrieveOtherDeductionsRequestData)(_: HeaderCarrier, _: ExecutionContext, _: String))
         .expects(requestData, *, *, *)
     }
 

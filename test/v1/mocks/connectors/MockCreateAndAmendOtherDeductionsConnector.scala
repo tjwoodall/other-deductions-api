@@ -21,7 +21,7 @@ import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.connectors.CreateAndAmendOtherDeductionsConnector
-import v1.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRequest
+import v1.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRequestData
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -31,9 +31,9 @@ trait MockCreateAndAmendOtherDeductionsConnector extends MockFactory {
 
   object MockCreateAndAmendOtherDeductionsConnector {
 
-    def createAndAmend(requestData: CreateAndAmendOtherDeductionsRequest): CallHandler[Future[DownstreamOutcome[Unit]]] = {
+    def createAndAmend(requestData: CreateAndAmendOtherDeductionsRequestData): CallHandler[Future[DownstreamOutcome[Unit]]] = {
       (mockCreateAndAmendOtherDeductionsConnector
-        .createAndAmend(_: CreateAndAmendOtherDeductionsRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
+        .createAndAmend(_: CreateAndAmendOtherDeductionsRequestData)(_: HeaderCarrier, _: ExecutionContext, _: String))
         .expects(requestData, *, *, *)
     }
 

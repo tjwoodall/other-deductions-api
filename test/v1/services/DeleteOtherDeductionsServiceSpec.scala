@@ -33,7 +33,7 @@ import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.connectors.MockDeleteOtherDeductionsConnector
-import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequest
+import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequestData
 
 import scala.concurrent.Future
 
@@ -89,7 +89,7 @@ class DeleteOtherDeductionsServiceSpec extends ServiceSpec {
     private val nino    = "AA123456A"
     private val taxYear = "2019-20"
 
-    val request = DeleteOtherDeductionsRequest(Nino(nino), TaxYear.fromMtd(taxYear))
+    val request = DeleteOtherDeductionsRequestData(Nino(nino), TaxYear.fromMtd(taxYear))
 
     val service = new DeleteOtherDeductionsService(
       DeleteOtherDeductionsConnector = mockDeleteOtherDeductionsConnector

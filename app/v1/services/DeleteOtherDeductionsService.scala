@@ -21,7 +21,7 @@ import api.models.errors._
 import api.services.{BaseService, ServiceOutcome}
 import cats.implicits._
 import v1.connectors.DeleteOtherDeductionsConnector
-import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequest
+import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequestData
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,13 +29,13 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class DeleteOtherDeductionsService @Inject() (DeleteOtherDeductionsConnector: DeleteOtherDeductionsConnector) extends BaseService {
 
-  def delete(request: DeleteOtherDeductionsRequest)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ServiceOutcome[Unit]] = {
+  def delete(request: DeleteOtherDeductionsRequestData)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ServiceOutcome[Unit]] = {
 
     DeleteOtherDeductionsConnector.delete(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
 
   }
 
-  private def downstreamErrorMap = {
+  private val downstreamErrorMap: Map[String, MtdError] = {
     val errors = Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
       "INVALID_TAX_YEAR"          -> TaxYearFormatError,

@@ -19,7 +19,7 @@ package v1.connectors
 import api.connectors.ConnectorSpec
 import api.models.domain.{Nino, TaxYear}
 import api.models.outcomes.ResponseWrapper
-import v1.models.request.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsBody, CreateAndAmendOtherDeductionsRequest}
+import v1.models.request.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsBody, CreateAndAmendOtherDeductionsRequestData}
 
 import scala.concurrent.Future
 
@@ -69,7 +69,7 @@ class CreateAndAmendOtherDeductionsConnectorSpec extends ConnectorSpec {
 
       val body = CreateAndAmendOtherDeductionsBody(None)
 
-      lazy val request = CreateAndAmendOtherDeductionsRequest(Nino("AA123456A"), TaxYear.fromMtd(taxYear), body)
+      lazy val request = CreateAndAmendOtherDeductionsRequestData(Nino("AA123456A"), TaxYear.fromMtd(taxYear), body)
     }
 
   }

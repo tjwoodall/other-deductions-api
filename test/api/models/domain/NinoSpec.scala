@@ -64,12 +64,6 @@ class NinoSpec extends UnitSpec {
     }
   }
 
-  "Creating a Nino" should {
-    "fail if the nino is not valid" in {
-      an[IllegalArgumentException] should be thrownBy Nino("INVALID_NINO")
-    }
-  }
-
   "Formatting a Nino" should {
     "produce a formatted nino" in {
       Nino("CS100700A").formatted shouldBe "CS 10 07 00 A"
@@ -79,12 +73,6 @@ class NinoSpec extends UnitSpec {
   "Removing a suffix" should {
     "produce a nino without a suffix" in {
       Nino("AA111111A").withoutSuffix shouldBe "AA111111"
-    }
-  }
-
-  "toString" should {
-    "return the value of the nino" in {
-      Nino("AA111111A").toString shouldBe "AA111111A"
     }
   }
 

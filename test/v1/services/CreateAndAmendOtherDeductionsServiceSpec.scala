@@ -23,7 +23,7 @@ import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.connectors.MockCreateAndAmendOtherDeductionsConnector
-import v1.models.request.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsBody, CreateAndAmendOtherDeductionsRequest, Seafarers}
+import v1.models.request.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsBody, CreateAndAmendOtherDeductionsRequestData, Seafarers}
 
 import scala.concurrent.Future
 
@@ -44,7 +44,7 @@ class CreateAndAmendOtherDeductionsServiceSpec extends ServiceSpec {
         )))
   )
 
-  private val requestData = CreateAndAmendOtherDeductionsRequest(Nino(nino), TaxYear.fromMtd(taxYear), body)
+  private val requestData = CreateAndAmendOtherDeductionsRequestData(Nino(nino), TaxYear.fromMtd(taxYear), body)
 
   trait Test extends MockCreateAndAmendOtherDeductionsConnector {
     implicit val hc: HeaderCarrier              = HeaderCarrier()
