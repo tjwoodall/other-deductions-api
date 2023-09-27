@@ -67,7 +67,7 @@ class ResolveFromAndToDatesSpec extends UnitSpec {
       }
 
       "passed both dates that are out of range" in {
-        val fromDate = LocalDate.parse("2020-04-06")
+        val fromDate = LocalDate.parse("1899-04-06")
         val toDate = LocalDate.parse("2178-04-05")
         val result = resolveFromAndToDates(DateRange(fromDate, toDate))
         result shouldBe Invalid(List(StartDateFormatError, EndDateFormatError))
