@@ -263,54 +263,79 @@ class CreateAndAmendOtherDeductionsValidatorFactorySpec extends UnitSpec with Mo
         )
       }
 
-      "the fromDate is invalid" in {
-        val badJson = Json.parse(
-          """
+      "the fromDate is invalid" when {
+        val jsonBody = (fromDate: String) =>
+          Json.parse(
+            s"""
               |{
               |    "seafarers":[
               |      {
               |      "customerReference": "SEAFARERS1234",
               |      "amountDeducted": 2342.22,
               |      "nameOfShip": "Blue Bell",
-              |      "fromDate": "17-08-2012",
+              |      "fromDate": "$fromDate",
               |      "toDate":"2018-10-02"
               |      }
               |    ]
               |}
               |""".stripMargin
-        )
+          )
 
-        val result: Either[ErrorWrapper, CreateAndAmendOtherDeductionsRequestData] =
-          validator(validNino, validTaxYear, badJson).validateAndWrapResult()
+        "the format of the date is wrong" in {
+          val result: Either[ErrorWrapper, CreateAndAmendOtherDeductionsRequestData] =
+            validator(validNino, validTaxYear, jsonBody("17-08-2012")).validateAndWrapResult()
 
-        result shouldBe Left(
-          ErrorWrapper(correlationId, DateFormatError.copy(paths = Some(Seq("/seafarers/0/fromDate"))))
-        )
+          result shouldBe Left(
+            ErrorWrapper(correlationId, DateFormatError.copy(paths = Some(Seq("/seafarers/0/fromDate"))))
+          )
+        }
+
+        "the date is earlier than the minimum fromDate" in {
+          val result: Either[ErrorWrapper, CreateAndAmendOtherDeductionsRequestData] =
+            validator(validNino, validTaxYear, jsonBody("1890-08-12")).validateAndWrapResult()
+
+          result shouldBe Left(
+            ErrorWrapper(correlationId, StartDateFormatError)
+          )
+        }
       }
 
-      "the toDate is invalid" in {
-        val badJson = Json.parse(
-          """
-              |{
-              |    "seafarers":[
-              |      {
-              |      "customerReference": "SEAFARERS1234",
-              |      "amountDeducted": 2342.22,
-              |      "nameOfShip": "Blue Bell",
-              |      "fromDate": "2018-08-17",
-              |      "toDate":"2018.10.02"
-              |      }
-              |    ]
-              |}
-              |""".stripMargin
-        )
+      "the toDate is invalid" when {
+        val jsonBody = (toDate: String) =>
+          Json.parse(
+            s"""
+               |{
+               |    "seafarers":[
+               |      {
+               |      "customerReference": "SEAFARERS1234",
+               |      "amountDeducted": 2342.22,
+               |      "nameOfShip": "Blue Bell",
+               |      "fromDate": "2018-10-02",
+               |      "toDate": "$toDate"
+               |      }
+               |    ]
+               |}
+               |""".stripMargin
+          )
 
-        val result: Either[ErrorWrapper, CreateAndAmendOtherDeductionsRequestData] =
-          validator(validNino, validTaxYear, badJson).validateAndWrapResult()
+        "the format of the to date is wrong" in {
+          val result: Either[ErrorWrapper, CreateAndAmendOtherDeductionsRequestData] =
+            validator(validNino, validTaxYear, jsonBody("2018.10.02")).validateAndWrapResult()
 
-        result shouldBe Left(
-          ErrorWrapper(correlationId, DateFormatError.copy(paths = Some(Seq("/seafarers/0/toDate"))))
-        )
+          result shouldBe Left(
+            ErrorWrapper(correlationId, DateFormatError.copy(paths = Some(Seq("/seafarers/0/toDate"))))
+          )
+        }
+
+        "the date is earlier than the minimum fromDate" in {
+          val result: Either[ErrorWrapper, CreateAndAmendOtherDeductionsRequestData] =
+            validator(validNino, validTaxYear, jsonBody("2101-08-12")).validateAndWrapResult()
+
+          result shouldBe Left(
+            ErrorWrapper(correlationId, EndDateFormatError)
+          )
+        }
+
       }
 
       "the toDate is before fromDate" in {
