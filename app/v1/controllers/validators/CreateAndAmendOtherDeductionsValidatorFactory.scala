@@ -17,7 +17,7 @@
 package v1.controllers.validators
 
 import api.controllers.validators.Validator
-import api.controllers.validators.resolvers.{DateRange, DateRangeResolving, ResolveJsonObject, ResolveNino, ResolveParsedNumber, ResolveTaxYear}
+import api.controllers.validators.resolvers._
 import api.models.domain.TaxYear
 import api.models.errors._
 import cats.data.Validated
@@ -36,6 +36,11 @@ class CreateAndAmendOtherDeductionsValidatorFactory {
   private val valid = Valid(())
 
   private val resolveJson = new ResolveJsonObject[CreateAndAmendOtherDeductionsBody]()
+
+  private val minYear: Int = 1900
+  private val maxYear: Int = 2100
+
+  private val validateMaxAndMinDate = new ResolveFromAndToDates(minYear, maxYear)
 
   def validator(nino: String, taxYear: String, body: JsValue): Validator[CreateAndAmendOtherDeductionsRequestData] =
     new Validator[CreateAndAmendOtherDeductionsRequestData] {
@@ -69,12 +74,12 @@ class CreateAndAmendOtherDeductionsValidatorFactory {
       validateCustomerReference(customerReference, s"/seafarers/$arrayIndex/customerReference"),
       validateAmountDeducted(amountDeducted, s"/seafarers/$arrayIndex/amountDeducted"),
       validateNameOfShip(nameOfShip, s"/seafarers/$arrayIndex/nameOfShip"),
-      validateDates(fromDate, toDate, arrayIndex)
+      validateDateRange(fromDate, toDate, arrayIndex)
     ).tupled
       .andThen { case (_, _, _, _) => valid }
   }
 
-  private def validateDates(fromDate: String, toDate: String, arrayIndex: Int): Validated[Seq[MtdError], Unit] = {
+  private def validateDateRange(fromDate: String, toDate: String, arrayIndex: Int): Validated[Seq[MtdError], Unit] = {
     val fromPath = s"/seafarers/$arrayIndex/fromDate"
     val toPath   = s"/seafarers/$arrayIndex/toDate"
 
@@ -88,7 +93,8 @@ class CreateAndAmendOtherDeductionsValidatorFactory {
 
     }
 
-    ResolveToFromDateRange((fromDate, toDate), Some(RangeToDateBeforeFromDateError.withPaths(List(fromPath, toPath))), None).map(_ => ())
+    (ResolveToFromDateRange((fromDate, toDate), Some(RangeToDateBeforeFromDateError.withPaths(List(fromPath, toPath))), None) andThen (dateRange =>
+      validateMaxAndMinDate(dateRange))).map(_ => ())
   }
 
   private def validateCustomerReference(customerReference: Option[String], path: String): Validated[Seq[MtdError], Unit] =
