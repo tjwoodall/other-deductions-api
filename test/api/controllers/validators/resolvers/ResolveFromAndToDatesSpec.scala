@@ -52,14 +52,14 @@ class ResolveFromAndToDatesSpec extends UnitSpec {
     }
 
     "return an error" when {
-      "passed a fromYear less than or equal to minimumTaxYear" in {
+      "passed a fromDate less than or equal to minimumTaxYear" in {
         val fromDate = LocalDate.parse("1789-04-06")
         val toDate = LocalDate.parse("2019-04-05")
         val result = resolveFromAndToDates(DateRange(fromDate, toDate))
         result shouldBe Invalid(List(StartDateFormatError))
       }
 
-      "passed a toYear greater than or equal to maximumTaxYear" in {
+      "passed a toDate greater than or equal to maximumTaxYear" in {
         val fromDate = LocalDate.parse("2020-04-06")
         val toDate = LocalDate.parse("2178-04-05")
         val result = resolveFromAndToDates(DateRange(fromDate, toDate))

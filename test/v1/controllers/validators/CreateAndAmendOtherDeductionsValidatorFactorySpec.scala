@@ -327,7 +327,7 @@ class CreateAndAmendOtherDeductionsValidatorFactorySpec extends UnitSpec with Mo
           )
         }
 
-        "the date is earlier than the minimum fromDate" in {
+        "the date is later than the allowed toDate" in {
           val result: Either[ErrorWrapper, CreateAndAmendOtherDeductionsRequestData] =
             validator(validNino, validTaxYear, jsonBody("2101-08-12")).validateAndWrapResult()
 
