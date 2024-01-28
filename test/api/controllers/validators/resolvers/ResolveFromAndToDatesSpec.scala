@@ -35,7 +35,6 @@ class ResolveFromAndToDatesSpec extends UnitSpec {
         val fromDate = LocalDate.parse("2019-04-06")
         val toDate   = LocalDate.parse("2019-08-06")
 
-
         val result = resolveFromAndToDates(DateRange(fromDate, toDate))
 
         result shouldBe Valid(DateRange(fromDate, toDate))
@@ -49,27 +48,36 @@ class ResolveFromAndToDatesSpec extends UnitSpec {
 
         result shouldBe Valid(DateRange(fromDate, toDate))
       }
+
+      "passed valid from and to dates are equal" in {
+        val fromDate = LocalDate.parse("2019-04-06")
+        val toDate   = LocalDate.parse("2019-04-06")
+
+        val result = resolveFromAndToDates(DateRange(fromDate, toDate))
+
+        result shouldBe Valid(DateRange(fromDate, toDate))
+      }
     }
 
     "return an error" when {
       "passed a fromDate less than or equal to minimumTaxYear" in {
         val fromDate = LocalDate.parse("1789-04-06")
-        val toDate = LocalDate.parse("2019-04-05")
-        val result = resolveFromAndToDates(DateRange(fromDate, toDate))
+        val toDate   = LocalDate.parse("2019-04-05")
+        val result   = resolveFromAndToDates(DateRange(fromDate, toDate))
         result shouldBe Invalid(List(StartDateFormatError))
       }
 
       "passed a toDate greater than or equal to maximumTaxYear" in {
         val fromDate = LocalDate.parse("2020-04-06")
-        val toDate = LocalDate.parse("2178-04-05")
-        val result = resolveFromAndToDates(DateRange(fromDate, toDate))
+        val toDate   = LocalDate.parse("2178-04-05")
+        val result   = resolveFromAndToDates(DateRange(fromDate, toDate))
         result shouldBe Invalid(List(EndDateFormatError))
       }
 
       "passed both dates that are out of range" in {
         val fromDate = LocalDate.parse("1899-04-06")
-        val toDate = LocalDate.parse("2178-04-05")
-        val result = resolveFromAndToDates(DateRange(fromDate, toDate))
+        val toDate   = LocalDate.parse("2178-04-05")
+        val result   = resolveFromAndToDates(DateRange(fromDate, toDate))
         result shouldBe Invalid(List(StartDateFormatError, EndDateFormatError))
       }
 
