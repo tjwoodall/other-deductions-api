@@ -48,15 +48,6 @@ class ResolveFromAndToDatesSpec extends UnitSpec {
 
         result shouldBe Valid(DateRange(fromDate, toDate))
       }
-
-      "passed valid from and to dates are equal" in {
-        val fromDate = LocalDate.parse("2019-04-06")
-        val toDate   = LocalDate.parse("2019-04-06")
-
-        val result = resolveFromAndToDates(DateRange(fromDate, toDate))
-
-        result shouldBe Valid(DateRange(fromDate, toDate))
-      }
     }
 
     "return an error" when {

@@ -36,7 +36,7 @@ trait DateRangeResolving {
       val startDateEpochTime = parsedStartDate.toEpochDay
       val endDateEpochTime   = parsedEndDate.toEpochDay
 
-      if ((endDateEpochTime - startDateEpochTime) <= 0)
+      if ((endDateEpochTime - startDateEpochTime) < 0)
         Invalid(List(maybeError.getOrElse(RuleEndDateBeforeStartDateError)))
       else
         Valid(DateRange(parsedStartDate, parsedEndDate))
