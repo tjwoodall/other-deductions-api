@@ -16,19 +16,18 @@
 
 package utils
 
-import org.joda.time.DateTime
-import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
-
+import java.time.LocalDate
+//import java.time.format.DateTimeFormatter
 import javax.inject.Singleton
 
 @Singleton
 class CurrentTaxYear {
 
-  private lazy val expectedDateFormat: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
+  //private lazy val expectedDateFormat: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE
 
-  def getCurrentTaxYear(date: DateTime): Int = {
+  def getCurrentTaxYear(date: LocalDate): Int = {
 
-    lazy val taxYearStartDate: DateTime = DateTime.parse(s"${date.getYear}-04-06", expectedDateFormat)
+    lazy val taxYearStartDate: LocalDate = LocalDate.parse(s"${date.getYear}-04-06")
 
     if (date.isBefore(taxYearStartDate)) date.getYear else date.getYear + 1
   }

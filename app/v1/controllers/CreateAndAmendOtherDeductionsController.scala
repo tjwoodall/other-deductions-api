@@ -19,7 +19,6 @@ package v1.controllers
 import api.controllers._
 import api.hateoas.HateoasFactory
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
-import config.AppConfig
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, ControllerComponents}
 import routing.{Version, Version1}
@@ -40,7 +39,7 @@ class CreateAndAmendOtherDeductionsController @Inject() (val authService: Enrolm
                                                          auditService: AuditService,
                                                          hateoasFactory: HateoasFactory,
                                                          cc: ControllerComponents,
-                                                         idGenerator: IdGenerator)(implicit ec: ExecutionContext, appConfig: AppConfig)
+                                                         idGenerator: IdGenerator)(implicit ec: ExecutionContext)
     extends AuthorisedController(cc) {
 
   implicit val endpointLogContext: EndpointLogContext =

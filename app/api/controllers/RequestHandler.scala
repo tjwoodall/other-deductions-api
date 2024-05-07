@@ -23,7 +23,6 @@ import api.models.outcomes.ResponseWrapper
 import api.services.ServiceOutcome
 import cats.data.EitherT
 import cats.implicits._
-import config.AppConfig
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Writes}
 import play.api.mvc.Result
@@ -37,8 +36,7 @@ trait RequestHandler {
   def handleRequest()(implicit
       ctx: RequestContext,
       request: UserRequest[_],
-      ec: ExecutionContext,
-      appConfig: AppConfig
+      ec: ExecutionContext
   ): Future[Result]
 
 }
@@ -66,8 +64,7 @@ object RequestHandler {
     def handleRequest()(implicit
         ctx: RequestContext,
         request: UserRequest[_],
-        ec: ExecutionContext,
-        appConfig: AppConfig
+        ec: ExecutionContext
     ): Future[Result] =
       Delegate.handleRequest()
 
@@ -139,8 +136,7 @@ object RequestHandler {
       def handleRequest()(implicit
           ctx: RequestContext,
           request: UserRequest[_],
-          ec: ExecutionContext,
-          appConfig: AppConfig
+          ec: ExecutionContext
       ): Future[Result] = {
 
         logger.info(
