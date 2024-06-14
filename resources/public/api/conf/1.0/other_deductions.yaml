@@ -1,7 +1,7 @@
 put:
   $ref: "./other_deductions_create_and_amend.yaml"
 
-  summary: Create and Amend deductions
+  summary: Create and Amend Deductions
 
   security:
     - User-Restricted:
@@ -10,7 +10,7 @@ put:
 get:
   $ref: "./other_deductions_retrieve.yaml"
 
-  summary: Retrieve deductions
+  summary: Retrieve Deductions
 
   security:
     - User-Restricted:
@@ -19,7 +19,7 @@ get:
 delete:
   $ref: "./other_deductions_delete.yaml"
 
-  summary: Delete deductions
+  summary: Delete Deductions
 
   security:
     - User-Restricted:
