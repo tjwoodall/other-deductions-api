@@ -16,55 +16,44 @@
 
 package api.connectors
 
+import api.connectors.MtdIdLookupConnector.Outcome
 import api.mocks.MockHttpClient
-import api.models.errors.InternalError
 import mocks.MockAppConfig
 
 import scala.concurrent.Future
-
 class MtdIdLookupConnectorSpec extends ConnectorSpec {
-
-  val nino  = "test-nino"
-  val mtdId = "test-mtdId"
-
   class Test extends MockHttpClient with MockAppConfig {
-
     val connector = new MtdIdLookupConnector(
       http = mockHttpClient,
       appConfig = mockAppConfig
     )
-
     MockAppConfig.mtdIdBaseUrl returns baseUrl
   }
-
+  val nino  = "test-nino"
+  val mtdId = "test-mtdId"
   "getMtdId" should {
     "return an MtdId" when {
       "the http client returns a mtd id" in new Test {
         MockedHttpClient
-          .get[MtdIdLookupOutcome](
-            url = s"$baseUrl/mtd-identifier-lookup/nino/$nino",
-            config = dummyHeaderCarrierConfig
-          )
+          .get[MtdIdLookupConnector.Outcome](s"$baseUrl/mtd-identifier-lookup/nino/$nino", config = dummyHeaderCarrierConfig)
           .returns(Future.successful(Right(mtdId)))
+        val result: Outcome = await(connector.getMtdId(nino))
 
-        val result: MtdIdLookupOutcome = await(connector.getMtdId(nino))
         result shouldBe Right(mtdId)
       }
     }
 
-    "return a DownstreamError" when {
-      "the http client returns a DownstreamError" in new Test {
-        MockedHttpClient
-          .get[MtdIdLookupOutcome](
-            url = s"$baseUrl/mtd-identifier-lookup/nino/$nino",
-            config = dummyHeaderCarrierConfig
-          )
-          .returns(Future.successful(Left(InternalError)))
+    "return an error" when {
+      "the http client returns that error" in new Test {
+        val statusCode: Int = IM_A_TEAPOT
 
-        val result: MtdIdLookupOutcome = await(connector.getMtdId(nino))
-        result shouldBe Left(InternalError)
+        MockedHttpClient
+          .get[MtdIdLookupConnector.Outcome](s"$baseUrl/mtd-identifier-lookup/nino/$nino", config = dummyHeaderCarrierConfig)
+          .returns(Future.successful(Left(MtdIdLookupConnector.Error(statusCode))))
+        val result: Outcome = await(connector.getMtdId(nino))
+
+        result shouldBe Left(MtdIdLookupConnector.Error(statusCode))
       }
     }
   }
-
 }

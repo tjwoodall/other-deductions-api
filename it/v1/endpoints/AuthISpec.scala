@@ -18,7 +18,7 @@ package v1.endpoints
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status
+import play.api.http.Status.{FORBIDDEN, INTERNAL_SERVER_ERROR, OK}
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
@@ -75,27 +75,43 @@ class AuthISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          MtdIdLookupStub.internalServerError(nino)
+          MtdIdLookupStub.error(nino, INTERNAL_SERVER_ERROR)
         }
 
         val response: WSResponse = await(request().get())
-        response.status shouldBe Status.INTERNAL_SERVER_ERROR
+        response.status shouldBe INTERNAL_SERVER_ERROR
       }
     }
 
     "an MTD ID is successfully retrieve from the NINO and the user is authorised" should {
 
-      "return 200" in new Test {
+      "MTD ID lookup fails with a 403" should {
+
+        "return 403" in new Test {
+          override val nino: String = "AA123456A"
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            MtdIdLookupStub.error(nino, FORBIDDEN)
+          }
+
+          val response: WSResponse = await(request().get())
+          response.status shouldBe FORBIDDEN
+        }
+
+      }
+
+      "return success status" in new Test {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.GET, ifsUri, Status.OK, ifsResponseBody)
+          DownstreamStub.onSuccess(DownstreamStub.GET, ifsUri, OK, ifsResponseBody)
         }
 
         val response: WSResponse = await(request().get())
-        response.status shouldBe Status.OK
+        response.status shouldBe OK
       }
     }
 
@@ -111,7 +127,7 @@ class AuthISpec extends IntegrationBaseSpec {
         }
 
         val response: WSResponse = await(request().get())
-        response.status shouldBe Status.FORBIDDEN
+        response.status shouldBe FORBIDDEN
       }
     }
 
@@ -127,7 +143,7 @@ class AuthISpec extends IntegrationBaseSpec {
         }
 
         val response: WSResponse = await(request().get())
-        response.status shouldBe Status.FORBIDDEN
+        response.status shouldBe FORBIDDEN
       }
     }
   }

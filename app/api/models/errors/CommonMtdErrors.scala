@@ -77,11 +77,10 @@ object BVRError extends MtdError("BUSINESS_ERROR", "Business validation error", 
 object ServiceUnavailableError extends MtdError(code = "SERVICE_UNAVAILABLE", message = "Internal server error", INTERNAL_SERVER_ERROR)
 
 //Authorisation Errors
-object ClientNotAuthorisedError extends MtdError("CLIENT_OR_AGENT_NOT_AUTHORISED", "The client and/or agent is not authorised", FORBIDDEN)
-
+object ClientOrAgentNotAuthorisedError extends MtdError("CLIENT_OR_AGENT_NOT_AUTHORISED", "The client or agent is not authorised", FORBIDDEN) {
+  def withStatus401: MtdError = copy(httpStatus = UNAUTHORIZED)
+}
 object InvalidHttpMethodError extends MtdError("INVALID_HTTP_METHOD", "Invalid HTTP method", METHOD_NOT_ALLOWED)
-
-object ClientNotAuthenticatedError extends MtdError("CLIENT_OR_AGENT_NOT_AUTHORISED", "The client and/or agent is not authorised", UNAUTHORIZED)
 
 object InvalidBearerTokenError extends MtdError("UNAUTHORIZED", "Bearer token is missing or not authorized", UNAUTHORIZED)
 

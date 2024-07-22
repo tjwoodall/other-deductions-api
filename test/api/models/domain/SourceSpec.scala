@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package api
+package api.models.domain
 
-import api.models.errors.DownstreamError
-import api.models.outcomes.ResponseWrapper
+import api.models.domain.Source.`MTD-SA`
+import support.UnitSpec
+import utils.enums.EnumJsonSpecSupport
 
-package object connectors {
+class SourceSpec extends UnitSpec with EnumJsonSpecSupport {
 
-  type DownstreamOutcome[A] = Either[ResponseWrapper[DownstreamError], ResponseWrapper[A]]
+  testRoundTrip[Source](
+    ("MTD-SA", `MTD-SA`)
+  )
 
 }
