@@ -22,8 +22,9 @@ import api.hateoas.Method.{DELETE, GET, PUT}
 import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
-import mocks.MockAppConfig
+import config.MockAppConfig
 import play.api.mvc.Result
+import play.api.Configuration
 import v1.controllers.validators.MockRetrieveOtherDeductionsValidatorFactory
 import v1.fixtures.RetrieveOtherDeductionsFixtures._
 import v1.mocks.services.MockRetrieveOtherDeductionsService
@@ -69,6 +70,11 @@ class RetrieveOtherDeductionsControllerSpec
       "given a valid request" in new Test {
         willUseValidator(returningSuccess(requestData))
 
+        MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+          "supporting-agents-access-control.enabled" -> true
+        )
+
+        MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
         MockRetrieveOtherDeductionsService
           .retrieve(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseBodyModel))))
@@ -88,11 +94,23 @@ class RetrieveOtherDeductionsControllerSpec
       "the parser validation fails" in new Test {
         willUseValidator(returning(NinoFormatError))
 
+        MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+          "supporting-agents-access-control.enabled" -> true
+        )
+
+        MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
+
         runErrorTest(NinoFormatError)
       }
 
       "the service returns an error" in new Test {
         willUseValidator(returningSuccess(requestData))
+
+        MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+          "supporting-agents-access-control.enabled" -> true
+        )
+
+        MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
         MockRetrieveOtherDeductionsService
           .retrieve(requestData)

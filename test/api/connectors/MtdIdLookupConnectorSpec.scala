@@ -18,19 +18,25 @@ package api.connectors
 
 import api.connectors.MtdIdLookupConnector.Outcome
 import api.mocks.MockHttpClient
-import mocks.MockAppConfig
+import config.MockAppConfig
 
 import scala.concurrent.Future
+
 class MtdIdLookupConnectorSpec extends ConnectorSpec {
+
   class Test extends MockHttpClient with MockAppConfig {
+
     val connector = new MtdIdLookupConnector(
       http = mockHttpClient,
       appConfig = mockAppConfig
     )
-    MockAppConfig.mtdIdBaseUrl returns baseUrl
+
+    MockedAppConfig.mtdIdBaseUrl returns baseUrl
   }
+
   val nino  = "test-nino"
   val mtdId = "test-mtdId"
+
   "getMtdId" should {
     "return an MtdId" when {
       "the http client returns a mtd id" in new Test {
@@ -56,4 +62,5 @@ class MtdIdLookupConnectorSpec extends ConnectorSpec {
       }
     }
   }
+
 }

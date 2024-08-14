@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package mocks
+package config
 
 import config.{AppConfig, ConfidenceLevelConfig}
-import org.scalamock.handlers.CallHandler
+import org.scalamock.handlers.{CallHandler, CallHandler0}
 import org.scalamock.scalatest.MockFactory
 import play.api.Configuration
 import routing.Version
@@ -26,7 +26,7 @@ trait MockAppConfig extends MockFactory {
 
   implicit val mockAppConfig: AppConfig = mock[AppConfig]
 
-  object MockAppConfig {
+  object MockedAppConfig {
 
     // MTD ID Lookup Config
     def mtdIdBaseUrl: CallHandler[String] = (() => mockAppConfig.mtdIdBaseUrl).expects()
@@ -49,7 +49,13 @@ trait MockAppConfig extends MockFactory {
     def apiStatus(version: Version): CallHandler[String]         = (mockAppConfig.apiStatus(_: Version)).expects(version)
     def endpointsEnabled(version: Version): CallHandler[Boolean] = (mockAppConfig.endpointsEnabled(_: Version)).expects(version)
 
+    def confidenceLevelConfig: CallHandler0[ConfidenceLevelConfig] =
+      (() => mockAppConfig.confidenceLevelConfig).expects()
+
     def confidenceLevelCheckEnabled: CallHandler[ConfidenceLevelConfig] = (() => mockAppConfig.confidenceLevelConfig).expects()
+
+    def endpointAllowsSupportingAgents(endpointName: String): CallHandler[Boolean] =
+      (mockAppConfig.endpointAllowsSupportingAgents(_: String)).expects(endpointName)
 
   }
 

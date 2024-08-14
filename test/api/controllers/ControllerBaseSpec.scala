@@ -27,6 +27,7 @@ import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result}
 import play.api.test.Helpers.stubControllerComponents
 import play.api.test.{FakeRequest, ResultExtractors}
 import support.UnitSpec
+import config.RealAppConfig
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
@@ -38,7 +39,8 @@ class ControllerBaseSpec
     with HeaderNames
     with ResultExtractors
     with MockAuditService
-    with ControllerSpecHateoasSupport {
+    with ControllerSpecHateoasSupport
+    with RealAppConfig {
 
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
@@ -58,6 +60,8 @@ trait ControllerTestRunner extends MockEnrolmentsAuthService with MockMtdIdLooku
   trait ControllerTest {
     protected val hc: HeaderCarrier = HeaderCarrier()
 
+    protected val controller: AuthorisedController
+
     MockedMtdIdLookupService.lookup(nino).returns(Future.successful(Right("test-mtd-id")))
     MockedEnrolmentsAuthService.authoriseUser()
     MockIdGenerator.generateCorrelationId.returns(correlationId)
@@ -72,6 +76,8 @@ trait ControllerTestRunner extends MockEnrolmentsAuthService with MockMtdIdLooku
         case Some(jsBody) => contentAsJson(result) shouldBe jsBody
         case None         => contentType(result) shouldBe empty
       }
+
+      checkEmaConfig()
     }
 
     protected def runErrorTest(expectedError: MtdError): Unit = {
@@ -84,6 +90,20 @@ trait ControllerTestRunner extends MockEnrolmentsAuthService with MockMtdIdLooku
     }
 
     protected def callController(): Future[Result]
+
+    private def checkEmaConfig(): Unit = {
+      val endpoints: Map[String, Boolean] = emaEndpoints
+
+      val endpointSupportingAgentsAllowed: Boolean =
+        endpoints
+          .getOrElse(
+            controller.endpointName,
+            fail(s"Controller endpoint name \"${controller.endpointName}\" not found in application.conf.")
+          )
+
+      realAppConfig.endpointAllowsSupportingAgents(controller.endpointName) shouldBe endpointSupportingAgentsAllowed
+    }
+
   }
 
   trait AuditEventChecking {

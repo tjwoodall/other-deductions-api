@@ -15,6 +15,7 @@
  */
 
 package api.controllers.validators.resolvers
+
 import api.models.domain.Nino
 import api.models.errors.{MtdError, NinoFormatError}
 import cats.data.Validated
@@ -39,4 +40,5 @@ object ResolveNino {
 
   private val invalidPrefixes =
     List("BG", "GB", "NK", "KN", "TN", "NT", "ZZ")
+
 }

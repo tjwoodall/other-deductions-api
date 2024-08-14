@@ -61,4 +61,5 @@ class MtdIdLookupHttpParserSpec extends UnitSpec {
       }
     }
   }
+
 }

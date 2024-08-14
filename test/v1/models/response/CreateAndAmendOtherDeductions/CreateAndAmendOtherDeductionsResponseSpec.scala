@@ -17,7 +17,7 @@
 package v1.models.response.CreateAndAmendOtherDeductions
 
 import api.hateoas.{Link, Method}
-import mocks.MockAppConfig
+import config.MockAppConfig
 import support.UnitSpec
 import v1.models.response.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsHateoasData, CreateAndAmendOtherDeductionsResponse}
 
@@ -28,7 +28,7 @@ class CreateAndAmendOtherDeductionsResponseSpec extends UnitSpec with MockAppCon
       "called" in {
         val data: CreateAndAmendOtherDeductionsHateoasData = CreateAndAmendOtherDeductionsHateoasData("mynino", "mytaxyear")
 
-        MockAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
+        MockedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
 
         CreateAndAmendOtherDeductionsResponse.CreateAndAmendOtherLinksFactory.links(mockAppConfig, data) shouldBe Seq(
           Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.PUT, rel = "create-and-amend-deductions-other"),

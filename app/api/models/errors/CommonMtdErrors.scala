@@ -80,6 +80,7 @@ object ServiceUnavailableError extends MtdError(code = "SERVICE_UNAVAILABLE", me
 object ClientOrAgentNotAuthorisedError extends MtdError("CLIENT_OR_AGENT_NOT_AUTHORISED", "The client or agent is not authorised", FORBIDDEN) {
   def withStatus401: MtdError = copy(httpStatus = UNAUTHORIZED)
 }
+
 object InvalidHttpMethodError extends MtdError("INVALID_HTTP_METHOD", "Invalid HTTP method", METHOD_NOT_ALLOWED)
 
 object InvalidBearerTokenError extends MtdError("UNAUTHORIZED", "Bearer token is missing or not authorized", UNAUTHORIZED)

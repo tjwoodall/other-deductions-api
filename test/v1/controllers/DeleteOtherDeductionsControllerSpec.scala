@@ -23,9 +23,10 @@ import api.models.errors
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.MockAuditService
-import mocks.MockAppConfig
+import config.MockAppConfig
 import play.api.libs.json.JsValue
 import play.api.mvc.Result
+import play.api.Configuration
 import v1.controllers.validators.MockDeleteOtherDeductionsValidatorFactory
 import v1.mocks.services.MockDeleteOtherDeductionsService
 import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequestData
@@ -49,6 +50,11 @@ class DeleteOtherDeductionsControllerSpec
       "a valid request is supplied" in new Test {
         willUseValidator(returningSuccess(requestData))
 
+        MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+          "supporting-agents-access-control.enabled" -> true
+        )
+
+        MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
         MockDeleteOtherDeductionsService
           .delete(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
@@ -61,6 +67,12 @@ class DeleteOtherDeductionsControllerSpec
       "the parser validation fails" in new Test {
         willUseValidator(returning(NinoFormatError))
 
+        MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+          "supporting-agents-access-control.enabled" -> true
+        )
+
+        MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
+
         runErrorTestWithAudit(NinoFormatError)
       }
 
@@ -70,6 +82,12 @@ class DeleteOtherDeductionsControllerSpec
         MockDeleteOtherDeductionsService
           .delete(requestData)
           .returns(Future.successful(Left(errors.ErrorWrapper(correlationId, RuleTaxYearNotSupportedError))))
+
+        MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+          "supporting-agents-access-control.enabled" -> true
+        )
+
+        MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
         runErrorTestWithAudit(RuleTaxYearNotSupportedError)
       }

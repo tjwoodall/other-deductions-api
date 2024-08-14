@@ -24,9 +24,10 @@ import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.hateoas.Method.{DELETE, GET, PUT}
 import api.services.MockAuditService
-import mocks.MockAppConfig
+import config.MockAppConfig
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
+import play.api.Configuration
 import v1.controllers.validators.MockCreateAndAmendOtherDeductionsValidatorFactory
 import v1.mocks.services._
 import v1.models.request.createAndAmendOtherDeductions._
@@ -108,6 +109,11 @@ class CreateAndAmendOtherDeductionsControllerSpec
     "return a successful response with status 200 (OK)" when {
       "the request received is valid" in new Test {
         willUseValidator(returningSuccess(requestData))
+        MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+          "supporting-agents-access-control.enabled" -> true
+        )
+
+        MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
         MockCreateAndAmendOtherDeductionsService
           .createAndAmend(requestData)
@@ -129,12 +135,22 @@ class CreateAndAmendOtherDeductionsControllerSpec
     "return the error as per spec" when {
       "the parser validation fails" in new Test {
         willUseValidator(returning(NinoFormatError))
+        MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+          "supporting-agents-access-control.enabled" -> true
+        )
+
+        MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
         runErrorTestWithAudit(NinoFormatError, Some(requestBodyJson))
       }
 
       "the service returns an error" in new Test {
         willUseValidator(returningSuccess(requestData))
+        MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+          "supporting-agents-access-control.enabled" -> true
+        )
+
+        MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
         MockCreateAndAmendOtherDeductionsService
           .createAndAmend(requestData)

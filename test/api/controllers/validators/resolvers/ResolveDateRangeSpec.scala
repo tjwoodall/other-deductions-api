@@ -53,7 +53,7 @@ class ResolveDateRangeSpec extends UnitSpec {
 
       "passed valid from and to dates are equal" in {
         val fromDate = "2019-04-06"
-        val toDate = "2019-04-06"
+        val toDate   = "2019-04-06"
 
         val result = ResolveDateRange(fromDate -> toDate)
 

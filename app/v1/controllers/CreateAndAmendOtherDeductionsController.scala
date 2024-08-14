@@ -23,6 +23,7 @@ import play.api.libs.json.JsValue
 import play.api.mvc.{Action, ControllerComponents}
 import routing.{Version, Version1}
 import utils.IdGenerator
+import config.AppConfig
 import v1.controllers.validators.CreateAndAmendOtherDeductionsValidatorFactory
 import v1.models.response.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsHateoasData
 import v1.models.response.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsResponse.CreateAndAmendOtherLinksFactory
@@ -39,8 +40,9 @@ class CreateAndAmendOtherDeductionsController @Inject() (val authService: Enrolm
                                                          auditService: AuditService,
                                                          hateoasFactory: HateoasFactory,
                                                          cc: ControllerComponents,
-                                                         idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+                                                         idGenerator: IdGenerator)(implicit appConfig: AppConfig, ec: ExecutionContext)
     extends AuthorisedController(cc) {
+  val endpointName = "create-amend-other-deductions"
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "CreateAndAmendOtherDeductionsController", endpointName = "createAndAmendOtherDeductions")

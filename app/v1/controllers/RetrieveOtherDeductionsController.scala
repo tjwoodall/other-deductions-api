@@ -21,6 +21,7 @@ import api.hateoas.HateoasFactory
 import api.services.{EnrolmentsAuthService, MtdIdLookupService}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import utils.IdGenerator
+import config.AppConfig
 import v1.controllers.validators.RetrieveOtherDeductionsValidatorFactory
 import v1.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsHateoasData
 import v1.services.RetrieveOtherDeductionsService
@@ -35,8 +36,10 @@ class RetrieveOtherDeductionsController @Inject() (val authService: EnrolmentsAu
                                                    service: RetrieveOtherDeductionsService,
                                                    hateoasFactory: HateoasFactory,
                                                    cc: ControllerComponents,
-                                                   idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+                                                   idGenerator: IdGenerator)(implicit appConfig: AppConfig, ec: ExecutionContext)
     extends AuthorisedController(cc) {
+
+  val endpointName: String = "retrieve-other-deductions"
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "RetrieveOtherDeductionsController", endpointName = "retrieveOtherDeductions")

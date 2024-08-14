@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-package utils
+package config
 
-import java.time.LocalDate
-//import java.time.format.DateTimeFormatter
-import javax.inject.Singleton
+import org.scalamock.handlers.CallHandler
+import org.scalamock.scalatest.MockFactory
 
-@Singleton
-class CurrentTaxYear {
+trait MockFeatureSwitches extends MockFactory {
+  implicit val mockFeatureSwitches: FeatureSwitches = mock[FeatureSwitches]
 
-  // private lazy val expectedDateFormat: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE
-
-  def getCurrentTaxYear(date: LocalDate): Int = {
-
-    lazy val taxYearStartDate: LocalDate = LocalDate.parse(s"${date.getYear}-04-06")
-
-    if (date.isBefore(taxYearStartDate)) date.getYear else date.getYear + 1
+  object MockedFeatureSwitches {
+    def supportingAgentsAccessControlEnabled: CallHandler[Boolean] = (() => mockFeatureSwitches.supportingAgentsAccessControlEnabled).expects()
   }
 
 }
