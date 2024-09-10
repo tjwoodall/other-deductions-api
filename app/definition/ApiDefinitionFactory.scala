@@ -19,35 +19,14 @@ package definition
 import config.AppConfig
 import play.api.Logger
 import routing.{Version, Version1}
-import uk.gov.hmrc.auth.core.ConfidenceLevel
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class ApiDefinitionFactory @Inject() (appConfig: AppConfig) {
 
-  lazy val confidenceLevel: ConfidenceLevel = {
-    val clConfig = appConfig.confidenceLevelConfig
-
-    if (clConfig.definitionEnabled) clConfig.confidenceLevel else ConfidenceLevel.L50
-  }
-
   lazy val definition: Definition =
     Definition(
-      scopes = Seq(
-        Scope(
-          key = readScope,
-          name = "View your Self Assessment information",
-          description = "Allow read access to self assessment data",
-          confidenceLevel = confidenceLevel
-        ),
-        Scope(
-          key = writeScope,
-          name = "Change your Self Assessment information",
-          description = "Allow write access to self assessment data",
-          confidenceLevel = confidenceLevel
-        )
-      ),
       api = APIDefinition(
         name = "Other Deductions (MTD)",
         description = "An API for retrieving, amending and deleting other deductions",
@@ -64,8 +43,6 @@ class ApiDefinitionFactory @Inject() (appConfig: AppConfig) {
       )
     )
 
-  private val readScope      = "read:self-assessment"
-  private val writeScope     = "write:self-assessment"
   private val logger: Logger = Logger(this.getClass)
 
   private[definition] def buildAPIStatus(version: Version): APIStatus = {
