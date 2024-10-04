@@ -16,12 +16,11 @@
 
 package v1.controllers.validators
 
-import api.controllers.validators.Validator
-import api.controllers.validators.resolvers.{ResolveNino, ResolveTaxYear}
-import api.models.domain.TaxYear
-import api.models.errors.MtdError
 import cats.data.Validated
 import cats.implicits._
+import shared.controllers.validators.Validator
+import shared.controllers.validators.resolvers.{ResolveNino, ResolveTaxYear}
+import shared.models.errors.MtdError
 import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequestData
 
 import javax.inject.Singleton
@@ -35,7 +34,7 @@ class RetrieveOtherDeductionsValidatorFactory {
       def validate: Validated[Seq[MtdError], RetrieveOtherDeductionsRequestData] =
         (
           ResolveNino(nino),
-          ResolveTaxYear(TaxYear.minimumTaxYear.year, taxYear, None, None)
+          ResolveTaxYear(minimumPermittedTaxYear, taxYear)
         ).mapN(RetrieveOtherDeductionsRequestData)
 
     }

@@ -16,12 +16,12 @@
 
 package v1.controllers
 
-import api.controllers.{AuthorisedController, EndpointLogContext, RequestContext, RequestHandler}
-import api.hateoas.HateoasFactory
-import api.services.{EnrolmentsAuthService, MtdIdLookupService}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import utils.IdGenerator
-import config.AppConfig
+import shared.config.SharedAppConfig
+import shared.controllers.{AuthorisedController, EndpointLogContext, RequestContext, RequestHandler}
+import shared.hateoas.HateoasFactory
+import shared.services.{EnrolmentsAuthService, MtdIdLookupService}
+import shared.utils.IdGenerator
 import v1.controllers.validators.RetrieveOtherDeductionsValidatorFactory
 import v1.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsHateoasData
 import v1.services.RetrieveOtherDeductionsService
@@ -36,7 +36,7 @@ class RetrieveOtherDeductionsController @Inject() (val authService: EnrolmentsAu
                                                    service: RetrieveOtherDeductionsService,
                                                    hateoasFactory: HateoasFactory,
                                                    cc: ControllerComponents,
-                                                   idGenerator: IdGenerator)(implicit appConfig: AppConfig, ec: ExecutionContext)
+                                                   idGenerator: IdGenerator)(implicit appConfig: SharedAppConfig, ec: ExecutionContext)
     extends AuthorisedController(cc) {
 
   val endpointName: String = "retrieve-other-deductions"

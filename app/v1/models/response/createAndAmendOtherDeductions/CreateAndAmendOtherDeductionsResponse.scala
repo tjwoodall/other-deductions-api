@@ -16,14 +16,15 @@
 
 package v1.models.response.createAndAmendOtherDeductions
 
-import api.hateoas.{HateoasData, HateoasLinks, HateoasLinksFactory, Link}
-import config.AppConfig
+import shared.config.SharedAppConfig
+import shared.hateoas.{HateoasData, HateoasLinksFactory, Link}
+import v1.HateoasLinks
 
 object CreateAndAmendOtherDeductionsResponse extends HateoasLinks {
 
   implicit object CreateAndAmendOtherLinksFactory extends HateoasLinksFactory[Unit, CreateAndAmendOtherDeductionsHateoasData] {
 
-    override def links(appConfig: AppConfig, data: CreateAndAmendOtherDeductionsHateoasData): Seq[Link] = {
+    override def links(appConfig: SharedAppConfig, data: CreateAndAmendOtherDeductionsHateoasData): Seq[Link] = {
       import data._
       Seq(
         createAndAmendOtherDeductions(appConfig, nino, taxYear),

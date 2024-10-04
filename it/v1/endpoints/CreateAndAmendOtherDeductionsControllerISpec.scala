@@ -16,15 +16,16 @@
 
 package v1.endpoints
 
-import api.models.errors
-import api.models.errors._
+import common.errors.{CustomerReferenceFormatError, NameOfShipFormatError}
+import shared.models.errors
+import shared.models.errors._
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import api.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
+import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
@@ -71,19 +72,6 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             |""".stripMargin)
 
         val allInvalidValueRequestError: List[MtdError] = List(
-          ValueFormatError.copy(
-            paths = Some(
-              List(
-                "/seafarers/0/amountDeducted"
-              ))
-          ),
-          NameOfShipFormatError.copy(
-            message = "The provided name of ship is not valid",
-            paths = Some(
-              List(
-                "/seafarers/0/nameOfShip"
-              ))
-          ),
           CustomerReferenceFormatError.copy(
             message = "The provided customer reference is not valid",
             paths = Some(
@@ -97,6 +85,19 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
               List(
                 "/seafarers/0/fromDate",
                 "/seafarers/0/toDate"
+              ))
+          ),
+          NameOfShipFormatError.copy(
+            message = "The provided name of ship is not valid",
+            paths = Some(
+              List(
+                "/seafarers/0/nameOfShip"
+              ))
+          ),
+          ValueFormatError.copy(
+            paths = Some(
+              List(
+                "/seafarers/0/amountDeducted"
               ))
           )
         )

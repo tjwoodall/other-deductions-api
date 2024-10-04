@@ -16,12 +16,12 @@
 
 package v1.controllers
 
-import api.controllers._
-import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import routing.{Version, Version1}
-import utils.IdGenerator
-import config.AppConfig
+import shared.routing.Version
+import shared.config.SharedAppConfig
+import shared.controllers._
+import shared.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
+import shared.utils.IdGenerator
 import v1.controllers.validators.DeleteOtherDeductionsValidatorFactory
 import v1.services.DeleteOtherDeductionsService
 
@@ -35,7 +35,7 @@ class DeleteOtherDeductionsController @Inject() (val authService: EnrolmentsAuth
                                                  service: DeleteOtherDeductionsService,
                                                  auditService: AuditService,
                                                  cc: ControllerComponents,
-                                                 idGenerator: IdGenerator)(implicit appConfig: AppConfig, ec: ExecutionContext)
+                                                 idGenerator: IdGenerator)(implicit appConfig: SharedAppConfig, ec: ExecutionContext)
     extends AuthorisedController(cc) {
 
   val endpointName = "delete-other-deductions"
@@ -56,7 +56,7 @@ class DeleteOtherDeductionsController @Inject() (val authService: EnrolmentsAuth
           auditService = auditService,
           auditType = "DeleteOtherDeductions",
           transactionName = "delete-other-deductions",
-          apiVersion = Version.from(request, orElse = Version1),
+          apiVersion = Version(request),
           params = Map("nino" -> nino, "taxYear" -> taxYear),
           requestBody = None
         ))

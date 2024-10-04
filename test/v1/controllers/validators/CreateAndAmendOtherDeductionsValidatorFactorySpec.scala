@@ -16,14 +16,16 @@
 
 package v1.controllers.validators
 
-import api.models.domain.{Nino, TaxYear}
-import api.models.errors._
-import config.MockAppConfig
+import common.errors.{CustomerReferenceFormatError, NameOfShipFormatError}
 import play.api.libs.json.{JsValue, Json}
-import support.UnitSpec
+import shared.models.domain.{Nino, TaxYear}
+import shared.models.errors._
+import common.errors.DateFormatError
+import common.errors.RangeToDateBeforeFromDateError
+import shared.utils.UnitSpec
 import v1.models.request.createAndAmendOtherDeductions._
 
-class CreateAndAmendOtherDeductionsValidatorFactorySpec extends UnitSpec with MockAppConfig {
+class CreateAndAmendOtherDeductionsValidatorFactorySpec extends UnitSpec {
 
   private implicit val correlationId: String = "1234"
 
@@ -397,10 +399,10 @@ class CreateAndAmendOtherDeductionsValidatorFactorySpec extends UnitSpec with Mo
             correlationId,
             BadRequestError,
             Some(List(
-              ValueFormatError.copy(paths = Some(Seq("/seafarers/0/amountDeducted", "/seafarers/1/amountDeducted"))),
-              NameOfShipFormatError.copy(paths = Some(Seq("/seafarers/0/nameOfShip", "/seafarers/1/nameOfShip"))),
               CustomerReferenceFormatError.copy(paths = Some(Seq("/seafarers/0/customerReference", "/seafarers/1/customerReference"))),
-              DateFormatError.copy(paths = Some(Seq("/seafarers/0/fromDate", "/seafarers/0/toDate", "/seafarers/1/fromDate", "/seafarers/1/toDate")))
+              DateFormatError.copy(paths = Some(Seq("/seafarers/0/fromDate", "/seafarers/0/toDate", "/seafarers/1/fromDate", "/seafarers/1/toDate"))),
+              NameOfShipFormatError.copy(paths = Some(Seq("/seafarers/0/nameOfShip", "/seafarers/1/nameOfShip"))),
+              ValueFormatError.copy(paths = Some(Seq("/seafarers/0/amountDeducted", "/seafarers/1/amountDeducted")))
             ))
           )
         )

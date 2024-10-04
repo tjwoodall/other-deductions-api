@@ -16,15 +16,14 @@
 
 package v1.models.response.retrieveOtherDeductions
 
-import api.hateoas
-import api.hateoas.{Link, Method}
-import api.models.domain.Timestamp
-import config.MockAppConfig
 import play.api.libs.json.Json
-import support.UnitSpec
+import shared.config.MockSharedAppConfig
+import shared.hateoas.{Link, Method}
+import shared.models.domain.Timestamp
+import shared.utils.UnitSpec
 import v1.fixtures.RetrieveOtherDeductionsFixtures._
 
-class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
+class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockSharedAppConfig {
 
   val multipleSeafarersRetrieveOtherDeductionsResponse: RetrieveOtherDeductionsResponse = RetrieveOtherDeductionsResponse(
     submittedOn = Timestamp("2019-04-04T01:01:01.000Z"),
@@ -94,12 +93,12 @@ class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
       "called" in {
         val data: RetrieveOtherDeductionsHateoasData = RetrieveOtherDeductionsHateoasData("mynino", "mytaxyear")
 
-        MockedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
+        MockedSharedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
 
         RetrieveOtherDeductionsResponse.RetrieveOtherLinksFactory.links(mockAppConfig, data) shouldBe Seq(
           Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.PUT, rel = "create-and-amend-deductions-other"),
-          hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.GET, rel = "self"),
-          hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.DELETE, rel = "delete-deductions-other")
+          Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.GET, rel = "self"),
+          Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.DELETE, rel = "delete-deductions-other")
         )
       }
     }

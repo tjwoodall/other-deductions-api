@@ -16,15 +16,15 @@
 
 package v1.controllers
 
-import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
-import api.hateoas.{HateoasWrapper, Link, MockHateoasFactory}
-import api.hateoas.Method.{DELETE, GET, PUT}
-import api.models.domain.{Nino, TaxYear}
-import api.models.errors._
-import api.models.outcomes.ResponseWrapper
-import config.MockAppConfig
-import play.api.mvc.Result
 import play.api.Configuration
+import play.api.mvc.Result
+import shared.config.MockSharedAppConfig
+import shared.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import shared.hateoas.Method.{DELETE, GET, PUT}
+import shared.hateoas.{HateoasWrapper, Link, MockHateoasFactory}
+import shared.models.domain.{Nino, TaxYear}
+import shared.models.errors._
+import shared.models.outcomes.ResponseWrapper
 import v1.controllers.validators.MockRetrieveOtherDeductionsValidatorFactory
 import v1.fixtures.RetrieveOtherDeductionsFixtures._
 import v1.mocks.services.MockRetrieveOtherDeductionsService
@@ -40,8 +40,9 @@ class RetrieveOtherDeductionsControllerSpec
     with MockRetrieveOtherDeductionsService
     with MockRetrieveOtherDeductionsValidatorFactory
     with MockHateoasFactory
-    with MockAppConfig {
+    with MockSharedAppConfig {
 
+  private val nino        = "AA123456A"
   private val taxYear     = "2019-20"
   private val requestData = RetrieveOtherDeductionsRequestData(Nino(nino), TaxYear.fromMtd(taxYear))
 
@@ -70,11 +71,7 @@ class RetrieveOtherDeductionsControllerSpec
       "given a valid request" in new Test {
         willUseValidator(returningSuccess(requestData))
 
-        MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
-          "supporting-agents-access-control.enabled" -> true
-        )
-
-        MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
+        MockedSharedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
         MockRetrieveOtherDeductionsService
           .retrieve(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseBodyModel))))
@@ -94,11 +91,7 @@ class RetrieveOtherDeductionsControllerSpec
       "the parser validation fails" in new Test {
         willUseValidator(returning(NinoFormatError))
 
-        MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
-          "supporting-agents-access-control.enabled" -> true
-        )
-
-        MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
+        MockedSharedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
         runErrorTest(NinoFormatError)
       }
@@ -106,11 +99,7 @@ class RetrieveOtherDeductionsControllerSpec
       "the service returns an error" in new Test {
         willUseValidator(returningSuccess(requestData))
 
-        MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
-          "supporting-agents-access-control.enabled" -> true
-        )
-
-        MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
+        MockedSharedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
         MockRetrieveOtherDeductionsService
           .retrieve(requestData)
@@ -131,6 +120,10 @@ class RetrieveOtherDeductionsControllerSpec
       hateoasFactory = mockHateoasFactory,
       cc = cc,
       idGenerator = mockIdGenerator
+    )
+
+    MockedSharedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
+      "supporting-agents-access-control.enabled" -> true
     )
 
     protected def callController(): Future[Result] = controller.handleRequest(nino, taxYear)(fakeGetRequest)

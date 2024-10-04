@@ -16,13 +16,12 @@
 
 package v1.controllers.validators
 
-import api.models.domain.{Nino, TaxYear}
-import api.models.errors._
-import config.MockAppConfig
-import support.UnitSpec
+import shared.models.domain.{Nino, TaxYear}
+import shared.models.errors._
+import shared.utils.UnitSpec
 import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequestData
 
-class RetrieveOtherDeductionsValidatorFactorySpec extends UnitSpec with MockAppConfig {
+class RetrieveOtherDeductionsValidatorFactorySpec extends UnitSpec {
 
   private implicit val correlationId: String = "1234"
 

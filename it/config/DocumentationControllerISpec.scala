@@ -21,7 +21,7 @@ import play.api.http.Status
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
-import routing.Version1
+import shared.routing.Version1
 import support.IntegrationBaseSpec
 
 import scala.util.Try
@@ -31,21 +31,21 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
   private val apiDefinitionJson = Json.parse(
     s"""
        |{
-       |  "api":{
-       |     "name": "Other Deductions (MTD)",
-       |     "description": "An API for retrieving, amending and deleting other deductions",
-       |     "context":"individuals/deductions/other",
-       |     "categories":[
-       |        "INCOME_TAX_MTD"
-       |     ],
-       |     "versions":[
-       |        {
-       |           "version":"1.0",
-       |           "status":"BETA",
-       |           "endpointsEnabled":true
-       |        }
-       |     ]
-       |  }
+       |   "api":{
+       |      "name": "Other Deductions (MTD)",
+       |      "description": "An API for retrieving, amending and deleting other deductions",
+       |      "context":"individuals/deductions/other",
+       |      "categories":[
+       |         "INCOME_TAX_MTD"
+       |      ],
+       |      "versions":[
+       |         {
+       |            "version":"1.0",
+       |            "status":"BETA",
+       |            "endpointsEnabled":true
+       |         }
+       |      ]
+       |   }
        |}
     """.stripMargin
   )

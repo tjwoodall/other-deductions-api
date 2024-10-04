@@ -16,6 +16,6 @@
 
 package v1.models.request.retrieveOtherDeductions
 
-import api.models.domain.{Nino, TaxYear}
+import shared.models.domain.{Nino, TaxYear}
 
 case class RetrieveOtherDeductionsRequestData(nino: Nino, taxYear: TaxYear)

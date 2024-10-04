@@ -17,7 +17,7 @@
 package v1.models.response.retrieveOtherDeductions
 
 import play.api.libs.json.Json
-import support.UnitSpec
+import shared.utils.UnitSpec
 
 class SeafarersSpec extends UnitSpec {
   val seafarers = Seafarers(Some("myRef"), 2000.99, "Blue Bell", "2018-04-06", "2019-04-06")

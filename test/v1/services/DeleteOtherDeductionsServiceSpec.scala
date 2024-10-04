@@ -16,9 +16,9 @@
 
 package v1.services
 
-import api.controllers.EndpointLogContext
-import api.models.domain.{Nino, TaxYear}
-import api.models.errors.{
+import shared.controllers.EndpointLogContext
+import shared.models.domain.{Nino, TaxYear}
+import shared.models.errors.{
   DownstreamErrorCode,
   DownstreamErrors,
   ErrorWrapper,
@@ -29,8 +29,8 @@ import api.models.errors.{
   RuleTaxYearNotSupportedError,
   TaxYearFormatError
 }
-import api.models.outcomes.ResponseWrapper
-import api.services.ServiceSpec
+import shared.models.outcomes.ResponseWrapper
+import shared.services.ServiceSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.connectors.MockDeleteOtherDeductionsConnector
 import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequestData
