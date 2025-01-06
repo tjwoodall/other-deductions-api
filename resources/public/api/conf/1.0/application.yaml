@@ -4,6 +4,9 @@ info:
   version: "1.0"
   title: Other Deductions (MTD)
   description: |
+    The following group of endpoints is stateful in the Sandbox:
+    * [Other Deductions](#tag/Other-Deductions)
+
     # Send fraud prevention data
     HMRC monitors transactions to help protect your customers' confidential data from criminals and fraudsters. 
 
@@ -49,6 +52,8 @@ components:
             write:self-assessment: Grant write access
             read:self-assessment: Grant read access
 
+tags:
+  - name: Other Deductions
 
 paths:
   /individuals/deductions/other/{nino}/{taxYear}:
