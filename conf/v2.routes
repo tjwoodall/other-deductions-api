@@ -1,0 +1,3 @@
+DELETE     /:nino/:taxYear                                 v2.controllers.DeleteOtherDeductionsController.handleRequest(nino: String, taxYear: String)
+PUT        /:nino/:taxYear                                 v2.controllers.CreateAndAmendOtherDeductionsController.handleRequest(nino: String, taxYear: String)
+GET        /:nino/:taxYear                                 v2.controllers.RetrieveOtherDeductionsController.handleRequest(nino: String, taxYear: String)

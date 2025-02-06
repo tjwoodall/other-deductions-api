@@ -14,25 +14,12 @@
  * limitations under the License.
  */
 
-package routing
+package v2.models.request.createAndAmendOtherDeductions
 
-import play.api.routing.Router
-import shared.config.SharedAppConfig
-import shared.routing.{Version, Version1, Version2, VersionRoutingMap}
+import play.api.libs.json.{Json, OFormat}
 
-import javax.inject.{Inject, Singleton}
+case class CreateAndAmendOtherDeductionsBody(seafarers: Option[Seq[Seafarers]])
 
-@Singleton
-case class OtherDeductionsVersionRoutingMap @Inject() (
-    sharedAppConfig: SharedAppConfig,
-    defaultRouter: Router,
-    v1Router: v1.Routes,
-    v2Router: v2.Routes
-) extends VersionRoutingMap {
-
-  val map: Map[Version, Router] = Map(
-    Version1 -> v1Router,
-    Version2 -> v2Router
-  )
-
+object CreateAndAmendOtherDeductionsBody {
+  implicit val format: OFormat[CreateAndAmendOtherDeductionsBody] = Json.format[CreateAndAmendOtherDeductionsBody]
 }
