@@ -16,6 +16,7 @@
 
 package v2.services
 
+import common.errors.OutsideAmendmentWindowError
 import shared.controllers.EndpointLogContext
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.errors._
@@ -85,6 +86,7 @@ class CreateAndAmendOtherDeductionsServiceSpec extends ServiceSpec {
         ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
         ("INVALID_TAX_YEAR", TaxYearFormatError),
         ("INCOME_SOURCE_NOT_FOUND", NotFoundError),
+        ("OUTSIDE_AMENDMENT_WINDOW", OutsideAmendmentWindowError),
         ("INVALID_PAYLOAD", InternalError),
         ("INVALID_CORRELATIONID", InternalError),
         ("BUSINESS_VALIDATION_RULE_FAILURE", InternalError),

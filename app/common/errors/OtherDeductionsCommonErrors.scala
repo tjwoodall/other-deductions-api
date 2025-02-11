@@ -25,5 +25,7 @@ object NameOfShipFormatError extends MtdError("FORMAT_NAME_OF_SHIP", "The provid
 
 object DateFormatError extends MtdError("FORMAT_DATE", "The field should be in the format YYYY-MM-DD", BAD_REQUEST)
 
+object OutsideAmendmentWindowError extends MtdError("RULE_OUTSIDE_AMENDMENT_WINDOW", "You are outside the amendment window", BAD_REQUEST)
+
 object RangeToDateBeforeFromDateError
   extends MtdError(code = "RANGE_TO_DATE_BEFORE_FROM_DATE", message = "The To date is before the From date", BAD_REQUEST)

@@ -17,6 +17,7 @@
 package v2.services
 
 import cats.implicits._
+import common.errors.OutsideAmendmentWindowError
 import shared.controllers.RequestContext
 import shared.models.errors.{InternalError, MtdError, NinoFormatError, NotFoundError, RuleTaxYearNotSupportedError, TaxYearFormatError}
 import shared.services.{BaseService, ServiceOutcome}
@@ -39,6 +40,7 @@ class DeleteOtherDeductionsService @Inject() (DeleteOtherDeductionsConnector: De
     val errors = Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
       "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+      "OUTSIDE_AMENDMENT_WINDOW"  -> OutsideAmendmentWindowError,
       "NO_DATA_FOUND"             -> NotFoundError,
       "INVALID_CORRELATIONID"     -> InternalError,
       "SERVER_ERROR"              -> InternalError,

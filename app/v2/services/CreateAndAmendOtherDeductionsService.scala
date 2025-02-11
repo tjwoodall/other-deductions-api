@@ -16,10 +16,11 @@
 
 package v2.services
 
+import cats.implicits._
+import common.errors.OutsideAmendmentWindowError
 import shared.controllers.RequestContext
 import shared.models.errors._
 import shared.services.{BaseService, ServiceOutcome}
-import cats.implicits._
 import v2.connectors.CreateAndAmendOtherDeductionsConnector
 import v2.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRequestData
 
@@ -40,6 +41,7 @@ class CreateAndAmendOtherDeductionsService @Inject() (connector: CreateAndAmendO
     val errors = Map(
       "INVALID_TAXABLE_ENTITY_ID"        -> NinoFormatError,
       "INVALID_TAX_YEAR"                 -> TaxYearFormatError,
+      "OUTSIDE_AMENDMENT_WINDOW"         -> OutsideAmendmentWindowError,
       "INCOME_SOURCE_NOT_FOUND"          -> NotFoundError,
       "INVALID_PAYLOAD"                  -> InternalError,
       "INVALID_CORRELATIONID"            -> InternalError,
