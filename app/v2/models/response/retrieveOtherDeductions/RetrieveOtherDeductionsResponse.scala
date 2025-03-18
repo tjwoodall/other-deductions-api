@@ -17,29 +17,10 @@
 package v2.models.response.retrieveOtherDeductions
 
 import play.api.libs.json.{Json, OFormat}
-import shared.config.SharedAppConfig
-import shared.hateoas.{HateoasData, HateoasLinksFactory, Link}
 import shared.models.domain.Timestamp
-import v2.HateoasLinks
 
 case class RetrieveOtherDeductionsResponse(submittedOn: Timestamp, seafarers: Option[Seq[Seafarers]])
 
-object RetrieveOtherDeductionsResponse extends HateoasLinks {
+object RetrieveOtherDeductionsResponse {
   implicit val format: OFormat[RetrieveOtherDeductionsResponse] = Json.format[RetrieveOtherDeductionsResponse]
-
-  implicit object RetrieveOtherLinksFactory extends HateoasLinksFactory[RetrieveOtherDeductionsResponse, RetrieveOtherDeductionsHateoasData] {
-
-    override def links(appConfig: SharedAppConfig, data: RetrieveOtherDeductionsHateoasData): Seq[Link] = {
-      import data._
-      Seq(
-        createAndAmendOtherDeductions(appConfig, nino, taxYear),
-        retrieveOtherDeductions(appConfig, nino, taxYear),
-        deleteOtherDeductions(appConfig, nino, taxYear)
-      )
-    }
-
-  }
-
 }
-
-case class RetrieveOtherDeductionsHateoasData(nino: String, taxYear: String) extends HateoasData

@@ -16,9 +16,8 @@
 
 package v2.models.response.retrieveOtherDeductions
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import shared.config.MockSharedAppConfig
-import shared.hateoas.{Link, Method}
 import shared.models.domain.Timestamp
 import shared.utils.UnitSpec
 import v2.fixtures.RetrieveOtherDeductionsFixtures._
@@ -35,14 +34,14 @@ class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockSharedAppCon
     Some(Seq(seafarersModel.copy(customerReference = None)))
   )
 
-  val jsonMultipleSeafarers = Json.parse(
+  val jsonMultipleSeafarers: JsValue = Json.parse(
     s"""{
       | "submittedOn": "2019-04-04T01:01:01.000Z",
       | "seafarers": [$seafarersJson, $seafarersJson]
       |}""".stripMargin
   )
 
-  val jsonNoRef = Json.parse("""{
+  val jsonNoRef: JsValue = Json.parse("""{
       | "submittedOn": "2019-04-04T01:01:01.000Z",
       | "seafarers": [{
       |   "amountDeducted": 2000.99,
@@ -84,22 +83,6 @@ class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockSharedAppCon
     "passed a body with no customer reference" should {
       "return a JSON with no customer reference" in {
         Json.toJson(noRefRetrieveOtherDeductionsResponse) shouldBe jsonNoRef
-      }
-    }
-  }
-
-  "LinksFactory" should {
-    "produce the correct links" when {
-      "called" in {
-        val data: RetrieveOtherDeductionsHateoasData = RetrieveOtherDeductionsHateoasData("mynino", "mytaxyear")
-
-        MockedSharedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
-
-        RetrieveOtherDeductionsResponse.RetrieveOtherLinksFactory.links(mockAppConfig, data) shouldBe Seq(
-          Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.PUT, rel = "create-and-amend-deductions-other"),
-          Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.GET, rel = "self"),
-          Link(href = s"/my/context/${data.nino}/${data.taxYear}", method = Method.DELETE, rel = "delete-deductions-other")
-        )
       }
     }
   }

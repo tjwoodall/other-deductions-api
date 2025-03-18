@@ -21,8 +21,6 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import shared.config.MockSharedAppConfig
 import shared.controllers.{ControllerBaseSpec, ControllerTestRunner}
-import shared.hateoas.Method.{DELETE, GET, PUT}
-import shared.hateoas.{HateoasWrapper, Link, MockHateoasFactory}
 import shared.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.errors._
@@ -31,7 +29,6 @@ import shared.services.MockAuditService
 import v2.controllers.validators.MockCreateAndAmendOtherDeductionsValidatorFactory
 import v2.mocks.services._
 import v2.models.request.createAndAmendOtherDeductions._
-import v2.models.response.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsHateoasData
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -41,18 +38,11 @@ class CreateAndAmendOtherDeductionsControllerSpec
     with ControllerTestRunner
     with MockCreateAndAmendOtherDeductionsService
     with MockCreateAndAmendOtherDeductionsValidatorFactory
-    with MockHateoasFactory
     with MockAuditService
     with MockSharedAppConfig {
 
   private val taxYear = "2021-22"
   private val nino    = "AA123456A"
-
-  private val testHateoasLinks = Seq(
-    Link(href = s"/individuals/deductions/other/$nino/$taxYear", method = PUT, rel = "amend-deductions-other"),
-    Link(href = s"/individuals/deductions/other/$nino/$taxYear", method = GET, rel = "self"),
-    Link(href = s"/individuals/deductions/other/$nino/$taxYear", method = DELETE, rel = "delete-deductions-other")
-  )
 
   private val requestBodyJson = Json.parse(
     """|
@@ -82,32 +72,10 @@ class CreateAndAmendOtherDeductionsControllerSpec
         )))
   )
 
-  val responseBody: JsValue = Json.parse(s"""
-                                            |{
-                                            |   "links":[
-                                            |      {
-                                            |         "href":"/individuals/deductions/other/$nino/$taxYear",
-                                            |         "method":"PUT",
-                                            |         "rel":"amend-deductions-other"
-                                            |      },
-                                            |      {
-                                            |         "href":"/individuals/deductions/other/$nino/$taxYear",
-                                            |         "method":"GET",
-                                            |         "rel":"self"
-                                            |      },
-                                            |      {
-                                            |         "href":"/individuals/deductions/other/$nino/$taxYear",
-                                            |         "method":"DELETE",
-                                            |         "rel":"delete-deductions-other"
-                                            |      }
-                                            |   ]
-                                            |}
-                                            |""".stripMargin)
-
   private val requestData = CreateAndAmendOtherDeductionsRequestData(Nino(nino), TaxYear.fromMtd(taxYear), requestBody)
 
   "handleRequest" should {
-    "return a successful response with status 200 (OK)" when {
+    "return a successful response with status 204 (NO_CONTENT)" when {
       "the request received is valid" in new Test {
         willUseValidator(returningSuccess(requestData))
 
@@ -117,15 +85,9 @@ class CreateAndAmendOtherDeductionsControllerSpec
           .createAndAmend(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
-        MockHateoasFactory
-          .wrap((), CreateAndAmendOtherDeductionsHateoasData(nino, taxYear))
-          .returns(HateoasWrapper((), testHateoasLinks))
-
         runOkTestWithAudit(
-          expectedStatus = OK,
-          maybeAuditRequestBody = Some(requestBodyJson),
-          maybeExpectedResponseBody = Some(responseBody),
-          maybeAuditResponseBody = Some(responseBody)
+          expectedStatus = NO_CONTENT,
+          maybeAuditRequestBody = Some(requestBodyJson)
         )
       }
     }
@@ -160,7 +122,6 @@ class CreateAndAmendOtherDeductionsControllerSpec
       lookupService = mockMtdIdLookupService,
       validatorFactory = mockCreateAndAmendOtherDeductionsValidatorFactory,
       service = mockService,
-      hateoasFactory = mockHateoasFactory,
       auditService = mockAuditService,
       cc = cc,
       idGenerator = mockIdGenerator

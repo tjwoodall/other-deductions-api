@@ -30,7 +30,7 @@ import support.IntegrationBaseSpec
 class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
   "Calling the create and amend other deductions endpoint" should {
-    "return a 200 status code" when {
+    "return a 204 status code" when {
       "any valid request is made" in new NonTysTest {
 
         override def setupStubs(): Unit = {
@@ -38,8 +38,7 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
         }
 
         val response: WSResponse = await(request().put(requestBodyJson))
-        response.status shouldBe OK
-        response.json shouldBe responseBody
+        response.status shouldBe NO_CONTENT
         response.header("X-CorrelationId").nonEmpty shouldBe true
       }
       "any valid request with a Tax Year Specific (TYS) tax year is made" in new TysIfsTest {
@@ -49,8 +48,7 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
         }
 
         val response: WSResponse = await(request().put(requestBodyJson))
-        response.status shouldBe OK
-        response.json shouldBe responseBody
+        response.status shouldBe NO_CONTENT
         response.header("X-CorrelationId").nonEmpty shouldBe true
       }
     }
@@ -373,28 +371,6 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
                                                  |  ]
                                                  |}
     """.stripMargin)
-
-    val responseBody: JsValue = Json.parse(s"""
-                                              |{
-                                              |   "links":[
-                                              |      {
-                                              |         "href":"/individuals/deductions/other/$nino/$taxYear",
-                                              |         "method":"PUT",
-                                              |         "rel":"create-and-amend-deductions-other"
-                                              |      },
-                                              |      {
-                                              |         "href":"/individuals/deductions/other/$nino/$taxYear",
-                                              |         "method":"GET",
-                                              |         "rel":"self"
-                                              |      },
-                                              |      {
-                                              |         "href":"/individuals/deductions/other/$nino/$taxYear",
-                                              |         "method":"DELETE",
-                                              |         "rel":"delete-deductions-other"
-                                              |      }
-                                              |   ]
-                                              |}
-                                              |""".stripMargin)
 
     def taxYear: String
 

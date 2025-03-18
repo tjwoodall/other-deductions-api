@@ -20,13 +20,10 @@ import play.api.libs.json.JsValue
 import play.api.mvc.{Action, ControllerComponents}
 import shared.config.SharedAppConfig
 import shared.controllers._
-import shared.hateoas.HateoasFactory
 import shared.routing.Version
 import shared.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import shared.utils.IdGenerator
 import v2.controllers.validators.CreateAndAmendOtherDeductionsValidatorFactory
-import v2.models.response.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsHateoasData
-import v2.models.response.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsResponse.CreateAndAmendOtherLinksFactory
 import v2.services.CreateAndAmendOtherDeductionsService
 
 import javax.inject.{Inject, Singleton}
@@ -38,7 +35,6 @@ class CreateAndAmendOtherDeductionsController @Inject() (val authService: Enrolm
                                                          validatorFactory: CreateAndAmendOtherDeductionsValidatorFactory,
                                                          service: CreateAndAmendOtherDeductionsService,
                                                          auditService: AuditService,
-                                                         hateoasFactory: HateoasFactory,
                                                          cc: ControllerComponents,
                                                          idGenerator: IdGenerator)(implicit appConfig: SharedAppConfig, ec: ExecutionContext)
     extends AuthorisedController(cc) {
@@ -65,7 +61,6 @@ class CreateAndAmendOtherDeductionsController @Inject() (val authService: Enrolm
           requestBody = Some(request.body),
           includeResponse = true
         ))
-        .withHateoasResult(hateoasFactory)(CreateAndAmendOtherDeductionsHateoasData(nino, taxYear))
 
       requestHandler.handleRequest()
     }

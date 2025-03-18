@@ -19,11 +19,9 @@ package v2.controllers
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import shared.config.SharedAppConfig
 import shared.controllers.{AuthorisedController, EndpointLogContext, RequestContext, RequestHandler}
-import shared.hateoas.HateoasFactory
 import shared.services.{EnrolmentsAuthService, MtdIdLookupService}
 import shared.utils.IdGenerator
 import v2.controllers.validators.RetrieveOtherDeductionsValidatorFactory
-import v2.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsHateoasData
 import v2.services.RetrieveOtherDeductionsService
 
 import javax.inject.{Inject, Singleton}
@@ -34,7 +32,6 @@ class RetrieveOtherDeductionsController @Inject() (val authService: EnrolmentsAu
                                                    val lookupService: MtdIdLookupService,
                                                    validatorFactory: RetrieveOtherDeductionsValidatorFactory,
                                                    service: RetrieveOtherDeductionsService,
-                                                   hateoasFactory: HateoasFactory,
                                                    cc: ControllerComponents,
                                                    idGenerator: IdGenerator)(implicit appConfig: SharedAppConfig, ec: ExecutionContext)
     extends AuthorisedController(cc) {
@@ -53,7 +50,7 @@ class RetrieveOtherDeductionsController @Inject() (val authService: EnrolmentsAu
       val requestHandler = RequestHandler
         .withValidator(validator)
         .withService(service.retrieve)
-        .withHateoasResult(hateoasFactory)(RetrieveOtherDeductionsHateoasData(nino, taxYear))
+        .withPlainJsonResult(OK)
 
       requestHandler.handleRequest()
     }
