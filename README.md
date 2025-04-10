@@ -14,7 +14,7 @@ populated.
 
 Run from the console using: `sbt run` (starts on port 7797 by default)
 
-Start the service manager profile: `sm --start MTDFB_OTHER_DEDUCTIONS`
+Start the service manager profile: `sm2 --start MTDFB_OTHER_DEDUCTIONS`
 
 ## Running tests
 
