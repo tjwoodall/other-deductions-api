@@ -19,6 +19,7 @@ package v2.connectors
 import shared.connectors.ConnectorSpec
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.outcomes.ResponseWrapper
+import uk.gov.hmrc.http.StringContextOps
 import v2.models.request.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsBody, CreateAndAmendOtherDeductionsRequestData}
 
 import scala.concurrent.Future
@@ -30,10 +31,10 @@ class CreateAndAmendOtherDeductionsConnectorSpec extends ConnectorSpec {
       "a valid request is made" in new IfsTest with Test {
         def taxYear: String = "2021-22"
 
-        val outcome = Right(ResponseWrapper(correlationId, ()))
+        val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willPut(
-          url = s"$baseUrl/income-tax/deductions/$nino/2021-22",
+          url = url"$baseUrl/income-tax/deductions/$nino/2021-22",
           body = body
         )
           .returns(Future.successful(outcome))
@@ -45,10 +46,10 @@ class CreateAndAmendOtherDeductionsConnectorSpec extends ConnectorSpec {
       "a valid request is made" in new TysIfsTest with Test {
         def taxYear: String = "2023-24"
 
-        val outcome = Right(ResponseWrapper(correlationId, ()))
+        val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willPut(
-          url = s"$baseUrl/income-tax/deductions/23-24/$nino",
+          url = url"$baseUrl/income-tax/deductions/23-24/$nino",
           body = body
         )
           .returns(Future.successful(outcome))
@@ -67,9 +68,9 @@ class CreateAndAmendOtherDeductionsConnectorSpec extends ConnectorSpec {
       val connector: CreateAndAmendOtherDeductionsConnector =
         new CreateAndAmendOtherDeductionsConnector(http = mockHttpClient, appConfig = mockAppConfig)
 
-      val body = CreateAndAmendOtherDeductionsBody(None)
+      val body: CreateAndAmendOtherDeductionsBody = CreateAndAmendOtherDeductionsBody(None)
 
-      lazy val request = CreateAndAmendOtherDeductionsRequestData(Nino("AA123456A"), TaxYear.fromMtd(taxYear), body)
+      lazy val request: CreateAndAmendOtherDeductionsRequestData = CreateAndAmendOtherDeductionsRequestData(Nino("AA123456A"), TaxYear.fromMtd(taxYear), body)
     }
 
   }

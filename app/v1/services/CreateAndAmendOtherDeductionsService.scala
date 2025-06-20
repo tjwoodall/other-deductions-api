@@ -16,10 +16,10 @@
 
 package v1.services
 
+import cats.implicits._
 import shared.controllers.RequestContext
 import shared.models.errors._
 import shared.services.{BaseService, ServiceOutcome}
-import cats.implicits._
 import v1.connectors.CreateAndAmendOtherDeductionsConnector
 import v1.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRequestData
 

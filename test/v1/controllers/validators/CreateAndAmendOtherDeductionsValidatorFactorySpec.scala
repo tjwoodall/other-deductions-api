@@ -16,12 +16,10 @@
 
 package v1.controllers.validators
 
-import common.errors.{CustomerReferenceFormatError, NameOfShipFormatError}
+import common.errors.{CustomerReferenceFormatError, DateFormatError, NameOfShipFormatError, RangeToDateBeforeFromDateError}
 import play.api.libs.json.{JsValue, Json}
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.errors._
-import common.errors.DateFormatError
-import common.errors.RangeToDateBeforeFromDateError
 import shared.utils.UnitSpec
 import v1.models.request.createAndAmendOtherDeductions._
 

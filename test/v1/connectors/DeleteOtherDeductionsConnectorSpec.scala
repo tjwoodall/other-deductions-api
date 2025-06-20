@@ -19,6 +19,7 @@ package v1.connectors
 import shared.connectors.ConnectorSpec
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.outcomes.ResponseWrapper
+import uk.gov.hmrc.http.StringContextOps
 import v1.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequestData
 
 import scala.concurrent.Future
@@ -29,10 +30,10 @@ class DeleteOtherDeductionsConnectorSpec extends ConnectorSpec {
     "return the expected response for a non-TYS request" when {
       "a valid request is made" in new IfsTest with Test {
         def taxYear: TaxYear = TaxYear.fromMtd("2019-20")
-        val outcome          = Right(ResponseWrapper(correlationId, ()))
+        val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willDelete(
-          url = s"$baseUrl/income-tax/deductions/$nino/2019-20"
+          url = url"$baseUrl/income-tax/deductions/$nino/2019-20"
         ).returns(Future.successful(outcome))
 
         await(connector.delete(request)) shouldBe outcome
@@ -42,10 +43,10 @@ class DeleteOtherDeductionsConnectorSpec extends ConnectorSpec {
     "return the expected response for a TYS request" when {
       "a valid request is made" in new TysIfsTest with Test {
         def taxYear: TaxYear = TaxYear.fromMtd("2023-24")
-        val outcome          = Right(ResponseWrapper(correlationId, ()))
+        val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willDelete(
-          url = s"$baseUrl/income-tax/deductions/23-24/$nino"
+          url = url"$baseUrl/income-tax/deductions/23-24/$nino"
         ).returns(Future.successful(outcome))
 
         await(connector.delete(request)) shouldBe outcome

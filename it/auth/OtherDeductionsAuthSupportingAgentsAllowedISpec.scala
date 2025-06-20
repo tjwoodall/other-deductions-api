@@ -16,11 +16,11 @@
 
 package auth
 
+import play.api.http.Status.OK
+import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.{WSRequest, WSResponse}
 import shared.models.domain.TaxYear
 import shared.services.DownstreamStub
-import play.api.libs.json.{JsValue, Json}
-import play.api.http.Status.OK
-import play.api.libs.ws.{WSRequest, WSResponse}
 
 class OtherDeductionsAuthSupportingAgentsAllowedISpec extends AuthSupportingAgentsAllowedISpec {
 

@@ -16,16 +16,17 @@
 
 package v2.controllers.validators
 
-import shared.controllers.validators.Validator
-import shared.models.errors.MtdError
 import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import play.api.libs.json.JsValue
+import shared.controllers.validators.Validator
+import shared.models.errors.MtdError
 import v2.models.request.createAndAmendOtherDeductions.CreateAndAmendOtherDeductionsRequestData
 
-trait MockCreateAndAmendOtherDeductionsValidatorFactory extends MockFactory {
+trait MockCreateAndAmendOtherDeductionsValidatorFactory extends TestSuite with MockFactory {
 
   val mockCreateAndAmendOtherDeductionsValidatorFactory: CreateAndAmendOtherDeductionsValidatorFactory =
     mock[CreateAndAmendOtherDeductionsValidatorFactory]

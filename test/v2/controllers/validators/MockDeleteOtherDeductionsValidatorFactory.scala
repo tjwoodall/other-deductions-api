@@ -16,15 +16,16 @@
 
 package v2.controllers.validators
 
-import shared.controllers.validators.Validator
-import shared.models.errors.MtdError
 import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
+import shared.controllers.validators.Validator
+import shared.models.errors.MtdError
 import v2.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequestData
 
-trait MockDeleteOtherDeductionsValidatorFactory extends MockFactory {
+trait MockDeleteOtherDeductionsValidatorFactory extends TestSuite with MockFactory {
 
   val mockDeleteOtherDeductionsValidatorFactory: DeleteOtherDeductionsValidatorFactory = mock[DeleteOtherDeductionsValidatorFactory]
 

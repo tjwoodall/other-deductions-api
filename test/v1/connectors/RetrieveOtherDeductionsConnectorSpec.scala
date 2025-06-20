@@ -19,8 +19,10 @@ package v1.connectors
 import shared.connectors.ConnectorSpec
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.outcomes.ResponseWrapper
+import uk.gov.hmrc.http.StringContextOps
 import v1.fixtures.RetrieveOtherDeductionsFixtures.responseBodyModel
 import v1.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequestData
+import v1.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsResponse
 
 import scala.concurrent.Future
 
@@ -30,9 +32,9 @@ class RetrieveOtherDeductionsConnectorSpec extends ConnectorSpec {
     "return the expected response for a non-TYS request" when {
       "a valid request is made" in new IfsTest with Test {
         val taxYear = "2017-18"
-        val outcome = Right(ResponseWrapper(correlationId, responseBodyModel))
+        val outcome: Right[Nothing, ResponseWrapper[RetrieveOtherDeductionsResponse]] = Right(ResponseWrapper(correlationId, responseBodyModel))
 
-        willGet(s"$baseUrl/income-tax/deductions/AA123456A/2017-18")
+        willGet(url"$baseUrl/income-tax/deductions/AA123456A/2017-18")
           .returns(Future.successful(outcome))
 
         await(connector.retrieve(request)) shouldBe outcome
@@ -42,9 +44,9 @@ class RetrieveOtherDeductionsConnectorSpec extends ConnectorSpec {
     "return the expected response for a TYS request" when {
       "a valid request is made" in new TysIfsTest with Test {
         val taxYear = "2023-24"
-        val outcome = Right(ResponseWrapper(correlationId, responseBodyModel))
+        val outcome: Right[Nothing, ResponseWrapper[RetrieveOtherDeductionsResponse]] = Right(ResponseWrapper(correlationId, responseBodyModel))
 
-        willGet(s"$baseUrl/income-tax/deductions/23-24/AA123456A")
+        willGet(url"$baseUrl/income-tax/deductions/23-24/AA123456A")
           .returns(Future.successful(outcome))
 
         await(connector.retrieve(request)) shouldBe outcome
@@ -56,7 +58,7 @@ class RetrieveOtherDeductionsConnectorSpec extends ConnectorSpec {
 
       val connector: RetrieveOtherDeductionsConnector = new RetrieveOtherDeductionsConnector(http = mockHttpClient, appConfig = mockAppConfig)
 
-      lazy val request = RetrieveOtherDeductionsRequestData(Nino("AA123456A"), TaxYear.fromMtd(taxYear))
+      lazy val request: RetrieveOtherDeductionsRequestData = RetrieveOtherDeductionsRequestData(Nino("AA123456A"), TaxYear.fromMtd(taxYear))
     }
   }
 

@@ -16,8 +16,8 @@
 
 package v1.models.request.createAndAmendOtherDeductions
 
-import shared.models.utils.JsonErrorValidators
 import play.api.libs.json.Json
+import shared.models.utils.JsonErrorValidators
 import shared.utils.UnitSpec
 
 class CreateAndAmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValidators {

@@ -17,9 +17,9 @@
 package v2.controllers
 
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import shared.routing.Version
 import shared.config.SharedAppConfig
 import shared.controllers._
+import shared.routing.Version
 import shared.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import shared.utils.IdGenerator
 import v2.controllers.validators.DeleteOtherDeductionsValidatorFactory

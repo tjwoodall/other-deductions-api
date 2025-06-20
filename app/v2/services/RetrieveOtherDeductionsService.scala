@@ -16,10 +16,10 @@
 
 package v2.services
 
+import cats.implicits._
 import shared.controllers.RequestContext
 import shared.models.errors._
 import shared.services.{BaseService, ServiceOutcome}
-import cats.implicits._
 import v2.connectors.RetrieveOtherDeductionsConnector
 import v2.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequestData
 import v2.models.response.retrieveOtherDeductions.RetrieveOtherDeductionsResponse

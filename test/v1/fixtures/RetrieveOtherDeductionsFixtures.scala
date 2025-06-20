@@ -16,8 +16,8 @@
 
 package v1.fixtures
 
-import shared.models.domain.Timestamp
 import play.api.libs.json.{JsObject, JsValue, Json}
+import shared.models.domain.Timestamp
 import v1.models.response.retrieveOtherDeductions.{RetrieveOtherDeductionsResponse, Seafarers}
 
 object RetrieveOtherDeductionsFixtures {
