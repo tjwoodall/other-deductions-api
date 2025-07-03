@@ -17,7 +17,7 @@
 package v2.connectors
 
 import shared.config.SharedAppConfig
-import shared.connectors.DownstreamUri.{IfsUri, TaxYearSpecificIfsUri}
+import shared.connectors.DownstreamUri.IfsUri
 import shared.connectors.httpparsers.StandardDownstreamHttpParser._
 import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -38,7 +38,7 @@ class DeleteOtherDeductionsConnector @Inject() (val http: HttpClientV2, val appC
     import request._
 
     val downstreamUri = if (taxYear.useTaxYearSpecificApi) {
-      TaxYearSpecificIfsUri[Unit](
+      IfsUri[Unit](
         s"income-tax/deductions/${taxYear.asTysDownstream}/${nino.value}"
       )
     } else {
