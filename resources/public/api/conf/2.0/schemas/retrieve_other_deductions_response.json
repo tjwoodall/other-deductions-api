@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Retrieve Deductions",
+  "description": "Allows the retrieval of deductions",
+  "type": "object",
+  "properties": {
+    "submittedOn": {
+      "description": "The date the deductions were added. It must be provided in the format YYYY-MM-DDThh:mm:ss.sssZ",
+      "type": "string",
+      "example": "2019-04-04T01:01:01.000Z"
+    },
+    "seafarers": {
+      "description": "Financial details about deductions and time spent working on a ship.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "customerReference": {
+            "description": "A reference the user supplies to identify the record.",
+            "type": "string",
+            "example": "SEAFARERS1234"
+          },
+          "amountDeducted": {
+            "description": "Deduction from Seafarers' Earnings. The value must be between 0 and 99999999999.99 up to 2 decimal places.",
+            "type": "number",
+            "example": "2000.99"
+          },
+          "nameOfShip": {
+            "description": "The name of the ship worked on.",
+            "type": "string",
+            "example": "Blue Bell"
+          },
+          "fromDate": {
+            "description": "The date work started in the format YYYY-MM-DD",
+            "type": "string",
+            "example": "2029-04-06"
+          },
+          "toDate": {
+            "description": "The date work ended in the format: YYYY-MM-DD",
+            "type": "string",
+            "example": "2020-04-06"
+          }
+        },
+        "required": [
+          "amountDeducted",
+          "nameOfShip",
+          "fromDate",
+          "toDate"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
