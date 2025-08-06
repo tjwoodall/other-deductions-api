@@ -1,0 +1,12 @@
+{
+  "submittedOn": "2019-04-04T01:01:01.000Z",
+  "seafarers": [
+    {
+      "customerReference": "SEAFARERS1234",
+      "amountDeducted": 2543.32,
+      "nameOfShip": "Blue Bell",
+      "fromDate": "2019-04-06",
+      "toDate": "2020-04-05"
+    }
+  ]
+}
