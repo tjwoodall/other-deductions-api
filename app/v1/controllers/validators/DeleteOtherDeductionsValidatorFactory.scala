@@ -35,7 +35,7 @@ class DeleteOtherDeductionsValidatorFactory {
         (
           ResolveNino(nino),
           ResolveTaxYear(minimumPermittedTaxYear, taxYear)
-        ).mapN(DeleteOtherDeductionsRequestData)
+        ).mapN(DeleteOtherDeductionsRequestData.apply)
 
     }
 

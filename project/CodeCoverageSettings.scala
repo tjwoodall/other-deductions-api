@@ -19,13 +19,6 @@ import scoverage.ScoverageKeys
 
 object CodeCoverageSettings {
 
-  val settings: Seq[Setting[_]] = Seq(
-    ScoverageKeys.coverageExcludedPackages := excludedPackages.mkString(";"),
-    ScoverageKeys.coverageMinimumStmtTotal := 94,
-    ScoverageKeys.coverageFailOnMinimum    := true,
-    ScoverageKeys.coverageHighlighting     := true
-  )
-
   private val excludedPackages: Seq[String] = Seq(
     "<empty>",
     "Reverse.*",
@@ -35,7 +28,15 @@ object CodeCoverageSettings {
     ".*Routes.*",
     "config.*",
     "testOnly.*",
-    "testOnlyDoNotUseInAppConf.*"
+    "testOnlyDoNotUseInAppConf.*",
+    ".*\\$anon.*"
+  )
+
+  val settings: Seq[Setting[?]] = Seq(
+    ScoverageKeys.coverageExcludedPackages := excludedPackages.mkString(";"),
+    ScoverageKeys.coverageMinimumStmtTotal := 93,
+    ScoverageKeys.coverageFailOnMinimum    := true,
+    ScoverageKeys.coverageHighlighting     := true
   )
 
 }

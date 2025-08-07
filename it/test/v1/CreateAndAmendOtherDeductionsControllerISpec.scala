@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package v1.endpoints
+package v1
 
 import common.errors.{CustomerReferenceFormatError, NameOfShipFormatError}
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import shared.models.errors
-import shared.models.errors._
+import shared.models.errors.*
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
+import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 import support.IntegrationBaseSpec
 
 class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
@@ -321,7 +322,7 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             ("AA123456A", "2019-20", allCustomerReferencesInvalidRequestBodyJson, BAD_REQUEST, allCustomerReferenceFormatErrors),
             ("AA123456A", "2019-20", allNamesOfShipsInvalidRequestBodyJson, BAD_REQUEST, allNamesOfShipsFormatErrors)
           )
-          input.foreach(args => (validationErrorTest _).tupled(args))
+          input.foreach(args => validationErrorTest.tupled(args))
         }
 
         "downstream service error" when {
@@ -348,7 +349,7 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, errors.InternalError),
             (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, errors.InternalError)
           )
-          input.foreach(args => (serviceErrorTest _).tupled(args))
+          input.foreach(args => serviceErrorTest.tupled(args))
         }
       }
     }
@@ -412,7 +413,7 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
         )
     }
 
-    def uri: String = s"/$nino/$taxYear"
+    private def uri: String = s"/$nino/$taxYear"
 
     def setupStubs(): Unit = {}
 

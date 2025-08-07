@@ -5,9 +5,9 @@ populated.
 
 ## Requirements
 
-- Scala 2.13.x
+- Scala 3.5.x
 - Java 11
-- sbt 1.7.x
+- sbt 1.10.x
 - [Service Manager](https://github.com/hmrc/service-manager)
 
 ## Development Setup
@@ -20,7 +20,7 @@ Start the service manager profile: `sm2 --start MTDFB_OTHER_DEDUCTIONS`
 
 ```
 sbt test
-sbt it:test
+sbt it/test
 ```
 
 ## Viewing Open API Spec (OAS) docs

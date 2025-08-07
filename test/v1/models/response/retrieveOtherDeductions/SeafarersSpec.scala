@@ -16,7 +16,7 @@
 
 package v1.models.response.retrieveOtherDeductions
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, JsObject, JsError}
 import shared.utils.UnitSpec
 
 class SeafarersSpec extends UnitSpec {
@@ -65,6 +65,10 @@ class SeafarersSpec extends UnitSpec {
         Json.toJson(noRefSeafares) shouldBe noRefJson
       }
     }
+  }
+
+  "error when JSON is invalid" in {
+    JsObject.empty.validate[Seafarers] shouldBe a[JsError]
   }
 
 }

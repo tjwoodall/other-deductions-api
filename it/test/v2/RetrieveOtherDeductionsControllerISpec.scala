@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package v1.endpoints
+package v2
 
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.Json
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
-import shared.models.errors._
+import shared.models.errors.*
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 import support.IntegrationBaseSpec
-import v1.fixtures.RetrieveOtherDeductionsFixtures.{responseBodyJson, responseWithHateoasLinks}
+import v1.fixtures.RetrieveOtherDeductionsFixtures.responseBodyJson
 
 class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
@@ -40,7 +40,7 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(request().get())
         response.status shouldBe OK
-        response.json shouldBe responseWithHateoasLinks(mtdTaxYear)
+        response.json shouldBe responseBodyJson
         response.header("X-CorrelationId").nonEmpty shouldBe true
         response.header("Content-Type") shouldBe Some("application/json")
       }
@@ -53,7 +53,7 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(request().get())
         response.status shouldBe OK
-        response.json shouldBe responseWithHateoasLinks(mtdTaxYear)
+        response.json shouldBe responseBodyJson
         response.header("X-CorrelationId").nonEmpty shouldBe true
         response.header("Content-Type") shouldBe Some("application/json")
       }
@@ -80,7 +80,7 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           ("AA123456A", "2017-18", BAD_REQUEST, RuleTaxYearNotSupportedError),
           ("AA123456A", "2018-20", BAD_REQUEST, RuleTaxYearRangeInvalidError)
         )
-        input.foreach(args => (validationErrorTest _).tupled(args))
+        input.foreach(args => validationErrorTest.tupled(args))
       }
 
       "downstream service error" when {
@@ -111,7 +111,7 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
           (UNPROCESSABLE_ENTITY, "TAX_YEAR_NOT_SUPPORTED", BAD_REQUEST, RuleTaxYearNotSupportedError)
         )
 
-        (errors ++ extraTysErrors).foreach(args => (serviceErrorTest _).tupled(args))
+        (errors ++ extraTysErrors).foreach(args => serviceErrorTest.tupled(args))
       }
     }
   }
@@ -133,7 +133,7 @@ class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 
       buildRequest(s"/$nino/$mtdTaxYear")
         .withHttpHeaders(
-          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (ACCEPT, "application/vnd.hmrc.2.0+json"),
           (AUTHORIZATION, "Bearer 123") // some bearer token
         )
     }

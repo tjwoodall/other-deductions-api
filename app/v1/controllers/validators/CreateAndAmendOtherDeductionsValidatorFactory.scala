@@ -51,7 +51,7 @@ class CreateAndAmendOtherDeductionsValidatorFactory {
           ResolveNino(nino),
           resolveTaxYear(taxYear),
           resolveJson(body)
-        ).mapN(CreateAndAmendOtherDeductionsRequestData) andThen validateBodyFieldFormat
+        ).mapN(CreateAndAmendOtherDeductionsRequestData.apply).andThen(validateBodyFieldFormat)
 
     }
 

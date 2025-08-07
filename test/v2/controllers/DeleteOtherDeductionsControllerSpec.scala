@@ -85,7 +85,7 @@ class DeleteOtherDeductionsControllerSpec
 
   trait Test extends ControllerTest with AuditEventChecking[GenericAuditDetail] {
 
-    val controller = new DeleteOtherDeductionsController(
+    val controller: DeleteOtherDeductionsController = new DeleteOtherDeductionsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
       validatorFactory = mockDeleteOtherDeductionsValidatorFactory,

@@ -58,8 +58,7 @@ class CreateAndAmendOtherDeductionsConnectorSpec extends ConnectorSpec {
       }
     }
 
-    trait Test {
-      _: ConnectorTest =>
+    trait Test extends ConnectorTest {
 
       val nino: String = "AA123456A"
 
@@ -70,7 +69,8 @@ class CreateAndAmendOtherDeductionsConnectorSpec extends ConnectorSpec {
 
       val body: CreateAndAmendOtherDeductionsBody = CreateAndAmendOtherDeductionsBody(None)
 
-      lazy val request: CreateAndAmendOtherDeductionsRequestData = CreateAndAmendOtherDeductionsRequestData(Nino("AA123456A"), TaxYear.fromMtd(taxYear), body)
+      lazy val request: CreateAndAmendOtherDeductionsRequestData =
+        CreateAndAmendOtherDeductionsRequestData(Nino("AA123456A"), TaxYear.fromMtd(taxYear), body)
     }
 
   }

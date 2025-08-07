@@ -16,7 +16,7 @@
 
 package v2.models.response.retrieveOtherDeductions
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.*
 import shared.config.MockSharedAppConfig
 import shared.models.domain.Timestamp
 import shared.utils.UnitSpec
@@ -66,6 +66,10 @@ class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockSharedAppCon
       "return a model with no customer reference" in {
         jsonNoRef.as[RetrieveOtherDeductionsResponse] shouldBe noRefRetrieveOtherDeductionsResponse
       }
+    }
+
+    "error when JSON is invalid" in {
+      JsObject.empty.validate[RetrieveOtherDeductionsResponse] shouldBe a[JsError]
     }
   }
 

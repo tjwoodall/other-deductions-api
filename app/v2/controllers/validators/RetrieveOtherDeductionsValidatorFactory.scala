@@ -35,7 +35,7 @@ class RetrieveOtherDeductionsValidatorFactory {
         (
           ResolveNino(nino),
           ResolveTaxYear(minimumPermittedTaxYear, taxYear)
-        ).mapN(RetrieveOtherDeductionsRequestData)
+        ).mapN(RetrieveOtherDeductionsRequestData.apply)
 
     }
 

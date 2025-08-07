@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package v2.endpoints
+package v2
 
 import common.errors.{CustomerReferenceFormatError, NameOfShipFormatError, OutsideAmendmentWindowError}
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
-import shared.models.errors
-import shared.models.errors._
-import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
+import shared.models.errors.*
+import shared.services.*
 import support.IntegrationBaseSpec
 
 class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
@@ -319,7 +319,7 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             ("AA123456A", "2019-20", allCustomerReferencesInvalidRequestBodyJson, BAD_REQUEST, allCustomerReferenceFormatErrors),
             ("AA123456A", "2019-20", allNamesOfShipsInvalidRequestBodyJson, BAD_REQUEST, allNamesOfShipsFormatErrors)
           )
-          input.foreach(args => (validationErrorTest _).tupled(args))
+          input.foreach(args => validationErrorTest.tupled(args))
         }
 
         "downstream service error" when {
@@ -344,10 +344,10 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
             (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
             (BAD_REQUEST, "INVALID_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
             (UNPROCESSABLE_ENTITY, "OUTSIDE_AMENDMENT_WINDOW", BAD_REQUEST, OutsideAmendmentWindowError),
-            (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, errors.InternalError),
-            (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, errors.InternalError)
+            (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, InternalError),
+            (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, InternalError)
           )
-          input.foreach(args => (serviceErrorTest _).tupled(args))
+          input.foreach(args => serviceErrorTest.tupled(args))
         }
       }
     }
@@ -389,7 +389,7 @@ class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {
         )
     }
 
-    def uri: String = s"/$nino/$taxYear"
+    private def uri: String = s"/$nino/$taxYear"
 
     def setupStubs(): Unit = {}
 

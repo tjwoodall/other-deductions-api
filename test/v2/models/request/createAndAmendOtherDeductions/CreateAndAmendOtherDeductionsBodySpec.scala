@@ -135,4 +135,8 @@ class CreateAndAmendOtherDeductionsBodySpec extends UnitSpec with JsonErrorValid
     }
   }
 
+  "error when JSON is invalid" in {
+    Json.parse("""{ "seafarers": "notASequence" }""").validate[CreateAndAmendOtherDeductionsBody].isError shouldBe true
+  }
+
 }

@@ -19,14 +19,13 @@ package shared.utils
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Configuration
 import play.api.http.Status
-import play.api.http.Status.UNSUPPORTED_MEDIA_TYPE
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, RequestHeader, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import shared.models.errors._
+import play.api.test.Helpers.*
+import shared.models.errors.*
 import uk.gov.hmrc.auth.core.InsufficientEnrolments
-import uk.gov.hmrc.http.{HeaderCarrier, JsValidationException, NotFoundException}
+import uk.gov.hmrc.http.*
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult.Success
 import uk.gov.hmrc.play.audit.model.{DataEvent, TruncationLog}
@@ -44,7 +43,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
       s"URI not found" in new Test {
 
         val result: Future[Result] = handler.onClientError(requestHeader, Status.NOT_FOUND, "test")
-        status(result) shouldBe Status.NOT_FOUND
+        status(result).shouldBe(Status.NOT_FOUND)
 
         contentAsJson(result) shouldBe NotFoundError.asJson
       }
@@ -53,7 +52,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
     "return 400 with error body" when {
       "JsValidationException thrown and header is supplied" in new Test {
         val result: Future[Result] = handler.onClientError(requestHeader, BAD_REQUEST, "test")
-        status(result) shouldBe BAD_REQUEST
+        status(result).shouldBe(BAD_REQUEST)
 
         contentAsJson(result) shouldBe BadRequestError.asJson
       }
@@ -62,7 +61,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
     "return 401 with error body" when {
       "unauthorised and header is supplied" in new Test {
         val result: Future[Result] = handler.onClientError(requestHeader, UNAUTHORIZED, "test")
-        status(result) shouldBe UNAUTHORIZED
+        status(result).shouldBe(UNAUTHORIZED)
 
         contentAsJson(result) shouldBe ClientOrAgentNotAuthorisedError.asJson
       }
@@ -71,7 +70,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
     "return 415 with error body" when {
       "unsupported body and header is supplied" in new Test {
         val result: Future[Result] = handler.onClientError(requestHeader, UNSUPPORTED_MEDIA_TYPE, "test")
-        status(result) shouldBe UNSUPPORTED_MEDIA_TYPE
+        status(result).shouldBe(UNSUPPORTED_MEDIA_TYPE)
 
         contentAsJson(result) shouldBe InvalidBodyTypeError.asJson
       }
@@ -80,7 +79,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
     "return 405 with error body" when {
       "invalid method type" in new Test {
         val result: Future[Result] = handler.onClientError(requestHeader, METHOD_NOT_ALLOWED, "test")
-        status(result) shouldBe METHOD_NOT_ALLOWED
+        status(result).shouldBe(METHOD_NOT_ALLOWED)
 
         contentAsJson(result) shouldBe InvalidHttpMethodError.asJson
       }
@@ -108,7 +107,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
     "return 404 with error body" when {
       "NotFoundException thrown" in new Test {
         val result: Future[Result] = handler.onServerError(requestHeader, new NotFoundException("test") with NoStackTrace)
-        status(result) shouldBe NOT_FOUND
+        status(result).shouldBe(NOT_FOUND)
 
         contentAsJson(result) shouldBe NotFoundError.asJson
       }
@@ -118,7 +117,7 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
       "AuthorisationException thrown" in new Test {
         val result: Future[Result] = handler.onServerError(requestHeader, new InsufficientEnrolments("test") with NoStackTrace)
         // TODO This really should be FORBIDDEN (403), but would need to be changed across all the APIs at once (if at all).
-        status(result) shouldBe UNAUTHORIZED
+        status(result).shouldBe(UNAUTHORIZED)
 
         contentAsJson(result) shouldBe ClientOrAgentNotAuthorisedError.asJson
       }
@@ -128,8 +127,16 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
       "JsValidationException thrown" in new Test {
         val result: Future[Result] =
           handler.onServerError(requestHeader, new JsValidationException("test", "test", classOf[String], "errs") with NoStackTrace)
-        status(result) shouldBe BAD_REQUEST
+        status(result).shouldBe(BAD_REQUEST)
 
+        contentAsJson(result) shouldBe BadRequestError.asJson
+      }
+
+      "Upstream4xxResponse thrown" in new Test() {
+        val ex: UpstreamErrorResponse = UpstreamErrorResponse("client error", TOO_MANY_REQUESTS, TOO_MANY_REQUESTS, None.orNull)
+        val result: Future[Result]    = handler.onServerError(requestHeader, ex)
+
+        status(result) shouldBe BAD_REQUEST
         contentAsJson(result) shouldBe BadRequestError.asJson
       }
     }
@@ -137,8 +144,16 @@ class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
     "return 500 with error body" when {
       "other exception thrown" in new Test {
         val result: Future[Result] = handler.onServerError(requestHeader, new Exception with NoStackTrace)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        status(result).shouldBe(INTERNAL_SERVER_ERROR)
 
+        contentAsJson(result) shouldBe InternalError.asJson
+      }
+
+      "Upstream5xxResponse thrown" in new Test() {
+        val ex: UpstreamErrorResponse = UpstreamErrorResponse("server error", SERVICE_UNAVAILABLE, SERVICE_UNAVAILABLE, None.orNull)
+        val result: Future[Result]    = handler.onServerError(requestHeader, ex)
+
+        status(result) shouldBe INTERNAL_SERVER_ERROR
         contentAsJson(result) shouldBe InternalError.asJson
       }
     }

@@ -16,7 +16,7 @@
 
 package v1.models.response.retrieveOtherDeductions
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, JsObject, JsError}
 import shared.config.MockSharedAppConfig
 import shared.hateoas.{Link, Method}
 import shared.models.domain.Timestamp
@@ -55,17 +55,17 @@ class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockSharedAppCon
   "reads" when {
     "passed a valid JSON" should {
       "return a valid model" in {
-        responseBodyJson.as[RetrieveOtherDeductionsResponse] shouldBe responseBodyModel
+        responseBodyJson.as[RetrieveOtherDeductionsResponse].shouldBe(responseBodyModel)
       }
     }
     "passed a JSON with multiple seafarers" should {
       "return a valid model with multiple seafarers" in {
-        jsonMultipleSeafarers.as[RetrieveOtherDeductionsResponse] shouldBe multipleSeafarersRetrieveOtherDeductionsResponse
+        jsonMultipleSeafarers.as[RetrieveOtherDeductionsResponse].shouldBe(multipleSeafarersRetrieveOtherDeductionsResponse)
       }
     }
     "passed JSON with no customer reference" should {
       "return a model with no customer reference" in {
-        jsonNoRef.as[RetrieveOtherDeductionsResponse] shouldBe noRefRetrieveOtherDeductionsResponse
+        jsonNoRef.as[RetrieveOtherDeductionsResponse].shouldBe(noRefRetrieveOtherDeductionsResponse)
       }
     }
   }
@@ -73,19 +73,24 @@ class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockSharedAppCon
   "writes" when {
     "passed valid model" should {
       "return valid JSON" in {
-        Json.toJson(responseBodyModel) shouldBe responseBodyJson
+        Json.toJson(responseBodyModel).shouldBe(responseBodyJson)
       }
     }
     "passed a model with multiple seafarers" should {
       "return a JSON with multiple seafarers" in {
-        Json.toJson(multipleSeafarersRetrieveOtherDeductionsResponse) shouldBe jsonMultipleSeafarers
+        Json.toJson(multipleSeafarersRetrieveOtherDeductionsResponse).shouldBe(jsonMultipleSeafarers)
       }
     }
     "passed a body with no customer reference" should {
       "return a JSON with no customer reference" in {
-        Json.toJson(noRefRetrieveOtherDeductionsResponse) shouldBe jsonNoRef
+        Json.toJson(noRefRetrieveOtherDeductionsResponse).shouldBe(jsonNoRef)
       }
     }
+
+    "error when JSON is invalid" in {
+      JsObject.empty.validate[RetrieveOtherDeductionsResponse] shouldBe a[JsError]
+    }
+
   }
 
   "LinksFactory" should {

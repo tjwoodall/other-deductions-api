@@ -29,7 +29,7 @@ class DeleteOtherDeductionsConnectorSpec extends ConnectorSpec {
   "deleteOtherDeductionsConnector" should {
     "return the expected response for a non-TYS request" when {
       "a valid request is made" in new IfsTest with Test {
-        def taxYear: TaxYear = TaxYear.fromMtd("2019-20")
+        def taxYear: TaxYear                               = TaxYear.fromMtd("2019-20")
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willDelete(
@@ -42,7 +42,7 @@ class DeleteOtherDeductionsConnectorSpec extends ConnectorSpec {
 
     "return the expected response for a TYS request" when {
       "a valid request is made" in new IfsTest with Test {
-        def taxYear: TaxYear = TaxYear.fromMtd("2023-24")
+        def taxYear: TaxYear                               = TaxYear.fromMtd("2023-24")
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willDelete(
@@ -54,8 +54,7 @@ class DeleteOtherDeductionsConnectorSpec extends ConnectorSpec {
     }
   }
 
-  trait Test {
-    _: ConnectorTest =>
+  trait Test extends ConnectorTest {
 
     val connector: DeleteOtherDeductionsConnector = new DeleteOtherDeductionsConnector(
       http = mockHttpClient,

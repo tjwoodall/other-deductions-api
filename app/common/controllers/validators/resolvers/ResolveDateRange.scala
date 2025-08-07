@@ -35,29 +35,14 @@ object ResolveDateRange extends ResolverSupport {
       Valid(DateRange(parsedStartDate, parsedEndDate))
 
   def validateMaxAndMinDate(minYear: Int, maxYear: Int, value: DateRange): Validated[Seq[MtdError], DateRange] = {
-    val validatedFromDate = if (value.startDate.getYear < minYear) Invalid(List(StartDateFormatError)) else Valid(())
-    val validatedToDate   = if (value.endDate.getYear >= maxYear) Invalid(List(EndDateFormatError)) else Valid(())
+    val validatedFromDate: Validated[List[MtdError], Unit] =
+      if (value.startDate.getYear < minYear) Invalid(List(StartDateFormatError)) else Valid(())
 
-    List(
-      validatedFromDate,
-      validatedToDate
-    ).traverse_(identity).map(_ => value)
+    val validatedToDate: Validated[List[MtdError], Unit] =
+      if (value.endDate.getYear >= maxYear) Invalid(List(EndDateFormatError)) else Valid(())
 
-  }
-
-  def datesLimitedTo(minDate: LocalDate, minError: => MtdError, maxDate: LocalDate, maxError: => MtdError): Validator[DateRange] =
-    combinedValidator[DateRange](
-      satisfies(minError)(_.startDate >= minDate),
-      satisfies(minError)(_.startDate <= maxDate),
-      satisfies(maxError)(_.endDate <= maxDate),
-      satisfies(maxError)(_.endDate >= minDate)
-    )
-
-  def yearsLimitedTo(minYear: Int, minError: => MtdError, maxYear: Int, maxError: => MtdError): Validator[DateRange] = {
-    def yearStartDate(year: Int) = LocalDate.ofYearDay(year, 1)
-    def yearEndDate(year: Int)   = yearStartDate(year + 1).minusDays(1)
-
-    datesLimitedTo(yearStartDate(minYear), minError, yearEndDate(maxYear), maxError)
+    List(validatedFromDate, validatedToDate).sequence_
+      .map(_ => value)
   }
 
 }

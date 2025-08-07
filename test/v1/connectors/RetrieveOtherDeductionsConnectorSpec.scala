@@ -31,7 +31,7 @@ class RetrieveOtherDeductionsConnectorSpec extends ConnectorSpec {
   "RetrieveOtherDeductionsConnector" should {
     "return the expected response for a non-TYS request" when {
       "a valid request is made" in new IfsTest with Test {
-        val taxYear = "2017-18"
+        val taxYear                                                                   = "2017-18"
         val outcome: Right[Nothing, ResponseWrapper[RetrieveOtherDeductionsResponse]] = Right(ResponseWrapper(correlationId, responseBodyModel))
 
         willGet(url"$baseUrl/income-tax/deductions/AA123456A/2017-18")
@@ -43,7 +43,7 @@ class RetrieveOtherDeductionsConnectorSpec extends ConnectorSpec {
 
     "return the expected response for a TYS request" when {
       "a valid request is made" in new IfsTest with Test {
-        val taxYear = "2023-24"
+        val taxYear                                                                   = "2023-24"
         val outcome: Right[Nothing, ResponseWrapper[RetrieveOtherDeductionsResponse]] = Right(ResponseWrapper(correlationId, responseBodyModel))
 
         willGet(url"$baseUrl/income-tax/deductions/23-24/AA123456A")
@@ -53,7 +53,7 @@ class RetrieveOtherDeductionsConnectorSpec extends ConnectorSpec {
       }
     }
 
-    trait Test { _: ConnectorTest =>
+    trait Test extends ConnectorTest {
       val taxYear: String
 
       val connector: RetrieveOtherDeductionsConnector = new RetrieveOtherDeductionsConnector(http = mockHttpClient, appConfig = mockAppConfig)

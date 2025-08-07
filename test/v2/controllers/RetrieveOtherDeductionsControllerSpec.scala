@@ -86,7 +86,7 @@ class RetrieveOtherDeductionsControllerSpec
 
   trait Test extends ControllerTest {
 
-    val controller = new RetrieveOtherDeductionsController(
+    val controller: RetrieveOtherDeductionsController = new RetrieveOtherDeductionsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
       validatorFactory = mockRetrieveOtherDeductionsValidatorFactory,

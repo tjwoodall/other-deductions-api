@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package auth
+package shared.auth
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status.{FORBIDDEN, INTERNAL_SERVER_ERROR, OK}
 import play.api.libs.json.JsValue
+import play.api.libs.ws.DefaultBodyReadables.readableAsString
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import shared.models.errors.{ClientOrAgentNotAuthorisedError, InternalError}
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
-import support.IntegrationBaseSpec
+import shared.support.IntegrationBaseSpec
 
 abstract class AuthMainAgentsOnlyISpec extends IntegrationBaseSpec {
 
@@ -44,7 +45,7 @@ abstract class AuthMainAgentsOnlyISpec extends IntegrationBaseSpec {
 
   protected val maybeDownstreamResponseJson: Option[JsValue]
 
-  protected val downstreamHttpMethod: DownstreamStub.HTTPMethod
+  protected val downstreamHttpMethod: DownstreamStub.HTTPMethod = DownstreamStub.POST
 
   protected val downstreamSuccessStatus: Int = OK
 
@@ -52,7 +53,7 @@ abstract class AuthMainAgentsOnlyISpec extends IntegrationBaseSpec {
 
   /** One endpoint where supporting agents are allowed.
     */
-  override def servicesConfig: Map[String, String] =
+  override def servicesConfig: Map[String, Any] =
     Map(
       s"api.supporting-agent-endpoints.$supportingAgentsNotAllowedEndpoint" -> "false"
     ) ++ super.servicesConfig

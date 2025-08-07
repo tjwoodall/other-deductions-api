@@ -22,9 +22,9 @@ import play.api.http.{DefaultFileMimeTypes, DefaultHttpErrorHandler, FileMimeTyp
 import play.api.mvc.Result
 import play.api.{Configuration, Environment}
 import shared.config.rewriters.DocumentationRewriters.CheckAndRewrite
-import shared.config.rewriters._
+import shared.config.rewriters.*
 import shared.config.{MockSharedAppConfig, RealAppConfig, SharedAppConfig}
-import shared.definition._
+import shared.definition.*
 import shared.routing.{Version, Versions}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -136,9 +136,9 @@ class DocumentationControllerSpec extends ControllerBaseSpec with MockSharedAppC
         }
 
         result should startWith(s"""openapi: "3.0.3"
-                                  |
-                                  |info:
-                                  |  version: "$apiVersionName"""".stripMargin)
+                                   |
+                                   |info:
+                                   |  version: "$apiVersionName"""".stripMargin)
       }
     }
 
@@ -158,7 +158,7 @@ class DocumentationControllerSpec extends ControllerBaseSpec with MockSharedAppC
         status(response) shouldBe OK
 
         val result: String = contentAsString(response)
-        result shouldBe actualApplicationYaml
+        result.replaceAll("\r", "") shouldBe actualApplicationYaml.replaceAll("\r", "")
       }
     }
   }
@@ -178,7 +178,7 @@ class DocumentationControllerSpec extends ControllerBaseSpec with MockSharedAppC
     private val apiFactory = new ApiDefinitionFactory {
       protected val appConfig: SharedAppConfig = mockAppConfig
 
-      val definition: Definition = Definition(
+      lazy val definition: Definition = Definition(
         APIDefinition(
           "test API definition",
           "description",
