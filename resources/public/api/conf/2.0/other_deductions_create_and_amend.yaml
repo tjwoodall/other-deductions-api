@@ -31,8 +31,7 @@ requestBody:
       examples:
         example-request:
           description: Default request
-          value:
-            $ref: './examples/create_and_amend_other_deductions_request.json'
+          externalValue: './examples/create_and_amend_other_deductions_request.json'
 
 responses:
   "204":
