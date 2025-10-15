@@ -9,7 +9,7 @@ description: |
   |----------------------------------|----------------------------------------------------------------------|
   | N/A - DEFAULT                    | Simulates success response.                                          |
   | NOT_FOUND                        | Simulates the scenario where the given deduction could not be found. |
-  | STATEFUL                         | Performs a stateful create or update.                                |   
+  | STATEFUL                         | Performs a stateful delete.                                          |   
 
 parameters:
   - $ref: './common/pathParameters.yaml#/components/parameters/nino'

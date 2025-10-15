@@ -9,7 +9,7 @@ description: |
   |----------------------------------|------------------------------------------------------------------------------------------------|
   | N/A - DEFAULT                    | Simulates success response.                                                                    |
   | NOT_FOUND                        | Simulates the scenario where the given deduction could not be found.                           |
-  | STATEFUL                         | Performs a stateful create or update.                                                          |
+  | STATEFUL                         | Performs a stateful delete.                                                                    |
   | OUTSIDE_AMENDMENT_WINDOW         | Simulates the scenario where request cannot be completed as it is outside the amendment window.|
 
 parameters:
