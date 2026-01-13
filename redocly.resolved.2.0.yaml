@@ -1,0 +1,669 @@
+openapi: 3.0.3
+info:
+  version: '2.0'
+  title: Other Deductions (MTD)
+  description: |
+    The following group of endpoints is stateful in the Sandbox:
+    * [Other Deductions](#tag/Other-Deductions)
+
+    # Send fraud prevention data
+    HMRC monitors transactions to help protect your customers' confidential data from criminals and fraudsters. 
+
+    <div class="govuk-warning-text warning-icon-fix">
+      <span class="govuk-warning-text__icon warning-icon-ui-fix" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        You are required by law to submit header data for this API. This includes all associated APIs and endpoints.
+      </strong>
+    </div>
+
+    [Check the data you need to send](/guides/fraud-prevention/). You can also use the [Test API](/api-documentation/docs/api/service/txm-fph-validator-api/1.0) during initial development and as part of your quality assurance checks.
+
+    # Mapping APIs to Self Assessment tax return forms
+    Some parameters in this API map to box numbers in one or more Self Assessment tax return forms. To learn more and to download this mapping information as a CSV file, go to [income-tax-mtd-changelog/mapping](https://github.com/hmrc/income-tax-mtd-changelog?tab=readme-ov-file#mapping-apis-to-self-assessment-tax-return-forms) on GitHub.
+
+    # Changelog
+    You can find the changelog in the [income-tax-mtd-changelog](https://github.com/hmrc/income-tax-mtd-changelog/#readme) on GitHub.
+
+    # Support
+
+    * Direct reports of bugs or errors in Production or Sandbox code, or queries about HMRC business functionality (such as how a specific field is used by HMRC or why it is needed) to [Software Development Support Team (SDST)](https://developer.service.hmrc.gov.uk/developer/support).
+    * Send queries or feedback related to the design of the APIs (including recommended changes) using the [income-tax-mtd-changelog](https://github.com/hmrc/income-tax-mtd-changelog/issues) GitHub page.
+    * <a href="/contact/report-technical-problem?newTab=true&service=api-documentation-frontend" target="_blank">Is this page not working properly? (opens in new tab)</a>
+servers:
+  - url: https://test-api.service.hmrc.gov.uk
+    description: Sandbox
+  - url: https://api.service.hmrc.gov.uk
+    description: Production
+tags:
+  - name: Other Deductions
+paths:
+  /individuals/deductions/other/{nino}/{taxYear}:
+    put:
+      summary: Create and Amend Deductions
+      security:
+        - User-Restricted:
+            - write:self-assessment
+      description: |
+        This endpoint enables you to create and amend deductions. A National Insurance number and tax year must be provided.
+
+        ### Test data
+        Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
+
+        | Header Value (Gov-Test-Scenario) | Scenario                                                                                       |
+        |----------------------------------|------------------------------------------------------------------------------------------------|
+        | N/A - DEFAULT                    | Simulates success response.                                                                    |
+        | STATEFUL                         | Performs a stateful create or update.                                                          |
+        | OUTSIDE_AMENDMENT_WINDOW         | Simulates the scenario where request cannot be completed as it is outside the amendment window.|
+      parameters:
+        - name: nino
+          in: path
+          description: |
+            National Insurance number, in the format `AA999999A`
+          schema: &ref_3
+            type: string
+            example: TC663795B
+          required: true
+        - name: taxYear
+          in: path
+          description: |
+            The tax year the data applies to, for example, 2021-22.  The start year and end year must not span two tax years. The minimum tax year is 2021-22. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20)
+          schema: &ref_4
+            type: string
+            pattern: ^[0-9]{4}-[0-9]{2}$
+            example: 2021-22
+          required: true
+        - name: Accept
+          in: header
+          description: |
+            Specifies the response format and the version of the API to be used.
+          schema: &ref_5
+            type: string
+            enum:
+              - application/vnd.hmrc.2.0+json
+          required: true
+        - name: Content-Type
+          in: header
+          description: |
+            Specifies the format of the request body, which must be JSON.
+          schema:
+            type: string
+            enum:
+              - application/json
+          required: true
+        - name: Authorization
+          in: header
+          description: |
+            An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
+          schema: &ref_14
+            type: string
+            example: Bearer bb7fed3fe10dd235a2ccda3d50fb
+          required: true
+        - name: Gov-Test-Scenario
+          in: header
+          description: |
+            Only in sandbox environment. See Test Data table for all header values.
+          schema: &ref_6
+            type: string
+            example: '-'
+          required: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $schema: http://json-schema.org/draft-04/schema#
+              title: Create And Amend Other Deductions
+              description: This endpoint allows the developer to create and amend deductions. A National Insurance number and tax year must be provided.
+              type: object
+              properties:
+                seafarers:
+                  type: array
+                  items:
+                    type: object
+                    description: Financial details about deductions and time spent working on a ship.
+                    properties:
+                      customerReference:
+                        description: A reference the user supplies to identify the record.
+                        type: string
+                        example: SEAFARERS1234
+                      amountDeducted:
+                        description: |-
+                          Deduction from Seafarers' Earnings.
+
+                          The value must be between 0 and 99999999999.99 up to 2 decimal places.
+                        type: number
+                        example: '2000.99'
+                      nameOfShip:
+                        description: The name of the ship worked on.
+                        type: string
+                        example: Blue Bell
+                      fromDate:
+                        description: The date work started in the format YYYY-MM-DD
+                        type: string
+                        example: '2019-04-06'
+                      toDate:
+                        description: The date work ended in format YYYY-MM-DD
+                        type: string
+                        example: '2020-04-06'
+                    required:
+                      - amountDeducted
+                      - nameOfShip
+                      - fromDate
+                      - toDate
+                    additionalProperties: false
+              additionalProperties: false
+            examples:
+              example-request:
+                description: Default request
+                value:
+                  seafarers:
+                    - customerReference: myref
+                      amountDeducted: 2342.22
+                      nameOfShip: Blue Bell
+                      fromDate: '2018-08-17'
+                      toDate: '2018-10-02'
+      responses:
+        '204':
+          description: Success(No Content)
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: &ref_0
+                type: string
+                example: c75f40a6-a3df-4429-a697-471eeec46435
+              required: true
+        '400':
+          description: Bad request
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: &ref_1
+                  code:
+                    description: The error code
+                    type: string
+                  message:
+                    description: The error message
+                    type: string
+                required: &ref_2
+                  - code
+                  - message
+              examples:
+                FORMAT_NINO:
+                  description: |
+                    The format of the supplied NINO field is not valid.
+                  value: &ref_7
+                    code: FORMAT_NINO
+                    message: The provided NINO is invalid
+                FORMAT_TAX_YEAR:
+                  description: |
+                    The format of the supplied tax year field is not valid.
+                  value: &ref_8
+                    code: FORMAT_TAX_YEAR
+                    message: The provided tax year is invalid
+                RULE_TAX_YEAR_RANGE_INVALID:
+                  description: |
+                    Tax year range invalid. A tax year range of one year is required.
+                  value: &ref_9
+                    code: RULE_TAX_YEAR_RANGE_INVALID
+                    message: Tax year range invalid. A tax year range of one year is required
+                FORMAT_VALUE:
+                  description: |
+                    One or more values have been added with the incorrect format.
+                  value: &ref_10
+                    code: FORMAT_VALUE
+                    message: The field should be between 0 and 99999999999.99
+                FORMAT_NAME_OF_SHIP:
+                  description: |
+                    The format of the name of ship is not valid.
+                  value:
+                    code: FORMAT_NAME_OF_SHIP
+                    message: The provided name of ship is not valid
+                FORMAT_CUSTOMER_REFERENCE:
+                  description: |
+                    The format of customer reference is not valid.
+                  value:
+                    code: FORMAT_CUSTOMER_REFERENCE
+                    message: The provided customer reference is not valid
+                FORMAT_DATE:
+                  description: |
+                    The supplied date format is invalid.
+                  value:
+                    code: FORMAT_DATE
+                    message: The field should be in the format YYYY-MM-DD
+                RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED:
+                  description: |
+                    An empty or non-matching body was submitted.
+                  value:
+                    code: RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED
+                    message: An empty or non-matching body was submitted
+                RANGE_TO_DATE_BEFORE_FROM_DATE:
+                  description: |
+                    The To date is before the From date.
+                  value:
+                    code: RANGE_TO_DATE_BEFORE_FROM_DATE
+                    message: The To date is before the From date
+                RULE_TAX_YEAR_NOT_SUPPORTED:
+                  description: |
+                    The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
+                  value: &ref_11
+                    code: RULE_TAX_YEAR_NOT_SUPPORTED
+                    message: The tax year specified does not lie within the supported range
+                RULE_OUTSIDE_AMENDMENT_WINDOW:
+                  description: |
+                    The request cannot be completed as you are outside the amendment window.
+                  value: &ref_15
+                    code: RULE_OUTSIDE_AMENDMENT_WINDOW
+                    message: You are outside the amendment window
+                RULE_INCORRECT_GOV_TEST_SCENARIO:
+                  description: The request did not match any available Sandbox data. Check that the supplied Gov-Test-Scenario is correct for this endpoint version. This error will only be returned in the Sandbox environment.
+                  value: &ref_12
+                    code: RULE_INCORRECT_GOV_TEST_SCENARIO
+                    message: The supplied Gov-Test-Scenario is not valid
+        '403':
+          description: Forbidden
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                CLIENT_OR_AGENT_NOT_AUTHORISED:
+                  description: |
+                    The client or agent is not authorised. This is because: the client is not subscribed to MTD, the agent is not subscribed to Agent Services, or the client has not authorised the agent to act on their behalf.
+                  value: &ref_13
+                    code: CLIENT_OR_AGENT_NOT_AUTHORISED
+                    message: The client or agent is not authorised
+    get:
+      summary: Retrieve Deductions
+      security:
+        - User-Restricted:
+            - read:self-assessment
+      description: |
+        This endpoint allows a developer to retrieve deductions that have been previously populated. A National Insurance number and tax year must be provided.
+
+        ### Test data
+        Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
+
+        | Header Value (Gov-Test-Scenario) | Scenario                                                             |
+        |----------------------------------|----------------------------------------------------------------------|
+        | N/A - DEFAULT                    | Simulates success response.                                          |
+        | NOT_FOUND                        | Simulates the scenario where the given deduction could not be found. |
+        | STATEFUL                         | Performs a stateful retrieve.                                        | 
+      parameters:
+        - name: nino
+          in: path
+          description: |
+            National Insurance number, in the format `AA999999A`
+          schema: *ref_3
+          required: true
+        - name: taxYear
+          in: path
+          description: |
+            The tax year the data applies to, for example, 2021-22.  The start year and end year must not span two tax years. The minimum tax year is 2021-22. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20)
+          schema: *ref_4
+          required: true
+        - name: Accept
+          in: header
+          description: |
+            Specifies the response format and the version of the API to be used.
+          schema: *ref_5
+          required: true
+        - name: Authorization
+          in: header
+          description: |
+            An OAuth 2.0 Bearer Token with the *read:self-assessment* scope.
+          schema:
+            type: string
+            example: Bearer bb7fed3fe10dd235a2ccda3d50fb
+          required: true
+        - name: Gov-Test-Scenario
+          in: header
+          description: |
+            Only in sandbox environment. See Test Data table for all header values.
+          schema: *ref_6
+          required: false
+      responses:
+        '200':
+          description: Success
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                $schema: http://json-schema.org/draft-04/schema#
+                title: Retrieve Deductions
+                description: Allows the retrieval of deductions
+                type: object
+                properties:
+                  submittedOn:
+                    description: The date the deductions were added. It must be provided in the format YYYY-MM-DDThh:mm:ss.sssZ
+                    type: string
+                    example: '2019-04-04T01:01:01.000Z'
+                  seafarers:
+                    description: Financial details about deductions and time spent working on a ship.
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        customerReference:
+                          description: A reference the user supplies to identify the record.
+                          type: string
+                          example: SEAFARERS1234
+                        amountDeducted:
+                          description: Deduction from Seafarers' Earnings. The value must be between 0 and 99999999999.99 up to 2 decimal places.
+                          type: number
+                          example: '2000.99'
+                        nameOfShip:
+                          description: The name of the ship worked on.
+                          type: string
+                          example: Blue Bell
+                        fromDate:
+                          description: The date work started in the format YYYY-MM-DD
+                          type: string
+                          example: '2029-04-06'
+                        toDate:
+                          description: 'The date work ended in the format: YYYY-MM-DD'
+                          type: string
+                          example: '2020-04-06'
+                      required:
+                        - amountDeducted
+                        - nameOfShip
+                        - fromDate
+                        - toDate
+                      additionalProperties: false
+                additionalProperties: false
+              examples:
+                example-response:
+                  description: Example Response
+                  value:
+                    submittedOn: '2019-04-04T01:01:01.000Z'
+                    seafarers:
+                      - customerReference: SEAFARERS1234
+                        amountDeducted: 2543.32
+                        nameOfShip: Blue Bell
+                        fromDate: '2019-04-06'
+                        toDate: '2020-04-05'
+        '400':
+          description: Bad request
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                FORMAT_NINO:
+                  description: |
+                    The format of the supplied NINO field is not valid.
+                  value: *ref_7
+                FORMAT_TAX_YEAR:
+                  description: |
+                    The format of the supplied tax year field is not valid.
+                  value: *ref_8
+                RULE_TAX_YEAR_RANGE_INVALID:
+                  description: |
+                    Tax year range invalid. A tax year range of one year is required.
+                  value: *ref_9
+                FORMAT_VALUE:
+                  description: |
+                    One or more values have been added with the incorrect format.
+                  value: *ref_10
+                RULE_TAX_YEAR_NOT_SUPPORTED:
+                  description: |
+                    The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
+                  value: *ref_11
+                RULE_INCORRECT_GOV_TEST_SCENARIO:
+                  description: The request did not match any available Sandbox data. Check that the supplied Gov-Test-Scenario is correct for this endpoint version. This error will only be returned in the Sandbox environment.
+                  value: *ref_12
+        '403':
+          description: Forbidden
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                CLIENT_OR_AGENT_NOT_AUTHORISED:
+                  description: |
+                    The client or agent is not authorised. This is because: the client is not subscribed to MTD, the agent is not subscribed to Agent Services, or the client has not authorised the agent to act on their behalf.
+                  value: *ref_13
+        '404':
+          description: Not Found
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                MATCHING_RESOURCE_NOT_FOUND:
+                  description: |
+                    The matching resource is not found.
+                  value: &ref_16
+                    code: MATCHING_RESOURCE_NOT_FOUND
+                    message: Matching resource not found
+    delete:
+      summary: Delete Deductions
+      security:
+        - User-Restricted:
+            - write:self-assessment
+      description: |
+        This endpoint allows the developer to delete deductions.
+
+        ### Test data
+        Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
+
+        | Header Value (Gov-Test-Scenario) | Scenario                                                                                       |
+        |----------------------------------|------------------------------------------------------------------------------------------------|
+        | N/A - DEFAULT                    | Simulates success response.                                                                    |
+        | NOT_FOUND                        | Simulates the scenario where the given deduction could not be found.                           |
+        | STATEFUL                         | Performs a stateful delete.                                                                    |
+        | OUTSIDE_AMENDMENT_WINDOW         | Simulates the scenario where request cannot be completed as it is outside the amendment window.|
+      parameters:
+        - name: nino
+          in: path
+          description: |
+            National Insurance number, in the format `AA999999A`
+          schema: *ref_3
+          required: true
+        - name: taxYear
+          in: path
+          description: |
+            The tax year the data applies to, for example, 2021-22.  The start year and end year must not span two tax years. The minimum tax year is 2021-22. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20)
+          schema: *ref_4
+          required: true
+        - name: Accept
+          in: header
+          description: |
+            Specifies the response format and the version of the API to be used.
+          schema: *ref_5
+          required: true
+        - name: Authorization
+          in: header
+          description: |
+            An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
+          schema: *ref_14
+          required: true
+        - name: Gov-Test-Scenario
+          in: header
+          description: |
+            Only in sandbox environment. See Test Data table for all header values.
+          schema: *ref_6
+          required: false
+      responses:
+        '204':
+          description: Success(No Content)
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+        '400':
+          description: Bad request
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                FORMAT_NINO:
+                  description: |
+                    The format of the supplied NINO field is not valid.
+                  value: *ref_7
+                FORMAT_TAX_YEAR:
+                  description: |
+                    The format of the supplied tax year field is not valid.
+                  value: *ref_8
+                RULE_TAX_YEAR_RANGE_INVALID:
+                  description: |
+                    Tax year range invalid. A tax year range of one year is required.
+                  value: *ref_9
+                RULE_TAX_YEAR_NOT_SUPPORTED:
+                  description: |
+                    The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
+                  value: *ref_11
+                RULE_OUTSIDE_AMENDMENT_WINDOW:
+                  description: |
+                    The request cannot be completed as you are outside the amendment window.
+                  value: *ref_15
+                RULE_INCORRECT_GOV_TEST_SCENARIO:
+                  description: The request did not match any available Sandbox data. Check that the supplied Gov-Test-Scenario is correct for this endpoint version. This error will only be returned in the Sandbox environment.
+                  value: *ref_12
+        '403':
+          description: Forbidden
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                CLIENT_OR_AGENT_NOT_AUTHORISED:
+                  description: |
+                    The client or agent is not authorised. This is because: the client is not subscribed to MTD, the agent is not subscribed to Agent Services, or the client has not authorised the agent to act on their behalf.
+                  value: *ref_13
+        '404':
+          description: Not Found
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                MATCHING_RESOURCE_NOT_FOUND:
+                  description: |
+                    The matching resource is not found.
+                  value: *ref_16
+components:
+  securitySchemes:
+    User-Restricted:
+      type: oauth2
+      description: HMRC supports OAuth 2.0 for authenticating [User-restricted](https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints) API requests
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
+          scopes:
+            write:self-assessment: Grant write access
+            read:self-assessment: Grant read access
