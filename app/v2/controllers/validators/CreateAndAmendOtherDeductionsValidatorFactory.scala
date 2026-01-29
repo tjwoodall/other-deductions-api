@@ -18,12 +18,12 @@ package v2.controllers.validators
 
 import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
-import cats.implicits._
+import cats.implicits.*
 import common.controllers.validators.resolvers.ResolveDateRange
 import common.errors.{CustomerReferenceFormatError, DateFormatError, NameOfShipFormatError, RangeToDateBeforeFromDateError}
 import play.api.libs.json.JsValue
 import shared.controllers.validators.Validator
-import shared.controllers.validators.resolvers._
+import shared.controllers.validators.resolvers.*
 import shared.models.errors.MtdError
 import v2.models.request.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsBody, CreateAndAmendOtherDeductionsRequestData, Seafarers}
 
@@ -36,7 +36,7 @@ class CreateAndAmendOtherDeductionsValidatorFactory {
 
   private val valid = Valid(())
 
-  private val resolveJson = new ResolveJsonObject[CreateAndAmendOtherDeductionsBody]()
+  private val resolveJson = new ResolveNonEmptyJsonObject[CreateAndAmendOtherDeductionsBody]()
 
   private val minYear: Int = 1900
   private val maxYear: Int = 2100

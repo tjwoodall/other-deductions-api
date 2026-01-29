@@ -17,13 +17,14 @@
 package v2.controllers.validators
 
 import common.errors.{CustomerReferenceFormatError, DateFormatError, NameOfShipFormatError, RangeToDateBeforeFromDateError}
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.*
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.errors._
+import shared.models.utils.JsonErrorValidators
 import shared.utils.UnitSpec
-import v2.models.request.createAndAmendOtherDeductions._
+import v2.models.request.createAndAmendOtherDeductions.*
 
-class CreateAndAmendOtherDeductionsValidatorFactorySpec extends UnitSpec {
+class CreateAndAmendOtherDeductionsValidatorFactorySpec extends UnitSpec with JsonErrorValidators {
 
   private implicit val correlationId: String = "1234"
 
@@ -177,12 +178,44 @@ class CreateAndAmendOtherDeductionsValidatorFactorySpec extends UnitSpec {
     }
 
     "return RuleIncorrectOrEmptyBodyError" when {
-      "an empty JSON body is submitted" in {
+      "passed an empty JSON body" in {
         val result: Either[ErrorWrapper, CreateAndAmendOtherDeductionsRequestData] =
           validator(validNino, validTaxYear, emptyJson).validateAndWrapResult()
 
         result shouldBe Left(
           ErrorWrapper(correlationId, RuleIncorrectOrEmptyBodyError)
+        )
+      }
+
+      "passed a body with an empty seafarers array" in {
+        val invalidJson: JsValue = validRequestBodyJson.update("/seafarers", JsArray.empty)
+
+        val result: Either[ErrorWrapper, CreateAndAmendOtherDeductionsRequestData] =
+          validator(validNino, validTaxYear, invalidJson).validateAndWrapResult()
+
+        result shouldBe Left(
+          ErrorWrapper(correlationId, RuleIncorrectOrEmptyBodyError.withPath("/seafarers"))
+        )
+      }
+
+      "passed a body with missing mandatory fields" in {
+        val invalidJson: JsValue = Json.obj("seafarers" -> Json.arr(Json.obj()))
+
+        val result: Either[ErrorWrapper, CreateAndAmendOtherDeductionsRequestData] =
+          validator(validNino, validTaxYear, invalidJson).validateAndWrapResult()
+
+        result shouldBe Left(
+          ErrorWrapper(
+            correlationId,
+            RuleIncorrectOrEmptyBodyError.withPaths(
+              Seq(
+                "/seafarers/0/amountDeducted",
+                "/seafarers/0/fromDate",
+                "/seafarers/0/nameOfShip",
+                "/seafarers/0/toDate"
+              )
+            )
+          )
         )
       }
     }
