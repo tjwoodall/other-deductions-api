@@ -18,7 +18,7 @@ package definition
 
 import shared.config.SharedAppConfig
 import shared.definition.{APIDefinition, APIVersion, ApiDefinitionFactory, Definition}
-import shared.routing.{Version1, Version2}
+import shared.routing.Version2
 
 import javax.inject.{Inject, Singleton}
 
@@ -33,11 +33,6 @@ class OtherDeductionsApiDefinitionFactory @Inject() (protected val appConfig: Sh
         context = appConfig.apiGatewayContext,
         categories = Seq("INCOME_TAX_MTD"),
         versions = Seq(
-          APIVersion(
-            version = Version1,
-            status = buildAPIStatus(Version1),
-            endpointsEnabled = appConfig.endpointsEnabled(Version1)
-          ),
           APIVersion(
             version = Version2,
             status = buildAPIStatus(Version2),

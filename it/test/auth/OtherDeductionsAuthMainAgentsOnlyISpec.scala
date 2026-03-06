@@ -25,7 +25,7 @@ import shared.services.DownstreamStub
 
 class OtherDeductionsAuthMainAgentsOnlyISpec extends AuthMainAgentsOnlyISpec {
 
-  val callingApiVersion = "1.0"
+  val callingApiVersion = "2.0"
 
   val supportingAgentsNotAllowedEndpoint = "retrieve-other-deductions"
 

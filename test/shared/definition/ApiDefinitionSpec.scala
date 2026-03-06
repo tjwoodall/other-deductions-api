@@ -16,6 +16,7 @@
 
 package shared.definition
 
+import play.api.libs.json.Json
 import shared.routing.Version3
 import shared.utils.UnitSpec
 
@@ -32,37 +33,85 @@ class ApiDefinitionSpec extends UnitSpec {
         )
       }
     }
-  }
 
-  "the 'description' parameter is empty" should {
-    "throw an 'IllegalArgumentException'" in {
-      assertThrows[IllegalArgumentException](
-        apiDefinition.copy(description = "")
-      )
+    "the 'description' parameter is empty" should {
+      "throw an 'IllegalArgumentException'" in {
+        assertThrows[IllegalArgumentException](
+          apiDefinition.copy(description = "")
+        )
+      }
     }
-  }
 
-  "the 'context' parameter is empty" should {
-    "throw an 'IllegalArgumentException'" in {
-      assertThrows[IllegalArgumentException](
-        apiDefinition.copy(context = "")
-      )
+    "the 'context' parameter is empty" should {
+      "throw an 'IllegalArgumentException'" in {
+        assertThrows[IllegalArgumentException](
+          apiDefinition.copy(context = "")
+        )
+      }
     }
-  }
 
-  "the 'versions' parameter is not unique" should {
-    "throw an 'IllegalArgumentException'" in {
-      assertThrows[IllegalArgumentException](
-        apiDefinition.copy(versions = List(apiVersion, apiVersion))
-      )
+    "the 'versions' parameter is not unique" should {
+      "throw an 'IllegalArgumentException'" in {
+        assertThrows[IllegalArgumentException](
+          apiDefinition.copy(versions = List(apiVersion, apiVersion))
+        )
+      }
     }
-  }
 
-  "the 'versions' parameter is empty" should {
-    "throw an 'IllegalArgumentException'" in {
-      assertThrows[IllegalArgumentException](
-        apiDefinition.copy(versions = Nil)
-      )
+    "the 'versions' parameter is empty" should {
+      "throw an 'IllegalArgumentException'" in {
+        assertThrows[IllegalArgumentException](
+          apiDefinition.copy(versions = Nil)
+        )
+      }
+    }
+
+    "serializing to Json" should {
+      "do so successfully" in {
+        val expectedJson =
+          Json.parse("""
+              |{
+              |  "name": "b",
+              |  "description": "c",
+              |  "context": "d",
+              |  "categories": ["category"],
+              |  "versions": [
+              |   {
+              |     "version": "3.0",
+              |     "status": "ALPHA",
+              |     "endpointsEnabled": true
+              |   }
+              |  ],
+              |  "requiresTrust": false
+              |}
+              |""".stripMargin)
+        val result = Json.toJson(apiDefinition)
+        result shouldBe expectedJson
+      }
+    }
+
+    "deserializing from Json" should {
+      "do so successfully" in {
+        val inputJson =
+          Json.parse("""
+              |{
+              |  "name": "b",
+              |  "description": "c",
+              |  "context": "d",
+              |  "categories": ["category"],
+              |  "versions": [
+              |   {
+              |     "version": "3.0",
+              |     "status": "ALPHA",
+              |     "endpointsEnabled": true
+              |   }
+              |  ],
+              |  "requiresTrust": false
+              |}
+              |""".stripMargin)
+        val result: APIDefinition = Json.fromJson(inputJson).get
+        result shouldBe apiDefinition
+      }
     }
   }
 

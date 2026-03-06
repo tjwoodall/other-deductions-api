@@ -24,7 +24,7 @@ import play.api.test.Helpers.AUTHORIZATION
 import shared.models.errors.*
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 import support.IntegrationBaseSpec
-import v1.fixtures.RetrieveOtherDeductionsFixtures.responseBodyJson
+import v2.fixtures.RetrieveOtherDeductionsFixtures.responseBodyJson
 
 class RetrieveOtherDeductionsControllerISpec extends IntegrationBaseSpec {
 

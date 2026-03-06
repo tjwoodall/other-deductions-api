@@ -22,7 +22,7 @@ import shared.config.MockSharedAppConfig
 import shared.definition.APIStatus.BETA
 import shared.definition.{APIDefinition, APIVersion, Definition}
 import shared.mocks.MockHttpClient
-import shared.routing.{Version1, Version2}
+import shared.routing.Version2
 import shared.utils.UnitSpec
 
 class OtherDeductionsApiDefinitionFactorySpec extends UnitSpec {
@@ -35,9 +35,6 @@ class OtherDeductionsApiDefinitionFactorySpec extends UnitSpec {
   "definition" when {
     "called" should {
       "return a valid Definition case class" in new Test {
-        MockedSharedAppConfig.apiStatus(Version1) returns "BETA"
-        MockedSharedAppConfig.endpointsEnabled(Version1) returns true
-        MockedSharedAppConfig.deprecationFor(Version1).returns(NotDeprecated.valid).anyNumberOfTimes()
         MockedSharedAppConfig.apiStatus(Version2) returns "BETA"
         MockedSharedAppConfig.endpointsEnabled(Version2) returns true
         MockedSharedAppConfig.deprecationFor(Version2).returns(NotDeprecated.valid).anyNumberOfTimes()
@@ -49,11 +46,6 @@ class OtherDeductionsApiDefinitionFactorySpec extends UnitSpec {
             context = "other/deductions",
             categories = Seq("INCOME_TAX_MTD"),
             versions = Seq(
-              APIVersion(
-                version = Version1,
-                status = BETA,
-                endpointsEnabled = true
-              ),
               APIVersion(
                 version = Version2,
                 status = BETA,
