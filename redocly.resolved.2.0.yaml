@@ -40,10 +40,10 @@ tags:
 paths:
   /individuals/deductions/other/{nino}/{taxYear}:
     put:
-      summary: Create and Amend Deductions
       security:
         - User-Restricted:
             - write:self-assessment
+      summary: Create and Amend Deductions
       description: |
         This endpoint enables you to create and amend deductions. A National Insurance number and tax year must be provided.
 
@@ -156,12 +156,7 @@ paths:
               example-request:
                 description: Default request
                 value:
-                  seafarers:
-                    - customerReference: myref
-                      amountDeducted: 2342.22
-                      nameOfShip: Blue Bell
-                      fromDate: '2018-08-17'
-                      toDate: '2018-10-02'
+                  $ref: ./examples/create_and_amend_other_deductions_request.json
       responses:
         '204':
           description: Success(No Content)
@@ -300,10 +295,10 @@ paths:
                     code: CLIENT_OR_AGENT_NOT_AUTHORISED
                     message: The client or agent is not authorised
     get:
-      summary: Retrieve Deductions
       security:
         - User-Restricted:
             - read:self-assessment
+      summary: Retrieve Deductions
       description: |
         This endpoint allows a developer to retrieve deductions that have been previously populated. A National Insurance number and tax year must be provided.
 
@@ -409,13 +404,7 @@ paths:
                 example-response:
                   description: Example Response
                   value:
-                    submittedOn: '2019-04-04T01:01:01.000Z'
-                    seafarers:
-                      - customerReference: SEAFARERS1234
-                        amountDeducted: 2543.32
-                        nameOfShip: Blue Bell
-                        fromDate: '2019-04-06'
-                        toDate: '2020-04-05'
+                    $ref: ./examples/retrieve_other_deductions_response.json
         '400':
           description: Bad request
           headers:
@@ -507,10 +496,10 @@ paths:
                     code: MATCHING_RESOURCE_NOT_FOUND
                     message: Matching resource not found
     delete:
-      summary: Delete Deductions
       security:
         - User-Restricted:
             - write:self-assessment
+      summary: Delete Deductions
       description: |
         This endpoint allows the developer to delete deductions.
 
