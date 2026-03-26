@@ -35,17 +35,14 @@ tags:
 paths:
   /individuals/deductions/other/{nino}/{taxYear}:
     get:
-      summary: Retrieve Deductions
       security:
       - User-Restricted:
         - read:self-assessment
     put:
-      summary: Create and Amend Deductions
       security:
       - User-Restricted:
         - write:self-assessment
     delete:
-      summary: Delete Deductions
       security:
       - User-Restricted:
         - write:self-assessment
