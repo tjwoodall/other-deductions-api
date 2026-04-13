@@ -20,7 +20,6 @@ import play.api.Configuration
 import play.api.mvc.Result
 import shared.config.MockSharedAppConfig
 import shared.controllers.{ControllerBaseSpec, ControllerTestRunner}
-import shared.hateoas.MockHateoasFactory
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.errors._
 import shared.models.outcomes.ResponseWrapper
@@ -37,7 +36,6 @@ class RetrieveOtherDeductionsControllerSpec
     with ControllerTestRunner
     with MockRetrieveOtherDeductionsService
     with MockRetrieveOtherDeductionsValidatorFactory
-    with MockHateoasFactory
     with MockSharedAppConfig {
 
   private val nino        = "AA123456A"
