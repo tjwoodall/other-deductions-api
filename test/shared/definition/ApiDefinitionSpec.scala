@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,50 @@ class ApiDefinitionSpec extends UnitSpec {
 
   private val apiVersion: APIVersion       = APIVersion(Version3, APIStatus.ALPHA, endpointsEnabled = true)
   private val apiDefinition: APIDefinition = APIDefinition("b", "c", "d", List("category"), List(apiVersion), Some(false))
+
+  private val apiVersionJson = Json.parse("""
+          {
+            "version": "3.0",
+            "status": "ALPHA",
+            "endpointsEnabled": true
+          }
+        """)
+
+  private val apiDefinitionJson = Json.parse("""
+          {
+            "name": "b",
+            "description": "c",
+            "context": "d",
+            "categories": ["category"],
+            "versions": [
+              {
+                "version": "3.0",
+                "status": "ALPHA",
+                "endpointsEnabled": true
+              }
+            ],
+            "requiresTrust": false
+          }
+        """)
+
+  private val definitionJson = Json.parse("""
+          {
+            "api": {
+              "name": "b",
+              "description": "c",
+              "context": "d",
+              "categories": ["category"],
+              "versions": [
+                {
+                  "version": "3.0",
+                  "status": "ALPHA",
+                  "endpointsEnabled": true
+                }
+              ],
+              "requiresTrust": false
+            }
+          }
+        """)
 
   "APIDefinition" when {
     "the 'name' parameter is empty" should {
@@ -65,53 +109,37 @@ class ApiDefinitionSpec extends UnitSpec {
         )
       }
     }
+  }
 
-    "serializing to Json" should {
-      "do so successfully" in {
-        val expectedJson =
-          Json.parse("""
-              |{
-              |  "name": "b",
-              |  "description": "c",
-              |  "context": "d",
-              |  "categories": ["category"],
-              |  "versions": [
-              |   {
-              |     "version": "3.0",
-              |     "status": "ALPHA",
-              |     "endpointsEnabled": true
-              |   }
-              |  ],
-              |  "requiresTrust": false
-              |}
-              |""".stripMargin)
-        val result = Json.toJson(apiDefinition)
-        result shouldBe expectedJson
-      }
+  "APIVersion" should {
+    "deserialise to model" in {
+      apiVersionJson.as[APIVersion] shouldBe apiVersion
     }
 
-    "deserializing from Json" should {
-      "do so successfully" in {
-        val inputJson =
-          Json.parse("""
-              |{
-              |  "name": "b",
-              |  "description": "c",
-              |  "context": "d",
-              |  "categories": ["category"],
-              |  "versions": [
-              |   {
-              |     "version": "3.0",
-              |     "status": "ALPHA",
-              |     "endpointsEnabled": true
-              |   }
-              |  ],
-              |  "requiresTrust": false
-              |}
-              |""".stripMargin)
-        val result: APIDefinition = Json.fromJson(inputJson).get
-        result shouldBe apiDefinition
-      }
+    "serialise to JSON" in {
+      Json.toJson(apiVersion) shouldBe apiVersionJson
+    }
+  }
+
+  "APIDefinition" should {
+    "deserialise to model" in {
+      apiDefinitionJson.as[APIDefinition] shouldBe apiDefinition
+    }
+
+    "serialise to JSON" in {
+      Json.toJson(apiDefinition) shouldBe apiDefinitionJson
+    }
+  }
+
+  "Definition" should {
+    val definition = Definition(apiDefinition)
+
+    "deserialise to model" in {
+      definitionJson.as[Definition] shouldBe definition
+    }
+
+    "serialise to JSON" in {
+      Json.toJson(definition) shouldBe definitionJson
     }
   }
 

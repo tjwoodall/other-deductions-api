@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ class SharedAppConfig @Inject() (val config: ServicesConfig, protected[config] v
   // MTD ID Lookup Config
   def mtdIdBaseUrl: String = config.baseUrl("mtd-id-lookup")
 
-  def ifsDownstreamConfig: DownstreamConfig          = downstreamConfig("ifs")
-  def hipDownstreamConfig: BasicAuthDownstreamConfig = basicAuthDownstreamConfig("hip")
+  def ifsDownstreamConfig: DownstreamConfig = downstreamConfig("ifs")
 
   // API Config
   def apiGatewayContext: String                    = config.getString("api.gateway.context")

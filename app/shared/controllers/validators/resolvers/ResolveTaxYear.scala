@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package shared.controllers.validators.resolvers
 import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import shared.models.domain.TaxYear
-import shared.models.errors._
+import shared.models.errors.*
 
 import java.time.Clock
 import scala.math.Ordering.Implicits.infixOrderingOps
@@ -118,10 +118,6 @@ case class ResolveTaxYearMinMax(minMax: (TaxYear, TaxYear), minError: MtdError, 
 }
 
 object ResolveTaxYearMinMax {
-
-  def apply(minMax: (TaxYear, TaxYear), error: MtdError): ResolveTaxYearMinMax = {
-    ResolveTaxYearMinMax(minMax, error, error)
-  }
 
   def apply(minMax: (TaxYear, TaxYear)): ResolveTaxYearMinMax = {
     ResolveTaxYearMinMax(minMax, RuleTaxYearNotSupportedError, RuleTaxYearNotSupportedError)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,6 +112,25 @@ class SharedAppConfigSpec extends UnitSpec {
             |""".stripMargin
         )
         val result = appConfigWithEnabledVersion.endpointsEnabled("6.0")
+        result shouldBe true
+      }
+    }
+  }
+
+  "allowRequestCannotBeFulfilledHeader" when {
+    "the API version allows request cannot be fulfilled header" should {
+      "return true" in {
+        val appConfigWithAllowRequestCannotBeFulfilledHeader = appConfig(
+          """
+            |    6.0 {
+            |      endpoints {
+            |        allow-request-cannot-be-fulfilled-header = true
+            |      }
+            |    }
+            |""".stripMargin
+        )
+
+        val result = appConfigWithAllowRequestCannotBeFulfilledHeader.allowRequestCannotBeFulfilledHeader(Version6)
         result shouldBe true
       }
     }
