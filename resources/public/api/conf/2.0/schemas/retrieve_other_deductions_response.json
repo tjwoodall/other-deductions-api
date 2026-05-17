@@ -17,7 +17,7 @@
         "type": "object",
         "properties": {
           "customerReference": {
-            "description": "A reference the user supplies to identify the record.",
+            "description": "A reference the user supplies to identify the record. Must not be empty or contain only whitespace.",
             "type": "string",
             "pattern": "^[0-9a-zA-Z{À-˿’}\\- _&`():.'^]{1,90}$",
             "example": "SEAFARERS1234"
@@ -31,9 +31,9 @@
             "example": 2000.99
           },
           "nameOfShip": {
-            "description": "The name of the ship worked on.",
+            "description": "The name of the ship worked on. Must not be empty or contain only whitespace.",
             "type": "string",
-            "maxLength": 105,
+            "pattern": "^.{1,105}$",
             "example": "Blue Bell"
           },
           "fromDate": {
