@@ -123,7 +123,7 @@ paths:
                     description: Financial details about deductions and time spent working on a ship.
                     properties:
                       customerReference:
-                        description: A reference the user supplies to identify the record.
+                        description: A reference the user supplies to identify the record. Must not be empty or contain only whitespace.
                         type: string
                         pattern: ^[0-9a-zA-Z{À-˿’}\- _&`():.'^]{1,90}$
                         example: SEAFARERS1234
@@ -138,9 +138,9 @@ paths:
                         maximum: 99999999999.99
                         example: 2000.99
                       nameOfShip:
-                        description: The name of the ship worked on.
+                        description: The name of the ship worked on. Must not be empty or contain only whitespace.
                         type: string
-                        maxLength: 105
+                        pattern: ^.{1,105}$
                         example: Blue Bell
                       fromDate:
                         description: The date work started in the format `YYYY-MM-DD`
@@ -382,7 +382,7 @@ paths:
                       type: object
                       properties:
                         customerReference:
-                          description: A reference the user supplies to identify the record.
+                          description: A reference the user supplies to identify the record. Must not be empty or contain only whitespace.
                           type: string
                           pattern: ^[0-9a-zA-Z{À-˿’}\- _&`():.'^]{1,90}$
                           example: SEAFARERS1234
@@ -394,9 +394,9 @@ paths:
                           maximum: 99999999999.99
                           example: 2000.99
                         nameOfShip:
-                          description: The name of the ship worked on.
+                          description: The name of the ship worked on. Must not be empty or contain only whitespace.
                           type: string
-                          maxLength: 105
+                          pattern: ^.{1,105}$
                           example: Blue Bell
                         fromDate:
                           description: The date work started in the format `YYYY-MM-DD`
