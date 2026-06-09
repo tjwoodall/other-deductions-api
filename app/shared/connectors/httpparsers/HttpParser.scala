@@ -16,19 +16,38 @@
 
 package shared.connectors.httpparsers
 
-import play.api.libs.json._
-import shared.models.errors._
+import play.api.libs.json.*
+import shared.models.errors.*
 import shared.utils.Logging
 import uk.gov.hmrc.http.HttpResponse
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 trait HttpParser extends Logging {
 
   implicit class JsonResponseHelper(response: HttpResponse) {
-    private lazy val jsonOpt: Option[JsValue] = Try(response.json).toOption
+    private lazy val tryJson: Try[JsValue] = Try(response.json)
 
-    def validateJson[T](implicit reads: Reads[T]): Option[T] = jsonOpt.flatMap(_.asOpt)
+    def validateJson[T](implicit reads: Reads[T]): Option[T] = tryJson.toOption.flatMap(_.asOpt)
+
+    def validateJsonWithLogging[T](implicit reads: Reads[T]): Option[T] = {
+      tryJson match {
+        case Success(json) =>
+          json
+            .validate[T]
+            .fold(
+              errors => {
+                logger.warn(s"[JsonResponseHelper][validateJsonWithLogging] JSON validation failed: $errors")
+                None
+              },
+              value => Some(value)
+            )
+        case Failure(_) =>
+          logger.warn("[JsonResponseHelper][validateJsonWithLogging] Response body is not valid JSON")
+          None
+      }
+    }
+
   }
 
   def retrieveCorrelationId(response: HttpResponse): String = response.header("CorrelationId").getOrElse("")
