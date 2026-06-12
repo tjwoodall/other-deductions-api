@@ -16,8 +16,8 @@
 
 package v2.models.response.retrieveOtherDeductions
 
+import api.models.domain.Timestamp
 import play.api.libs.json.{Json, OFormat}
-import shared.models.domain.Timestamp
 
 case class RetrieveOtherDeductionsResponse(submittedOn: Timestamp, seafarers: Option[Seq[Seafarers]])
 

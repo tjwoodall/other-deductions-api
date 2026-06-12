@@ -16,16 +16,17 @@
 
 package v2.controllers.validators
 
+import api.controllers.validators.Validator
+import api.controllers.validators.resolvers.*
+import api.models.errors.MtdError
 import cats.data.Validated
 import cats.data.Validated.Valid
 import cats.implicits.*
 import common.controllers.validators.resolvers.ResolveDateRange
 import common.errors.{CustomerReferenceFormatError, DateFormatError, NameOfShipFormatError, RangeToDateBeforeFromDateError}
 import play.api.libs.json.JsValue
-import shared.controllers.validators.Validator
-import shared.controllers.validators.resolvers.*
-import shared.models.errors.MtdError
 import v2.models.request.createAndAmendOtherDeductions.{CreateAndAmendOtherDeductionsBody, CreateAndAmendOtherDeductionsRequestData, Seafarers}
+
 import javax.inject.Singleton
 
 @Singleton
@@ -69,7 +70,7 @@ class CreateAndAmendOtherDeductionsValidatorFactory {
   }
 
   private def validateSeafarers(seafarers: Seafarers, arrayIndex: Int): Validated[Seq[MtdError], Unit] = {
-    import seafarers._
+    import seafarers.*
 
     def path(field: String) = s"/seafarers/$arrayIndex/$field"
 

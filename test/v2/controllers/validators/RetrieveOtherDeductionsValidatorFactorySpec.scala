@@ -16,9 +16,9 @@
 
 package v2.controllers.validators
 
-import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors._
-import shared.utils.UnitSpec
+import api.models.domain.{Nino, TaxYear}
+import api.models.errors.*
+import api.utils.UnitSpec
 import v2.models.request.retrieveOtherDeductions.RetrieveOtherDeductionsRequestData
 
 class RetrieveOtherDeductionsValidatorFactorySpec extends UnitSpec {

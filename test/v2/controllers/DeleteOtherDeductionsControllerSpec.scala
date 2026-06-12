@@ -16,17 +16,17 @@
 
 package v2.controllers
 
+import api.config.MockAppConfig
+import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import api.models.domain.{Nino, TaxYear}
+import api.models.errors
+import api.models.errors.*
+import api.models.outcomes.ResponseWrapper
+import api.services.MockAuditService
 import play.api.Configuration
 import play.api.libs.json.JsValue
 import play.api.mvc.Result
-import shared.config.MockSharedAppConfig
-import shared.controllers.{ControllerBaseSpec, ControllerTestRunner}
-import shared.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
-import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors
-import shared.models.errors._
-import shared.models.outcomes.ResponseWrapper
-import shared.services.MockAuditService
 import v2.controllers.validators.MockDeleteOtherDeductionsValidatorFactory
 import v2.mocks.services.MockDeleteOtherDeductionsService
 import v2.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequestData
@@ -40,7 +40,7 @@ class DeleteOtherDeductionsControllerSpec
     with MockDeleteOtherDeductionsService
     with MockDeleteOtherDeductionsValidatorFactory
     with MockAuditService
-    with MockSharedAppConfig {
+    with MockAppConfig {
 
   private val taxYear     = "2019-20"
   private val nino        = "AA123456A"
@@ -51,7 +51,7 @@ class DeleteOtherDeductionsControllerSpec
       "a valid request is supplied" in new Test {
         willUseValidator(returningSuccess(requestData))
 
-        MockedSharedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
+        MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
         MockDeleteOtherDeductionsService
           .delete(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
@@ -64,7 +64,7 @@ class DeleteOtherDeductionsControllerSpec
       "the parser validation fails" in new Test {
         willUseValidator(returning(NinoFormatError))
 
-        MockedSharedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
+        MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
         runErrorTestWithAudit(NinoFormatError)
       }
@@ -76,7 +76,7 @@ class DeleteOtherDeductionsControllerSpec
           .delete(requestData)
           .returns(Future.successful(Left(errors.ErrorWrapper(correlationId, RuleTaxYearNotSupportedError))))
 
-        MockedSharedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
+        MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
         runErrorTestWithAudit(RuleTaxYearNotSupportedError)
       }
@@ -95,7 +95,7 @@ class DeleteOtherDeductionsControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    MockedSharedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
+    MockedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
       "supporting-agents-access-control.enabled" -> true
     )
 

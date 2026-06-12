@@ -16,8 +16,8 @@
 
 package v2.models.request.createAndAmendOtherDeductions
 
-import play.api.libs.json.{Json, JsObject, JsError}
-import shared.utils.UnitSpec
+import api.utils.UnitSpec
+import play.api.libs.json.{JsError, JsObject, Json}
 
 class SeafarersSpec extends UnitSpec {
   val seafarers = Seafarers(Some("myRef"), 2000.99, "Blue Bell", "2018-04-06", "2019-04-06")

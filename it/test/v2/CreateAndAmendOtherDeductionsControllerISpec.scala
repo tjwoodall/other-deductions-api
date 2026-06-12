@@ -16,6 +16,8 @@
 
 package v2
 
+import api.models.errors.*
+import api.services.*
 import common.errors.{CustomerReferenceFormatError, NameOfShipFormatError, OutsideAmendmentWindowError}
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status.*
@@ -23,8 +25,6 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
-import shared.models.errors.*
-import shared.services.*
 import support.IntegrationBaseSpec
 
 class CreateAndAmendOtherDeductionsControllerISpec extends IntegrationBaseSpec {

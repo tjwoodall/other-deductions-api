@@ -16,11 +16,11 @@
 
 package v2.services
 
-import cats.implicits._
+import api.controllers.RequestContext
+import api.models.errors.{InternalError, MtdError, NinoFormatError, NotFoundError, RuleTaxYearNotSupportedError, TaxYearFormatError}
+import api.services.{BaseService, ServiceOutcome}
+import cats.implicits.*
 import common.errors.OutsideAmendmentWindowError
-import shared.controllers.RequestContext
-import shared.models.errors.{InternalError, MtdError, NinoFormatError, NotFoundError, RuleTaxYearNotSupportedError, TaxYearFormatError}
-import shared.services.{BaseService, ServiceOutcome}
 import v2.connectors.DeleteOtherDeductionsConnector
 import v2.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequestData
 

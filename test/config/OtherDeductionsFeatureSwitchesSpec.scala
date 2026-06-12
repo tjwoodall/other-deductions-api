@@ -16,8 +16,8 @@
 
 package config
 
+import api.utils.UnitSpec
 import play.api.Configuration
-import shared.utils.UnitSpec
 
 class OtherDeductionsFeatureSwitchesSpec extends UnitSpec {
 

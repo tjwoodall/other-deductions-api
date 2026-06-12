@@ -16,11 +16,11 @@
 
 package v2.services
 
-import shared.controllers.EndpointLogContext
-import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors._
-import shared.models.outcomes.ResponseWrapper
-import shared.services.ServiceSpec
+import api.controllers.EndpointLogContext
+import api.models.domain.{Nino, TaxYear}
+import api.models.errors.*
+import api.models.outcomes.ResponseWrapper
+import api.services.ServiceSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import v2.fixtures.RetrieveOtherDeductionsFixtures.responseBodyModel
 import v2.mocks.connectors.MockRetrieveOtherDeductionsConnector

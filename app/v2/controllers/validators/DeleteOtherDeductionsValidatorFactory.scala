@@ -16,11 +16,11 @@
 
 package v2.controllers.validators
 
+import api.controllers.validators.Validator
+import api.controllers.validators.resolvers.{ResolveNino, ResolveTaxYear}
+import api.models.errors.MtdError
 import cats.data.Validated
 import cats.implicits.catsSyntaxTuple2Semigroupal
-import shared.controllers.validators.Validator
-import shared.controllers.validators.resolvers.{ResolveNino, ResolveTaxYear}
-import shared.models.errors.MtdError
 import v2.models.request.deleteOtherDeductions.DeleteOtherDeductionsRequestData
 
 import javax.inject.Singleton

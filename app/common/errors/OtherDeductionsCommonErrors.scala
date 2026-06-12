@@ -16,8 +16,8 @@
 
 package common.errors
 
+import api.models.errors.MtdError
 import play.api.http.Status.BAD_REQUEST
-import shared.models.errors.MtdError
 
 object CustomerReferenceFormatError extends MtdError("FORMAT_CUSTOMER_REFERENCE", "The provided customer reference is not valid", BAD_REQUEST)
 

@@ -16,13 +16,13 @@
 
 package v2.models.response.retrieveOtherDeductions
 
+import api.config.MockAppConfig
+import api.models.domain.Timestamp
+import api.utils.UnitSpec
 import play.api.libs.json.*
-import shared.config.MockSharedAppConfig
-import shared.models.domain.Timestamp
-import shared.utils.UnitSpec
-import v2.fixtures.RetrieveOtherDeductionsFixtures._
+import v2.fixtures.RetrieveOtherDeductionsFixtures.*
 
-class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockSharedAppConfig {
+class RetrieveOtherDeductionsResponseSpec extends UnitSpec with MockAppConfig {
 
   val multipleSeafarersRetrieveOtherDeductionsResponse: RetrieveOtherDeductionsResponse = RetrieveOtherDeductionsResponse(
     submittedOn = Timestamp("2019-04-04T01:01:01.000Z"),
