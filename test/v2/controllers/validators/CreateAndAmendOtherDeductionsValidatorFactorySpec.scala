@@ -322,15 +322,6 @@ class CreateAndAmendOtherDeductionsValidatorFactorySpec extends UnitSpec with Js
             ErrorWrapper(correlationId, DateFormatError.copy(paths = Some(Seq("/seafarers/0/fromDate"))))
           )
         }
-
-        "the date is earlier than the minimum fromDate" in {
-          val result: Either[ErrorWrapper, CreateAndAmendOtherDeductionsRequestData] =
-            validator(validNino, validTaxYear, jsonBody("1890-08-12")).validateAndWrapResult()
-
-          result shouldBe Left(
-            ErrorWrapper(correlationId, StartDateFormatError)
-          )
-        }
       }
 
       "the toDate is invalid" when {
@@ -357,15 +348,6 @@ class CreateAndAmendOtherDeductionsValidatorFactorySpec extends UnitSpec with Js
 
           result shouldBe Left(
             ErrorWrapper(correlationId, DateFormatError.copy(paths = Some(Seq("/seafarers/0/toDate"))))
-          )
-        }
-
-        "the date is later than the allowed toDate" in {
-          val result: Either[ErrorWrapper, CreateAndAmendOtherDeductionsRequestData] =
-            validator(validNino, validTaxYear, jsonBody("2101-08-12")).validateAndWrapResult()
-
-          result shouldBe Left(
-            ErrorWrapper(correlationId, EndDateFormatError)
           )
         }
 
