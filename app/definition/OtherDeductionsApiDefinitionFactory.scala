@@ -17,6 +17,7 @@
 package definition
 
 import api.config.AppConfig
+import api.definition.APIAccessType.{CONTROLLED, PUBLIC}
 import api.definition.{APIDefinition, APIVersion, ApiDefinitionFactory, Definition}
 import api.routing.Version2
 
@@ -36,6 +37,7 @@ class OtherDeductionsApiDefinitionFactory @Inject() (protected val appConfig: Ap
           APIVersion(
             version = Version2,
             status = buildAPIStatus(Version2),
+            access = if (appConfig.controlledAccessEnabled) CONTROLLED else PUBLIC,
             endpointsEnabled = appConfig.endpointsEnabled(Version2)
           )
         ),

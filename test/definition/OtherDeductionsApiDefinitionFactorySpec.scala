@@ -18,6 +18,7 @@ package definition
 
 import api.config.Deprecation.NotDeprecated
 import api.config.MockAppConfig
+import api.definition.APIAccessType.{CONTROLLED, PUBLIC}
 import api.definition.APIStatus.BETA
 import api.definition.{APIDefinition, APIVersion, Definition}
 import api.mocks.MockHttpClient
@@ -32,30 +33,34 @@ class OtherDeductionsApiDefinitionFactorySpec extends UnitSpec {
     MockedAppConfig.apiGatewayContext returns "other/deductions"
   }
 
-  "definition" when {
-    "called" should {
-      "return a valid Definition case class" in new Test {
-        MockedAppConfig.apiStatus(Version2) returns "BETA"
-        MockedAppConfig.endpointsEnabled(Version2) returns true
-        MockedAppConfig.deprecationFor(Version2).returns(NotDeprecated.valid).anyNumberOfTimes()
+  "calling definition" when {
+    List((PUBLIC, false), (CONTROLLED, true)).foreach { (accessType, controlledAccessEnabled) =>
+      s"the controlled access flag is set to $controlledAccessEnabled" should {
+        s"return a valid Definition case class with the access type set to $accessType" in new Test {
+          MockedAppConfig.apiStatus(Version2) returns "BETA"
+          MockedAppConfig.endpointsEnabled(Version2) returns true
+          MockedAppConfig.deprecationFor(Version2).returns(NotDeprecated.valid).anyNumberOfTimes()
+          MockedAppConfig.controlledAccessEnabled returns controlledAccessEnabled
 
-        apiDefinitionFactory.definition shouldBe Definition(
-          api = APIDefinition(
-            name = "Other Deductions (MTD)",
-            description = "An API for retrieving, amending and deleting other deductions",
-            context = "other/deductions",
-            categories = Seq("INCOME_TAX_MTD"),
-            versions = Seq(
-              APIVersion(
-                version = Version2,
-                status = BETA,
-                endpointsEnabled = true
-              )
-            ),
-            requiresTrust = None
+          apiDefinitionFactory.definition shouldBe Definition(
+            api = APIDefinition(
+              name = "Other Deductions (MTD)",
+              description = "An API for retrieving, amending and deleting other deductions",
+              context = "other/deductions",
+              categories = Seq("INCOME_TAX_MTD"),
+              versions = Seq(
+                APIVersion(
+                  version = Version2,
+                  access = accessType,
+                  status = BETA,
+                  endpointsEnabled = true
+                )
+              ),
+              requiresTrust = None
+            )
           )
-        )
 
+        }
       }
     }
   }
