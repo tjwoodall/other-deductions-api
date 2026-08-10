@@ -1,3 +1,5 @@
+> HMRC is no longer accepting production credential access requests for new 2026–27 quarterly update products, as the market window for these products has now closed.
+
 Use the Other Deductions API to submit, edit and retrieve information about a customer’s Seafarers’ Earnings Deductions.
 
 This API is related to the following customer journey:
